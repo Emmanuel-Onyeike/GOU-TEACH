@@ -640,24 +640,63 @@
 </section>
 
     <!-- Profile -->
-    <section id="profile">
-      <div class="glass p-6 border border-white/10">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-user-cog"></i> Profile</h2>
-        <div class="flex flex-col sm:flex-row items-center gap-6">
-          <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-            <span id="profileInitial">T</span>
-          </div>
-          <div class="text-center sm:text-left flex-1">
-            <h3 id="profileName" class="text-xl font-bold text-white">Loading...</h3>
-            <p id="profileEmail" class="text-muted">email@gouni.edu.ng</p>
-            <div class="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
-              <span class="px-3 py-1 bg-accent/20 text-accent text-xs rounded-full">Lecturer</span>
-              <span id="profileId" class="px-3 py-1 bg-primary/20 text-primary text-xs rounded-full">GOTECH-LECXXXX</span>
-            </div>
-          </div>
+<section id="profile" class="mb-10 relative font-inter">
+  <div class="glass p-8 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden">
+
+    <!-- Glow Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-transparent to-purple-600/10 rounded-2xl pointer-events-none"></div>
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between mb-6 border-b border-gray-800 pb-3 relative z-10">
+      <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+        <i class="fas fa-user-cog text-accent drop-shadow-md"></i>
+        Profile
+      </h2>
+
+      <button id="editProfileBtn" class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition">
+        <i class="fas fa-edit mr-1"></i> Edit
+      </button>
+    </div>
+
+    <!-- PROFILE BODY -->
+    <div class="flex flex-col sm:flex-row items-center gap-8 relative z-10">
+
+      <!-- Profile Image -->
+      <div class="relative group">
+        <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-accent/50 shadow-xl bg-gray-800 flex items-center justify-center">
+          <img id="profileImage" src="" alt="Profile" class="hidden w-full h-full object-cover">
+          <span id="profileInitial" class="text-4xl font-bold text-white select-none">T</span>
+        </div>
+
+        <!-- Upload Button -->
+        <label for="profileImageInput"
+          class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow-md cursor-pointer opacity-0 group-hover:opacity-100 transition">
+          <i class="fas fa-camera text-sm"></i>
+        </label>
+        <input type="file" id="profileImageInput" accept="image/*" class="hidden" />
+      </div>
+
+      <!-- User Info -->
+      <div class="text-center sm:text-left flex-1">
+        <h3 id="profileName" class="text-xl font-bold text-white mb-1">Loading...</h3>
+        <p id="profileEmail" class="text-gray-400 text-sm mb-3">email@gouni.edu.ng</p>
+
+        <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+          <span class="px-3 py-1 bg-accent/20 text-accent text-xs font-semibold rounded-full">
+            Lecturer
+          </span>
+          <span id="profileId"
+            class="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">
+            GOTECH-LECXXXX
+          </span>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+
+
+
   </main>
   <!-- Firebase + Logic -->
   <script type="module">
@@ -1366,6 +1405,62 @@ deployBtn.addEventListener('click', () => {
 // ===============================
 renderDeployments();
 </script>
+<!-- ==========================
+     PROFILE SCRIPT
+=========================== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const imageInput = document.getElementById('profileImageInput');
+  const profileImage = document.getElementById('profileImage');
+  const profileInitial = document.getElementById('profileInitial');
+  const profileName = document.getElementById('profileName');
+  const profileEmail = document.getElementById('profileEmail');
+  const profileId = document.getElementById('profileId');
 
+  // Load saved data
+  const savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+
+  if (savedProfile.name) profileName.textContent = savedProfile.name;
+  if (savedProfile.email) profileEmail.textContent = savedProfile.email;
+  if (savedProfile.id) profileId.textContent = savedProfile.id;
+  if (savedProfile.image) {
+    profileImage.src = savedProfile.image;
+    profileImage.classList.remove('hidden');
+    profileInitial.classList.add('hidden');
+  } else if (savedProfile.name) {
+    profileInitial.textContent = savedProfile.name.charAt(0).toUpperCase();
+  }
+
+  // Handle image upload
+  imageInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      profileImage.src = reader.result;
+      profileImage.classList.remove('hidden');
+      profileInitial.classList.add('hidden');
+      savedProfile.image = reader.result;
+      localStorage.setItem('userProfile', JSON.stringify(savedProfile));
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Allow editing (simple prompt style for now)
+  document.getElementById('editProfileBtn').addEventListener('click', () => {
+    const name = prompt('Enter your full name:', savedProfile.name || '');
+    const email = prompt('Enter your email:', savedProfile.email || '');
+    const id = prompt('Enter your ID:', savedProfile.id || '');
+
+    if (name) profileName.textContent = savedProfile.name = name;
+    if (email) profileEmail.textContent = savedProfile.email = email;
+    if (id) profileId.textContent = savedProfile.id = id;
+
+    if (name) profileInitial.textContent = name.charAt(0).toUpperCase();
+
+    localStorage.setItem('userProfile', JSON.stringify(savedProfile));
+  });
+});
+</script>
 </body>
 </html> 
