@@ -516,152 +516,115 @@
 .locked { opacity: 0.5; cursor: not-allowed; }
 </style>
     <!-- Attendance -->
-  <section id="attendance" class="mb-10 relative">
-  <div class="glass p-6 border border-white/10">
+<section id="attendance" class="mb-10 relative font-inter">
+  <div class="glass p-8 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden">
+
+    <!-- Glow background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 rounded-2xl pointer-events-none"></div>
+
     <!-- HEADER -->
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-white flex items-center gap-2">
-        <i class="fas fa-clipboard-check"></i> Generate Code
+    <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4 relative z-10">
+      <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+        <i class="fas fa-key text-yellow-400 drop-shadow-md"></i>
+        Attendance Code Generator
       </h2>
+
+      <!-- Generate Button -->
       <button id="generateCodeBtn"
-        class="bg-accent hover:bg-accent/90 text-white font-semibold px-4 py-2 rounded-lg transition">
-        Generate Code
+        class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 
+        text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-300 
+        shadow-lg hover:shadow-blue-500/40 flex items-center gap-2">
+        <i class="fas fa-bolt animate-pulse"></i> Generate Code
       </button>
     </div>
 
-    <!-- NO ATTENDANCE STATE -->
-    <div class="flex flex-col items-center justify-center py-10">
-      <i class="fas fa-user-times text-5xl text-white/40 mb-3"></i>
-      <p class="text-white/60 text-center">No attendance recorded yet.</p>
+    <!-- EMPTY STATE -->
+    <div class="flex flex-col items-center justify-center py-14 text-center relative z-10">
+      <div class="relative">
+        <i class="fas fa-user-times text-8xl text-gray-700 mb-5 drop-shadow-lg"></i>
+        <div class="absolute inset-0 blur-3xl bg-blue-500/10 rounded-full animate-pulse"></div>
+      </div>
+      <p class="text-gray-300 font-semibold text-lg">No attendance session active</p>
+      <p class="text-sm text-gray-500 mt-1">Generate and deploy an attendance code to start recording.</p>
     </div>
   </div>
 
   <!-- ==========================
-       MODAL: CODE DISPLAY
+        MODAL
   =========================== -->
   <div id="codeModal"
-       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-[#1a1a1a] border border-white/10 rounded-2xl p-8 w-[90%] max-w-sm text-center relative">
-      <!-- Close Icon -->
+    class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 transition-all">
+    <div class="bg-[#1f2937] border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md 
+      text-center relative shadow-2xl shadow-black/50 animate-fadeIn scale-100">
+
+      <!-- Close Button -->
       <button id="closeModal"
-        class="absolute top-2 right-3 text-white/60 hover:text-white text-lg">
+        class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl transition">
         <i class="fas fa-times"></i>
       </button>
 
-      <h3 class="text-lg text-white font-semibold mb-2">Generated Code</h3>
-      <p id="generatedCode" class="text-3xl font-bold text-accent mb-6 select-all">GOU-ATT00AAA</p>
+      <!-- Title -->
+      <h3 id="modalTitle"
+        class="text-2xl text-white font-bold mb-6 flex justify-center items-center gap-2">
+        <i class="fas fa-lock text-green-400"></i>
+        Code Management
+      </h3>
 
-      <div class="flex justify-center gap-4">
+      <!-- Code Box -->
+      <p id="generatedCode"
+        class="text-4xl font-mono tracking-widest font-extrabold text-green-400 bg-gray-800/70 
+        p-5 rounded-xl mb-6 select-all border border-gray-700 shadow-inner">
+        GOU-ATT00AAA
+      </p>
+
+      <!-- Warning -->
+      <p id="deploymentWarning" class="text-red-400 text-xs font-medium mb-6 italic">
+        <i class="fas fa-exclamation-triangle mr-1"></i>
+        Once deployed, this code cannot be redeployed again.
+      </p>
+
+      <!-- Buttons -->
+      <div class="flex justify-center gap-4 pt-4 border-t border-gray-800">
         <button id="changeCodeBtn"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">
-          Change
+          class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2 rounded-lg font-semibold 
+          transition-all flex items-center gap-2 hover:shadow-md hover:shadow-gray-600/20">
+          <i class="fas fa-sync-alt"></i> Change
         </button>
+
         <button id="deployCodeBtn"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition">
-          Deploy
+          class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 
+          text-white px-5 py-2 rounded-lg font-semibold transition-all 
+          shadow-md hover:shadow-green-500/30 flex items-center gap-2">
+          <i class="fas fa-paper-plane"></i> Deploy
         </button>
       </div>
     </div>
   </div>
 
   <!-- ==========================
-       TOAST (RIGHT SIDE ALERTS)
+        TOAST ALERTS
   =========================== -->
   <div id="toastContainer" class="fixed top-5 right-5 z-[60] space-y-3"></div>
 </section>
 
-<script>
-// ===============================
-// CODE GENERATION
-// ===============================
-function generateAttendanceCode() {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers = Math.floor(Math.random() * 90 + 10); // two digits
-  let randomLetters = '';
-  for (let i = 0; i < 3; i++) {
-    randomLetters += letters[Math.floor(Math.random() * letters.length)];
+<style>
+  body {
+    background-color: #111827;
+    font-family: 'Inter', sans-serif;
   }
-  return `GOU-ATT${numbers}${randomLetters}`;
-}
 
-// ===============================
-// MODAL HANDLING
-// ===============================
-const generateBtn = document.getElementById('generateCodeBtn');
-const codeModal = document.getElementById('codeModal');
-const closeModalBtn = document.getElementById('closeModal');
-const generatedCodeEl = document.getElementById('generatedCode');
-const changeBtn = document.getElementById('changeCodeBtn');
-const deployBtn = document.getElementById('deployCodeBtn');
-
-let currentCode = '';
-let deployed = false;
-
-generateBtn.addEventListener('click', () => {
-  currentCode = generateAttendanceCode();
-  generatedCodeEl.textContent = currentCode;
-  codeModal.classList.remove('hidden');
-});
-
-closeModalBtn.addEventListener('click', () => {
-  codeModal.classList.add('hidden');
-});
-
-changeBtn.addEventListener('click', () => {
-  if (deployed) {
-    showToast('You already deployed a code.', 'error');
-    return;
+  .glass {
+    background-color: rgba(31, 41, 55, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
-  currentCode = generateAttendanceCode();
-  generatedCodeEl.textContent = currentCode;
-  showToast('Code changed successfully!', 'info');
-});
 
-deployBtn.addEventListener('click', () => {
-  if (deployed) {
-    showToast('Code already deployed before.', 'error');
-    return;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
   }
-  deployed = true;
-  showToast('Code has been deployed successfully!', 'success');
-  codeModal.classList.add('hidden');
-});
-
-// ===============================
-// TOAST SYSTEM
-// ===============================
-function showToast(message, type = 'info') {
-  const toastContainer = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `
-    px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium animate-fadeIn
-    ${type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600'}
-  `;
-  toast.textContent = message;
-  toastContainer.appendChild(toast);
-
-  // Remove after 4s
-  setTimeout(() => {
-    toast.classList.add('opacity-0', 'transition');
-    setTimeout(() => toast.remove(), 400);
-  }, 4000);
-}
-
-// ===============================
-// TOAST ANIMATION (OPTIONAL STYLE)
-// ===============================
-const style = document.createElement('style');
-style.textContent = `
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-in-out;
-}
-`;
-document.head.appendChild(style);
-</script>
+  .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+</style>
 
     <!-- Analytics -->
     <section id="analytics" class="mb-10">
@@ -1218,6 +1181,76 @@ function bindCamera(btnId, fileId, titleId, descId) {
 
   console.log('Real OCR / Voice / Build ready (AI locked for next update).');
 }
+</script>
+<!----for the attendance-->
+  
+<script>
+let currentCode = '';
+let deployed = false;
+
+const generateBtn = document.getElementById('generateCodeBtn');
+const codeModal = document.getElementById('codeModal');
+const closeModalBtn = document.getElementById('closeModal');
+const generatedCodeEl = document.getElementById('generatedCode');
+const changeBtn = document.getElementById('changeCodeBtn');
+const deployBtn = document.getElementById('deployCodeBtn');
+
+function generateAttendanceCode() {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const digits = '0123456789';
+  let chars = Array.from({ length: 2 }, () => digits[Math.floor(Math.random() * digits.length)])
+    .concat(Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)]));
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return `GOU-ATT-${chars.join('')}`;
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  let bg = 'bg-blue-600', icon = 'fa-info-circle';
+  if (type === 'success') { bg = 'bg-green-600'; icon = 'fa-check-circle'; }
+  if (type === 'error') { bg = 'bg-red-600'; icon = 'fa-times-circle'; }
+
+  toast.className = `px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium flex items-center gap-3 ${bg} animate-fadeIn`;
+  toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 4000);
+}
+
+// Open modal
+generateBtn.addEventListener('click', () => {
+  if (!currentCode || !deployed) currentCode = generateAttendanceCode();
+  generatedCodeEl.textContent = currentCode;
+  codeModal.classList.remove('hidden');
+});
+
+// Close modal
+closeModalBtn.addEventListener('click', () => codeModal.classList.add('hidden'));
+
+// Change code
+changeBtn.addEventListener('click', () => {
+  if (deployed) return showToast('Code cannot be changed after deployment.', 'error');
+  currentCode = generateAttendanceCode();
+  generatedCodeEl.textContent = currentCode;
+  showToast('Code changed successfully!', 'info');
+});
+
+// Deploy code
+deployBtn.addEventListener('click', () => {
+  if (deployed) return showToast('Code already deployed before.', 'error');
+  deployed = true;
+  changeBtn.disabled = true;
+  deployBtn.disabled = true;
+  deployBtn.innerHTML = '<i class="fas fa-lock"></i> Deployed';
+  deployBtn.classList.replace('from-green-600', 'from-gray-600');
+  deployBtn.classList.replace('to-emerald-600', 'to-gray-700');
+  deployBtn.classList.add('cursor-not-allowed', 'opacity-70');
+  showToast(`Code ${currentCode} has been deployed successfully!`, 'success');
+  codeModal.classList.add('hidden');
+});
 </script>
 
 </body>
