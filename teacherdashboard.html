@@ -117,42 +117,62 @@
   </aside>
 
   <!-- Desktop Sidebar (Left) -->
-  <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
-    <div class="flex items-center gap-3 mb-10">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
-        <i class="fas fa-graduation-cap text-white text-xl"></i>
+ <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
+  
+  <!-- Logo / Header -->
+  <div class="flex items-center gap-3 mb-10">
+    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
+      <i class="fas fa-graduation-cap text-white text-xl"></i>
+    </div>
+    <div>
+      <h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach</h1>
+      <p class="text-xs text-white/50">Godfrey Okoye University</p>
+    </div>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="flex-1 space-y-2">
+    <a href="#home" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 bg-white/10 hover:bg-white/15 transition-all duration-200">
+      <i class="fas fa-home text-white/70"></i> 
+      <span class="font-medium">Dashboard</span>
+    </a>
+    <a href="#students" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-users text-white/70"></i> 
+      <span class="font-medium">Students</span>
+    </a>
+    <a href="#attendance" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-clipboard-check text-white/70"></i> 
+      <span class="font-medium">Attendance</span>
+    </a>
+    <a href="#analytics" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-chart-line text-white/70"></i> 
+      <span class="font-medium">Analytics</span>
+    </a>
+    <a href="#profile" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-user-cog text-white/70"></i> 
+      <span class="font-medium">Profile</span>
+    </a>
+  </nav>
+
+  <!-- User Info & Logout -->
+  <div class="border-t border-white/10 pt-5 mt-5">
+    <div class="flex items-center gap-3 mb-3">
+      <div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-accent/20">
+        T
       </div>
       <div>
-        <h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach</h1>
-        <p class="text-xs text-white/50">Godfrey Okoye University</p>
+        <p id="sidebarName" class="font-semibold text-white leading-tight">Loading...</p>
+        <p class="text-xs text-white/50">Lecturer</p>
       </div>
     </div>
-
-    <nav class="flex-1 space-y-2">
-      <a href="#home" class="sidebar-link active"><i class="fas fa-home"></i> Dashboard</a>
-      <a href="#students" class="sidebar-link"><i class="fas fa-users"></i> Students</a>
-      <a href="#attendance" class="sidebar-link"><i class="fas fa-clipboard-check"></i> Attendance</a>
-      <a href="#analytics" class="sidebar-link"><i class="fas fa-chart-line"></i> Analytics</a>
-      <a href="#profile" class="sidebar-link"><i class="fas fa-user-cog"></i> Profile</a>
-    </nav>
-
-    <div class="border-t border-white/10 pt-5 mt-5">
-      <div class="flex items-center gap-3 mb-3">
-        <div id="sidebarAvatar"
-             class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-accent/20">
-          T
-        </div>
-        <div>
-          <p id="sidebarName" class="font-semibold text-white leading-tight">Loading...</p>
-          <p class="text-xs text-white/50">Lecturer</p>
-        </div>
-      </div>
-      <button id="desktopLogout"
-              class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
-    </div>
-  </aside>
+    <button 
+      id="desktopLogout" 
+      class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm"
+    >
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </div>
+</aside>
 
   <!-- Main Content -->
   <main class="lg:ml-72 p-4 lg:p-8 min-h-screen">
