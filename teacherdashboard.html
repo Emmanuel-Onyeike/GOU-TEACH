@@ -796,6 +796,62 @@
     addItem('hwTitle','hwDesc','#homeWork .list','homeModal','#homeWork .empty-state'));
   document.getElementById('addTestBtn').addEventListener('click', () =>
     addItem('qtTitle','qtDesc','#quickTest .list','testModal','#quickTest .empty-state'));
+ /* =========================
+     NEW FEATURE HANDLERS
+     ========================= */
+
+  function simulateCameraExtract(titleId, descId) {
+    showAlert("Opening camera or gallery...");
+    setTimeout(() => {
+      document.getElementById(titleId).value = "Extracted Title from Image";
+      document.getElementById(descId).value = "Automatically extracted content from the uploaded paper.";
+      showAlert("Text extracted and fields auto-filled!");
+    }, 2500);
+  }
+
+  function simulateAICorrection(titleId, descId) {
+    const titleField = document.getElementById(titleId);
+    const descField = document.getElementById(descId);
+    showAlert("AI reviewing text...");
+    setTimeout(() => {
+      titleField.value = titleField.value.replace(/teh/g, "the").replace(/recieve/g, "receive");
+      descField.value += "\n\n✅ AI: Grammar & spelling improved.";
+      showAlert("AI corrections applied successfully!");
+    }, 2000);
+  }
+
+  function simulateVoiceRecord(titleId, descId) {
+    showAlert("Recording voice...");
+    setTimeout(() => {
+      document.getElementById(descId).value += "\n(Voice input detected: 'This is a sample test question.')";
+      showAlert("Voice converted to text and added!");
+    }, 3000);
+  }
+
+  function openBuildModal() {
+    document.getElementById("buildModal").classList.remove("hidden");
+  }
+
+  // Bind to each modal
+  document.getElementById("cwCamera").onclick = () => simulateCameraExtract("cwTitle", "cwDesc");
+  document.getElementById("cwAI").onclick = () => simulateAICorrection("cwTitle", "cwDesc");
+  document.getElementById("cwVoice").onclick = () => simulateVoiceRecord("cwTitle", "cwDesc");
+  document.getElementById("cwBuild").onclick = openBuildModal;
+
+  document.getElementById("hwCamera").onclick = () => simulateCameraExtract("hwTitle", "hwDesc");
+  document.getElementById("hwAI").onclick = () => simulateAICorrection("hwTitle", "hwDesc");
+  document.getElementById("hwVoice").onclick = () => simulateVoiceRecord("hwTitle", "hwDesc");
+  document.getElementById("hwBuild").onclick = openBuildModal;
+
+  document.getElementById("qtCamera").onclick = () => simulateCameraExtract("qtTitle", "qtDesc");
+  document.getElementById("qtAI").onclick = () => simulateAICorrection("qtTitle", "qtDesc");
+  document.getElementById("qtVoice").onclick = () => simulateVoiceRecord("qtTitle", "qtDesc");
+  document.getElementById("qtBuild").onclick = openBuildModal;
+
+  document.getElementById("buildNow").addEventListener("click", () => {
+    document.getElementById("buildModal").classList.add("hidden");
+    showAlert("Build successful! Activity is now structured and ready.");
+  });
 </script>
 </body>
 </html> 
