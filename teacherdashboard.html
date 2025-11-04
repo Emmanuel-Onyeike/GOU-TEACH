@@ -139,7 +139,10 @@
 
     <!-- Stats -->
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+      <div class="relative glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
+          Coming Soon!
+        </div>
         <i class="fas fa-users text-3xl text-accent mb-2"></i>
         <h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
         <p class="text-xs text-muted">Total Students</p>
@@ -148,6 +151,14 @@
         <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
         <h3 class="text-2xl font-bold text-white" id="presentToday">0</h3>
         <p class="text-xs text-muted">Present Today</p>
+      </div>
+      <div class="relative glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
+          Coming Soon!
+        </div>
+        <i class="fas fa-book text-3xl text-purple-400 mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="examMode">0</h3>
+        <p class="text-xs text-muted">Exam Mode</p>
       </div>
       <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
         <i class="fas fa-percentage text-3xl text-yellow-400 mb-2"></i>
@@ -158,6 +169,11 @@
         <i class="fas fa-tasks text-3xl text-blue-400 mb-2"></i>
         <h3 class="text-2xl font-bold text-white" id="activities">0</h3>
         <p class="text-xs text-muted">Activities</p>
+      </div>
+      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <i class="fas fa-clock text-3xl text-primary mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="nextClassTime">08:30 AM</h3>
+        <p class="text-xs text-muted">Next Class</p>
       </div>
     </section>
 
@@ -377,7 +393,7 @@
 
   <!-- FULL SCRIPT -->
   <script type="module">
-    // Load Tesseract
+    // Load Tesseract First
     const tesseractScript = document.createElement('script');
     tesseractScript.src = 'https://unpkg.com/tesseract.js@v4.0.2/dist/tesseract.min.js';
     tesseractScript.onload = initApp;
@@ -549,7 +565,7 @@
               recorder.onstop = () => {
                 setTimeout(() => descEl.value += "\n[Voice Note: Transcribed automatically]", 1000);
               };
-              setTimeout(() => recorder.stop(), 3000); // Auto-stop after 3s
+              setTimeout(() => recorder.stop(), 3000);
               recording = true;
             });
           } else {
