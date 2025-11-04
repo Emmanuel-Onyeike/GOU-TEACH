@@ -287,62 +287,61 @@
 }
 </style>
 
-<section id="activity" class="mb-10 h-[80vh] overflow-y-auto">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative">
-    <!-- Header -->
-    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-      <i class="fas fa-history"></i> Activity
-    </h2>
+<section id="activity" class="mb-10">
+    <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+      <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+        <i class="fas fa-history"></i> Activity
+      </h2>
 
-    <!-- Tabs -->
-    <div class="flex justify-center mb-6">
-      <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
-        <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
-        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Home Work</button>
-        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
+      <!-- Tabs -->
+      <div class="flex justify-center mb-6">
+        <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
+          <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
+          <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Home Work</button>
+          <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
+        </div>
+      </div>
+
+      <!-- Tab Contents -->
+      <div id="tabContents" class="max-h-[60vh] overflow-y-auto pr-2">
+        <!-- CLASS WORK -->
+        <div id="classWork" class="tab-content">
+          <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+            <i class="fas fa-folder-open text-4xl mb-2"></i>
+            <p>No class work yet. Click + to add one.</p>
+          </div>
+          <div class="list space-y-3"></div>
+          <button class="add-btn fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10" data-modal="classModal">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- HOME WORK -->
+        <div id="homeWork" class="tab-content hidden">
+          <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+            <i class="fas fa-folder-open text-4xl mb-2"></i>
+            <p>No homework yet. Click + to add one.</p>
+          </div>
+          <div class="list space-y-3"></div>
+          <button class="add-btn fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10" data-modal="homeModal">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- QUICK TEST -->
+        <div id="quickTest" class="tab-content hidden">
+          <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+            <i class="fas fa-folder-open text-4xl mb-2"></i>
+            <p>No quick tests yet. Click + to add one.</p>
+          </div>
+          <div class="list space-y-3"></div>
+          <button class="add-btn fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10" data-modal="testModal">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
       </div>
     </div>
-
-    <!-- Tabs Content -->
-    <div id="tabContents" class="relative">
-      <!-- CLASS WORK -->
-      <div id="classWork" class="tab-content">
-        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-          <i class="fas fa-folder-open text-4xl mb-2"></i>
-          <p>No class work yet. Click ➕ to add one.</p>
-        </div>
-        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
-        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="classModal">
-          <i class="fas fa-plus"></i>
-        </button>
-      </div>
-
-      <!-- HOME WORK -->
-      <div id="homeWork" class="tab-content hidden">
-        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-          <i class="fas fa-folder-open text-4xl mb-2"></i>
-          <p>No homework yet. Click ➕ to add one.</p>
-        </div>
-        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
-        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="homeModal">
-          <i class="fas fa-plus"></i>
-        </button>
-      </div>
-
-      <!-- QUICK TEST -->
-      <div id="quickTest" class="tab-content hidden">
-        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-          <i class="fas fa-folder-open text-4xl mb-2"></i>
-          <p>No quick tests yet. Click ➕ to add one.</p>
-        </div>
-        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
-        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="testModal">
-          <i class="fas fa-plus"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
 <!-- MODALS -->
 <!-- CLASS WORK MODAL -->
@@ -385,16 +384,38 @@
 </div>
 
 <!-- DELETE WARNING MODAL -->
+<div id="alertModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-sm border border-white/10 text-center">
+    <i class="fas fa-exclamation-triangle text-yellow-400 text-3xl mb-3"></i>
+    <p id="alertMessage" class="text-white mb-4"></p>
+    <button id="closeAlert" class="px-4 py-2 bg-blue-600 rounded text-white">OK</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Edit Item</h3>
+    <input type="text" id="editTitle" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="editDesc" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="saveEdit" class="px-4 py-2 bg-green-600 rounded text-white">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
 <div id="deleteModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
   <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-sm border border-white/10 text-center">
     <h3 class="text-lg font-bold text-white mb-2">Confirm Delete</h3>
-    <p class="text-white/60 mb-4 text-sm">This file will be deleted permanently. Continue?</p>
+    <p class="text-white/60 mb-4 text-sm">This item will be deleted permanently.</p>
     <div id="deleteProgress" class="hidden w-full bg-white/10 h-2 rounded mb-4 overflow-hidden">
       <div id="deleteBar" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
     </div>
     <div class="flex justify-center gap-3">
       <button id="cancelDelete" class="px-4 py-2 bg-gray-600 rounded text-white">Cancel</button>
-      <button id="confirmDelete" class="px-4 py-2 bg-red-600 rounded text-white">Yes, Delete</button>
+      <button id="confirmDelete" class="px-4 py-2 bg-red-600 rounded text-white">Delete</button>
     </div>
   </div>
 </div>
@@ -661,125 +682,138 @@
     }
   </script>
   <!----for the activity-->
-<script>
-const tabLinks = document.querySelectorAll('.tab-link');
-const tabContents = document.querySelectorAll('.tab-content');
-let itemToDelete = null;
+<script type="module">
+  // ... [Keep all Firebase & Auth code unchanged] ...
 
-// SWITCH TABS
-tabLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    tabLinks.forEach(l => l.classList.remove('active-tab'));
-    tabContents.forEach(c => c.classList.add('hidden'));
-    link.classList.add('active-tab');
-    document.getElementById(link.dataset.target).classList.remove('hidden');
+  // === ACTIVITY SECTION SCRIPT ===
+  const tabLinks = document.querySelectorAll('.tab-link');
+  const tabContents = document.querySelectorAll('.tab-content');
+  let itemToDelete = null;
+  let itemToEdit = null;
+
+  // SWITCH TABS
+  tabLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      tabLinks.forEach(l => l.classList.remove('active-tab'));
+      tabContents.forEach(c => c.classList.add('hidden'));
+      link.classList.add('active-tab');
+      document.getElementById(link.dataset.target).classList.remove('hidden');
+    });
   });
-});
 
-// OPEN/CLOSE MODALS
-document.querySelectorAll('.add-btn').forEach(btn => {
-  btn.addEventListener('click', () => document.getElementById(btn.dataset.modal).classList.remove('hidden'));
-});
-document.querySelectorAll('.close-modal').forEach(btn => {
-  btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
-});
+  // OPEN MODALS
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modal = document.getElementById(btn.dataset.modal);
+      modal.classList.remove('hidden');
+      modal.querySelector('input, textarea').focus();
+    });
+  });
 
-// GLOBAL ADD FUNCTION
-function addItem(titleId, descId, listSelector, modalId, emptySelector) {
-  const title = document.getElementById(titleId).value.trim();
-  const desc = document.getElementById(descId).value.trim();
+  // CLOSE MODALS
+  document.querySelectorAll('.close-modal').forEach(btn => {
+    btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
+  });
 
-  if (!title) {
-    showAlert("Please enter a title before submitting.");
-    return;
+  // ALERT
+  function showAlert(msg) {
+    document.getElementById('alertMessage').textContent = msg;
+    document.getElementById('alertModal').classList.remove('hidden');
   }
+  document.getElementById('closeAlert').addEventListener('click', () => {
+    document.getElementById('alertModal').classList.add('hidden');
+  });
 
-  const modal = document.getElementById(modalId);
-  modal.innerHTML = `
-    <div class="text-white text-center py-6">
-      <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
-      <p>Adding...</p>
-    </div>`;
+  // ADD ITEM
+  function addItem(titleId, descId, listSelector, modalId, emptySelector) {
+    const title = document.getElementById(titleId).value.trim();
+    const desc = document.getElementById(descId).value.trim();
+    if (!title) return showAlert("Title is required!");
 
-  setTimeout(() => {
-    const now = Date.now();
-    const itemHTML = `
-      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start">
+    const modal = document.getElementById(modalId);
+    modal.innerHTML = `<div class="text-center py-6 text-white"><i class="fas fa-spinner fa-spin text-3xl"></i><p>Adding...</p></div>`;
+
+    setTimeout(() => {
+      const now = Date.now();
+      const item = document.createElement('div');
+      item.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
+      item.dataset.time = now;
+      item.innerHTML = `
         <div>
           <p class="text-white font-medium">${title}</p>
-          <p class="text-white/60 text-sm mt-1">${desc}</p>
+          <p class="text-white/60 text-sm mt-1">${desc || 'No description'}</p>
         </div>
         <div class="flex gap-3 items-center">
           <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn" data-time="${now}"></i>
           <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
-        </div>
-      </div>`;
-
-    const list = document.querySelector(listSelector);
-    list.insertAdjacentHTML('beforeend', itemHTML);
-    list.classList.remove('hidden');
-    document.querySelector(emptySelector).classList.add('hidden');
-    modal.classList.add('hidden');
-  }, 5000);
-}
-
-// ADD BUTTON EVENTS
-document.getElementById('addClassBtn').addEventListener('click', () =>
-  addItem('cwTitle','cwDesc','#classWork .list','classModal','#classWork .empty-state'));
-document.getElementById('addHomeBtn').addEventListener('click', () =>
-  addItem('hwTitle','hwDesc','#homeWork .list','homeModal','#homeWork .empty-state'));
-document.getElementById('addTestBtn').addEventListener('click', () =>
-  addItem('qtTitle','qtDesc','#quickTest .list','testModal','#quickTest .empty-state'));
-
-// DELETE ITEM
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('delete-btn')) {
-    itemToDelete = e.target.closest('.glass');
-    document.getElementById('deleteModal').classList.remove('hidden');
+        </div>`;
+      document.querySelector(listSelector).appendChild(item);
+      document.querySelector(emptySelector).classList.add('hidden');
+      document.querySelector(listSelector).classList.remove('hidden');
+      modal.classList.add('hidden');
+      document.getElementById(titleId).value = '';
+      document.getElementById(descId).value = '';
+    }, 800);
   }
-});
 
-// DELETE CONFIRMATION
-document.getElementById('confirmDelete').addEventListener('click', () => {
-  const bar = document.getElementById('deleteBar');
-  document.getElementById('deleteProgress').classList.remove('hidden');
-  bar.style.width = '0%';
-  setTimeout(() => (bar.style.width = '100%'), 50);
-
-  setTimeout(() => {
-    if (itemToDelete) itemToDelete.remove();
-    document.getElementById('deleteModal').classList.add('hidden');
-    document.getElementById('deleteProgress').classList.add('hidden');
-    bar.style.width = '0%';
-  }, 3000);
-});
-
-// CANCEL DELETE
-document.getElementById('cancelDelete').addEventListener('click', () => {
-  document.getElementById('deleteModal').classList.add('hidden');
-});
-
-// LOCK EDIT AFTER 24HRS
-setInterval(() => {
-  const now = Date.now();
-  document.querySelectorAll('.edit-btn').forEach(btn => {
-    const created = parseInt(btn.dataset.time);
-    if (now - created > 86400000) {
-      btn.classList.add('locked');
-      btn.classList.remove('cursor-pointer');
+  // EDIT ITEM
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('edit-btn')) {
+      const item = e.target.closest('[data-time]');
+      const created = parseInt(item.dataset.time);
+      if (Date.now() - created > 86400000) {
+        showAlert("This item is older than 24 hours and cannot be edited.");
+        return;
+      }
+      itemToEdit = item;
+      document.getElementById('editTitle').value = item.querySelector('p').textContent;
+      document.getElementById('editDesc').value = item.querySelector('p:nth-child(2)').textContent;
+      document.getElementById('editModal').classList.remove('hidden');
     }
   });
-}, 60000);
 
-// ALERT MODAL FUNCTION
-function showAlert(message) {
-  const modal = document.getElementById('alertModal');
-  document.getElementById('alertMessage').textContent = message;
-  modal.classList.remove('hidden');
-}
-document.getElementById('closeAlert').addEventListener('click', () => {
-  document.getElementById('alertModal').classList.add('hidden');
-});
+  document.getElementById('saveEdit').addEventListener('click', () => {
+    const title = document.getElementById('editTitle').value.trim();
+    const desc = document.getElementById('editDesc').value.trim();
+    if (!title) return showAlert("Title is required!");
+    itemToEdit.querySelector('p').textContent = title;
+    itemToEdit.querySelector('p:nth-child(2)').textContent = desc || 'No description';
+    document.getElementById('editModal').classList.add('hidden');
+  });
+
+  // DELETE ITEM
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('delete-btn')) {
+      itemToDelete = e.target.closest('.glass');
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+  });
+
+  document.getElementById('confirmDelete').addEventListener('click', () => {
+    const bar = document.getElementById('deleteBar');
+    document.getElementById('deleteProgress').classList.remove('hidden');
+    bar.style.width = '0%';
+    setTimeout(() => bar.style.width = '100%', 50);
+    setTimeout(() => {
+      itemToDelete?.remove();
+      document.getElementById('deleteModal').classList.add('hidden');
+      document.getElementById('deleteProgress').classList.add('hidden');
+      bar.style.width = '0%';
+      itemToDelete = null;
+    }, 1000);
+  });
+
+  document.getElementById('cancelDelete').addEventListener('click', () => {
+    document.getElementById('deleteModal').classList.add('hidden');
+  });
+
+  // ADD BUTTONS
+  document.getElementById('addClassBtn').addEventListener('click', () =>
+    addItem('cwTitle','cwDesc','#classWork .list','classModal','#classWork .empty-state'));
+  document.getElementById('addHomeBtn').addEventListener('click', () =>
+    addItem('hwTitle','hwDesc','#homeWork .list','homeModal','#homeWork .empty-state'));
+  document.getElementById('addTestBtn').addEventListener('click', () =>
+    addItem('qtTitle','qtDesc','#quickTest .list','testModal','#quickTest .empty-state'));
 </script>
 
 </body>
