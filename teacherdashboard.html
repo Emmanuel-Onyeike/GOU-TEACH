@@ -516,14 +516,14 @@
 .locked { opacity: 0.5; cursor: not-allowed; }
 </style>
     <!-- Attendance -->
-<section id="attendance" class="mb-10 relative font-inter">
-  <div class="glass p-8 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden">
+<section id="attendance" class="mb-10 relative font-inter h-[90vh] overflow-hidden">
+  <div class="glass p-8 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden h-full flex flex-col">
 
     <!-- Glow background -->
     <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 rounded-2xl pointer-events-none"></div>
 
     <!-- HEADER -->
-    <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4 relative z-10">
+    <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4 relative z-10 shrink-0">
       <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
         <i class="fas fa-key text-yellow-400 drop-shadow-md"></i>
         Attendance Code Generator
@@ -538,14 +538,35 @@
       </button>
     </div>
 
-    <!-- EMPTY STATE -->
-    <div class="flex flex-col items-center justify-center py-14 text-center relative z-10">
-      <div class="relative">
-        <i class="fas fa-user-times text-8xl text-gray-700 mb-5 drop-shadow-lg"></i>
-        <div class="absolute inset-0 blur-3xl bg-blue-500/10 rounded-full animate-pulse"></div>
+    <!-- CONTENT (Scrollable Container) -->
+    <div class="relative z-10 flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar">
+
+      <!-- EMPTY STATE -->
+      <div id="emptyState" class="flex flex-col items-center justify-center py-14 text-center">
+        <div class="relative">
+          <i class="fas fa-user-times text-8xl text-gray-700 mb-5 drop-shadow-lg"></i>
+          <div class="absolute inset-0 blur-3xl bg-blue-500/10 rounded-full animate-pulse"></div>
+        </div>
+        <p class="text-gray-300 font-semibold text-lg">No attendance session active</p>
+        <p class="text-sm text-gray-500 mt-1">Generate and deploy an attendance code to start recording.</p>
       </div>
-      <p class="text-gray-300 font-semibold text-lg">No attendance session active</p>
-      <p class="text-sm text-gray-500 mt-1">Generate and deploy an attendance code to start recording.</p>
+
+      <!-- ACTIVE CODES -->
+      <div>
+        <h3 class="text-green-400 text-lg font-semibold mb-2 flex items-center gap-2">
+          <i class="fas fa-check-circle"></i> Active Codes
+        </h3>
+        <div id="activeCodesList" class="space-y-3"></div>
+      </div>
+
+      <!-- INACTIVE CODES -->
+      <div>
+        <h3 class="text-red-400 text-lg font-semibold mb-2 flex items-center gap-2">
+          <i class="fas fa-times-circle"></i> Inactive Codes
+        </h3>
+        <div id="inactiveCodesList" class="space-y-3"></div>
+      </div>
+
     </div>
   </div>
 
@@ -624,6 +645,21 @@
     to { opacity: 1; transform: scale(1); }
   }
   .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+
+  /* Scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.4);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.6);
+  }
 </style>
 
     <!-- Analytics -->
@@ -1201,27 +1237,26 @@ const generatedCodeEl = document.getElementById('generatedCode');
 const changeBtn = document.getElementById('changeCodeBtn');
 const deployBtn = document.getElementById('deployCodeBtn');
 const toastContainer = document.getElementById('toastContainer');
-
-// Create activity area if not already there
-let activityContainer = document.getElementById('attendanceList');
-if (!activityContainer) {
-  activityContainer = document.createElement('div');
-  activityContainer.id = 'attendanceList';
-  document.querySelector('#attendance .glass').appendChild(activityContainer);
-}
+const emptyState = document.getElementById('emptyState');
+const activeCodesList = document.getElementById('activeCodesList');
+const inactiveCodesList = document.getElementById('inactiveCodesList');
 
 // ===============================
-// GENERATION & TOASTS
+// UTILS
 // ===============================
 function generateAttendanceCode() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const digits = '0123456789';
-  let chars = Array.from({ length: 2 }, () => digits[Math.floor(Math.random() * digits.length)])
-    .concat(Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)]));
+  let chars = [
+    ...Array.from({ length: 2 }, () => digits[Math.floor(Math.random() * digits.length)]),
+    ...Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)])
+  ];
+
   for (let i = chars.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
+
   return `GOU-ATT-${chars.join('')}`;
 }
 
@@ -1231,82 +1266,86 @@ function showToast(message, type = 'info') {
   if (type === 'success') { bg = 'bg-green-600'; icon = 'fa-check-circle'; }
   if (type === 'error') { bg = 'bg-red-600'; icon = 'fa-times-circle'; }
 
-  toast.className = `px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium flex items-center gap-3 ${bg} animate-fadeIn`;
+  toast.className = `
+    px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium 
+    flex items-center gap-3 ${bg} animate-fadeIn`;
   toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
   toastContainer.appendChild(toast);
   setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 4000);
 }
 
+function saveDeployments() {
+  localStorage.setItem('attendance_deployments', JSON.stringify(deployedCodes));
+}
+
 // ===============================
-// DEPLOYMENT LOGIC
+// RENDER DEPLOYMENTS
 // ===============================
 function renderDeployments() {
-  activityContainer.innerHTML = '';
+  activeCodesList.innerHTML = '';
+  inactiveCodesList.innerHTML = '';
 
   if (deployedCodes.length === 0) {
-    activityContainer.innerHTML = `
-      <div class="flex flex-col items-center justify-center py-10 text-gray-400">
-        <i class="fas fa-user-times text-6xl mb-3"></i>
-        <p>No attendance recorded yet.</p>
-      </div>
-    `;
+    emptyState.classList.remove('hidden');
     return;
+  } else {
+    emptyState.classList.add('hidden');
   }
 
   deployedCodes.forEach((code, index) => {
     const card = document.createElement('div');
     card.className = `
-      glass border border-gray-700 rounded-xl p-4 mb-3 transition-all
-      ${code.active ? 'opacity-100' : 'opacity-50'}
+      glass border border-gray-700 rounded-xl p-4 transition-all duration-300
+      hover:shadow-lg hover:shadow-gray-800/30
+      ${code.active ? 'opacity-100' : 'opacity-60 grayscale'}
     `;
 
     card.innerHTML = `
       <div class="flex justify-between items-center">
         <div>
           <h4 class="text-white text-lg font-bold">${code.code}</h4>
-          <p class="text-sm text-gray-400">
-            <i class="far fa-clock"></i> ${code.date}
+          <p class="text-sm text-gray-400 flex items-center gap-2">
+            <i class="far fa-clock text-gray-500"></i> ${code.date}
           </p>
           <p class="text-xs text-gray-500 mt-1">
             Deployment #${index + 1}
           </p>
         </div>
 
-        <div class="flex gap-2">
-          <button class="toggle-active bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition">
-            Active
+        <div class="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+          <button class="activateBtn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+            <i class="fas fa-toggle-on"></i> Activate
           </button>
-          <button class="toggle-inactive bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition">
-            Inactive
+          <button class="deactivateBtn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+            <i class="fas fa-toggle-off"></i> Deactivate
           </button>
         </div>
       </div>
     `;
 
-    // Attach toggle handlers
-    const activeBtn = card.querySelector('.toggle-active');
-    const inactiveBtn = card.querySelector('.toggle-inactive');
+    const activateBtn = card.querySelector('.activateBtn');
+    const deactivateBtn = card.querySelector('.deactivateBtn');
 
-    activeBtn.addEventListener('click', () => {
+    activateBtn.addEventListener('click', () => {
       code.active = true;
       saveDeployments();
       renderDeployments();
-      showToast(`Code ${code.code} reactivated.`, 'success');
+      showToast(`${code.code} reactivated successfully.`, 'success');
     });
 
-    inactiveBtn.addEventListener('click', () => {
+    deactivateBtn.addEventListener('click', () => {
       code.active = false;
       saveDeployments();
       renderDeployments();
-      showToast(`Code ${code.code} marked inactive.`, 'error');
+      showToast(`${code.code} deactivated.`, 'error');
     });
 
-    activityContainer.appendChild(card);
+    if (code.active) {
+      activeCodesList.appendChild(card);
+    } else {
+      inactiveCodesList.appendChild(card);
+    }
   });
-}
-
-function saveDeployments() {
-  localStorage.setItem('attendance_deployments', JSON.stringify(deployedCodes));
 }
 
 // ===============================
@@ -1338,16 +1377,18 @@ deployBtn.addEventListener('click', () => {
   deployedCodes.push(newDeployment);
   saveDeployments();
   renderDeployments();
-
   showToast(`Code ${currentCode} deployed successfully!`, 'success');
+
+  currentCode = '';
   codeModal.classList.add('hidden');
 });
 
 // ===============================
-// INITIAL RENDER
+// INITIAL LOAD
 // ===============================
 renderDeployments();
 </script>
+
 
 </body>
 </html> 
