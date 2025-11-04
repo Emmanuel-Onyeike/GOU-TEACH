@@ -674,8 +674,6 @@
 const STORAGE_KEY = 'goteach_activity_items_v2';
 const ARCHIVE_KEY = 'goteach_activity_archive_v2';
 let items = loadItems();
-let itemToDelete = null;
-let itemToEdit = null;
 
 // ===============================
 // LOADERS
@@ -696,7 +694,7 @@ function saveArchive(data) {
 }
 
 // ===============================
-// TAB SWITCHING (FIXED)
+// TAB SWITCHING
 // ===============================
 const tabLinks = document.querySelectorAll('.tab-link');
 const tabContents = document.querySelectorAll('.tab-content');
@@ -711,7 +709,7 @@ tabLinks.forEach(link => {
 });
 
 // ===============================
-// ALERT SYSTEM
+// ALERT
 // ===============================
 function showAlert(msg) {
   const modal = document.getElementById('alertModal');
@@ -726,7 +724,7 @@ document.getElementById('closeAlert')?.addEventListener('click', () => {
 });
 
 // ===============================
-// MODALS (RESTORED IDs)
+// MODALS
 // ===============================
 document.querySelectorAll('.add-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -735,7 +733,6 @@ document.querySelectorAll('.add-btn').forEach(btn => {
     modal?.querySelector('input, textarea')?.focus();
   });
 });
-
 document.querySelectorAll('.close-modal').forEach(btn => {
   btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
 });
@@ -780,9 +777,9 @@ function renderList(listSel, emptySel, arr) {
 renderAll(items);
 
 // ===============================
-// ADD ITEMS (UNLIMITED + KEEP IDs)
+// ADD ITEMS (UNLIMITED)
 // ===============================
-function addItem(titleId, descId, type, modalId) {
+function addItem(titleId, descId, type) {
   const title = document.getElementById(titleId).value.trim();
   const desc = document.getElementById(descId).value.trim();
   if (!title) return showAlert("Title is required!");
@@ -792,21 +789,20 @@ function addItem(titleId, descId, type, modalId) {
   saveItems(items);
   renderAll(items);
 
-  // reset fields
   document.getElementById(titleId).value = '';
   document.getElementById(descId).value = '';
 
-  // keep modal open for multiple entries
   showAlert("Added successfully! You can add another.");
 }
+
 document.getElementById('addClassBtn')?.addEventListener('click', () =>
-  addItem('cwTitle', 'cwDesc', 'classWork', 'classModal')
+  addItem('cwTitle', 'cwDesc', 'classWork')
 );
 document.getElementById('addHomeBtn')?.addEventListener('click', () =>
-  addItem('hwTitle', 'hwDesc', 'homeWork', 'homeModal')
+  addItem('hwTitle', 'hwDesc', 'homeWork')
 );
 document.getElementById('addTestBtn')?.addEventListener('click', () =>
-  addItem('qtTitle', 'qtDesc', 'quickTest', 'testModal')
+  addItem('qtTitle', 'qtDesc', 'quickTest')
 );
 
 // ===============================
@@ -824,7 +820,7 @@ document.addEventListener('click', e => {
 });
 
 // ===============================
-// AUTO ARCHIVE (24hr)
+// AUTO ARCHIVE (24 HOURS)
 // ===============================
 setInterval(() => {
   const now = Date.now();
@@ -848,8 +844,88 @@ setInterval(() => {
     renderAll(items);
   }
 }, 60 * 1000);
-</script>
 
+// ===============================
+// BASIC AI / CAMERA / VOICE / BUILD (PURE JS)
+// ===============================
+
+// 🧠 AI correction & simplification
+function correctAndSimplifyText(titleId, descId) {
+  const title = document.getElementById(titleId);
+  const desc = document.getElementById(descId);
+
+  if (!title.value && !desc.value) return showAlert("Enter some text first.");
+
+  // simple replacements
+  const corrections = { "teh": "the", "recieve": "receive", "occurence": "occurrence", "seperated": "separated" };
+  for (let [wrong, right] of Object.entries(corrections)) {
+    title.value = title.value.replace(new RegExp(wrong, "gi"), right);
+    desc.value = desc.value.replace(new RegExp(wrong, "gi"), right);
+  }
+
+  // simplify big words
+  const simplifyMap = {
+    "utilize": "use",
+    "commence": "start",
+    "terminate": "end",
+    "approximately": "about",
+    "assistance": "help",
+    "individual": "person",
+  };
+  for (let [hard, simple] of Object.entries(simplifyMap)) {
+    title.value = title.value.replace(new RegExp(hard, "gi"), simple);
+    desc.value = desc.value.replace(new RegExp(hard, "gi"), simple);
+  }
+
+  showAlert("AI has cleaned and simplified your text!");
+}
+
+// 📷 Camera extract (fake open file for now)
+function handleCameraInput(titleId, descId) {
+  const file = prompt("📸 Simulate: Paste image text or type short text from your document:");
+  if (file) {
+    document.getElementById(titleId).value = "Extracted: " + file.slice(0, 30);
+    document.getElementById(descId).value = file;
+    showAlert("Text extracted from your input!");
+  }
+}
+
+// 🎙️ Voice recording
+function handleVoiceInput(descId) {
+  const spoken = prompt("🎤 Say or type what you want recorded:");
+  if (spoken) {
+    document.getElementById(descId).value += "\n(Voice input): " + spoken;
+    showAlert("Voice text added!");
+  }
+}
+
+// 🏗️ Build question
+function handleBuild(titleId, descId) {
+  const topic = document.getElementById(titleId).value || "General topic";
+  const question = `Create a short test question about "${topic}".\nExample: What are key points about ${topic}?`;
+  document.getElementById(descId).value = question;
+  showAlert("Question generated based on your topic!");
+}
+
+// ===============================
+// ATTACH HANDLERS
+// ===============================
+document.getElementById("cwCamera").onclick = () => handleCameraInput("cwTitle", "cwDesc");
+document.getElementById("cwAI").onclick = () => correctAndSimplifyText("cwTitle", "cwDesc");
+document.getElementById("cwVoice").onclick = () => handleVoiceInput("cwDesc");
+document.getElementById("cwBuild").onclick = () => handleBuild("cwTitle", "cwDesc");
+
+document.getElementById("hwCamera").onclick = () => handleCameraInput("hwTitle", "hwDesc");
+document.getElementById("hwAI").onclick = () => correctAndSimplifyText("hwTitle", "hwDesc");
+document.getElementById("hwVoice").onclick = () => handleVoiceInput("hwDesc");
+document.getElementById("hwBuild").onclick = () => handleBuild("hwTitle", "hwDesc");
+
+document.getElementById("qtCamera").onclick = () => handleCameraInput("qtTitle", "qtDesc");
+document.getElementById("qtAI").onclick = () => correctAndSimplifyText("qtTitle", "qtDesc");
+document.getElementById("qtVoice").onclick = () => handleVoiceInput("qtDesc");
+document.getElementById("qtBuild").onclick = () => handleBuild("qtTitle", "qtDesc");
+
+</script>
 
 </body>
 </html> 
