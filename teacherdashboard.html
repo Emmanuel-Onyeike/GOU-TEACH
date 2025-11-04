@@ -287,61 +287,58 @@
 }
 </style>
 
+<!-- Activity Section -->
 <section id="activity" class="mb-10">
-    <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-      <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-        <i class="fas fa-history"></i> Activity
-      </h2>
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+      <i class="fas fa-history"></i> Activity
+    </h2>
 
-      <!-- Tabs -->
-      <div class="flex justify-center mb-6">
-        <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
-          <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
-          <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Home Work</button>
-          <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
-        </div>
-      </div>
-
-      <!-- Tab Contents -->
-      <div id="tabContents" class="max-h-[60vh] overflow-y-auto pr-2">
-        <!-- CLASS WORK -->
-        <div id="classWork" class="tab-content">
-          <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-            <i class="fas fa-folder-open text-4xl mb-2"></i>
-            <p>No class work yet. Click + to add one.</p>
-          </div>
-          <div class="list space-y-3"></div>
-          <button class="add-btn fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10" data-modal="classModal">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-
-        <!-- HOME WORK -->
-        <div id="homeWork" class="tab-content hidden">
-          <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-            <i class="fas fa-folder-open text-4xl mb-2"></i>
-            <p>No homework yet. Click + to add one.</p>
-          </div>
-          <div class="list space-y-3"></div>
-          <button class="add-btn fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10" data-modal="homeModal">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-
-        <!-- QUICK TEST -->
-        <div id="quickTest" class="tab-content hidden">
-          <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-            <i class="fas fa-folder-open text-4xl mb-2"></i>
-            <p>No quick tests yet. Click + to add one.</p>
-          </div>
-          <div class="list space-y-3"></div>
-          <button class="add-btn fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10" data-modal="testModal">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
+    <!-- Tabs -->
+    <div class="flex justify-center mb-6">
+      <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
+        <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Homework</button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
       </div>
     </div>
-  </section>
+
+    <!-- Tab Contents -->
+    <div id="tabContents" class="max-h-[60vh] overflow-y-auto pr-2">
+      <!-- CLASS WORK -->
+      <div id="classWork" class="tab-content">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No class work yet. Click + to add one.</p>
+        </div>
+        <div id="classWorkList" class="list space-y-3"></div>
+      </div>
+
+      <!-- HOMEWORK -->
+      <div id="homeWork" class="tab-content hidden">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No homework yet. Click + to add one.</p>
+        </div>
+        <div id="homeWorkList" class="list space-y-3"></div>
+      </div>
+
+      <!-- QUICK TEST -->
+      <div id="quickTest" class="tab-content hidden">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No quick tests yet. Click + to add one.</p>
+        </div>
+        <div id="quickTestList" class="list space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- Floating + Button -->
+    <button id="addActivityBtn" class="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+</section>
 
 <!-- MODALS -->
 <!-- CLASS WORK MODAL -->
@@ -683,91 +680,148 @@
   </script>
   <!----for the activity-->
 <script type="module">
-  // ... [Keep all Firebase & Auth code unchanged] ...
+  // ... [Keep all your Firebase & Auth code unchanged up to loadAnalytics()] ...
 
-  // === ACTIVITY SECTION SCRIPT ===
-  const tabLinks = document.querySelectorAll('.tab-link');
-  const tabContents = document.querySelectorAll('.tab-content');
-  let itemToDelete = null;
-  let itemToEdit = null;
+  // ================== ACTIVITY SYSTEM ==================
+  const STORAGE_KEY = 'goteach_activity_items';
+  const ARCHIVE_KEY = 'goteach_activity_archive';
 
-  // SWITCH TABS
-  tabLinks.forEach(link => {
+  // Load from localStorage
+  function loadItems() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : { classWork: [], homeWork: [], quickTest: [] };
+  }
+
+  function saveItems(items) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  function loadArchive() {
+    const data = localStorage.getItem(ARCHIVE_KEY);
+    return data ? JSON.parse(data) : {};
+  }
+
+  function saveArchive(archive) {
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive));
+  }
+
+  // Render list
+  function renderList(type, items) {
+    const list = document.getElementById(`${type}List`);
+    const empty = list.previousElementSibling;
+    list.innerHTML = '';
+
+    if (items.length === 0) {
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
+      div.dataset.id = item.id;
+      div.dataset.time = item.timestamp;
+      div.innerHTML = `
+        <div>
+          <p class="text-white font-medium">${item.title}</p>
+          <p class="text-white/60 text-sm mt-1">${item.desc || 'No description'}</p>
+          <p class="text-xs text-muted mt-1">${new Date(item.timestamp).toLocaleString()}</p>
+        </div>
+        <div class="flex gap-3 items-center">
+          <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn ${isEditable(item.timestamp) ? '' : 'opacity-50 cursor-not-allowed'}"></i>
+          <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+
+  function isEditable(timestamp) {
+    return Date.now() - timestamp < 24 * 60 * 60 * 1000;
+  }
+
+  // Initial Load
+  let items = loadItems();
+  renderList('classWork', items.classWork);
+  renderList('homeWork', items.homeWork);
+  renderList('quickTest', items.quickTest);
+
+  // Tab Switching
+  document.querySelectorAll('.tab-link').forEach(link => {
     link.addEventListener('click', () => {
-      tabLinks.forEach(l => l.classList.remove('active-tab'));
-      tabContents.forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active-tab'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
       link.classList.add('active-tab');
       document.getElementById(link.dataset.target).classList.remove('hidden');
     });
   });
 
-  // OPEN MODALS
-  document.querySelectorAll('.add-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const modal = document.getElementById(btn.dataset.modal);
-      modal.classList.remove('hidden');
-      modal.querySelector('input, textarea').focus();
-    });
+  // Floating + Button
+  document.getElementById('addActivityBtn').addEventListener('click', () => {
+    const activeTab = document.querySelector('.tab-link.active-tab').dataset.target;
+    const modalMap = { classWork: 'classModal', homeWork: 'homeModal', quickTest: 'testModal' };
+    const modal = document.getElementById(modalMap[activeTab]);
+    modal.classList.remove('hidden');
+    modal.querySelector('input').focus();
   });
 
-  // CLOSE MODALS
-  document.querySelectorAll('.close-modal').forEach(btn => {
-    btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
-  });
-
-  // ALERT
-  function showAlert(msg) {
-    document.getElementById('alertMessage').textContent = msg;
-    document.getElementById('alertModal').classList.remove('hidden');
+  // Add Item
+  function addItem(type, title, desc) {
+    const newItem = {
+      id: Date.now() + Math.random(),
+      title,
+      desc,
+      timestamp: Date.now()
+    };
+    items[type].push(newItem);
+    saveItems(items);
+    renderList(type, items[type]);
   }
-  document.getElementById('closeAlert').addEventListener('click', () => {
-    document.getElementById('alertModal').classList.add('hidden');
-  });
 
-  // ADD ITEM
-  function addItem(titleId, descId, listSelector, modalId, emptySelector) {
-    const title = document.getElementById(titleId).value.trim();
-    const desc = document.getElementById(descId).value.trim();
+  document.getElementById('addClassBtn').addEventListener('click', () => {
+    const title = document.getElementById('cwTitle').value.trim();
+    const desc = document.getElementById('cwDesc').value.trim();
     if (!title) return showAlert("Title is required!");
+    addItem('classWork', title, desc);
+    document.getElementById('classModal').classList.add('hidden');
+    document.getElementById('cwTitle').value = '';
+    document.getElementById('cwDesc').value = '';
+  });
 
-    const modal = document.getElementById(modalId);
-    modal.innerHTML = `<div class="text-center py-6 text-white"><i class="fas fa-spinner fa-spin text-3xl"></i><p>Adding...</p></div>`;
+  document.getElementById('addHomeBtn').addEventListener('click', () => {
+    const title = document.getElementById('hwTitle').value.trim();
+    const desc = document.getElementById('hwDesc').value.trim();
+    if (!title) return showAlert("Title is required!");
+    addItem('homeWork', title, desc);
+    document.getElementById('homeModal').classList.add('hidden');
+    document.getElementById('hwTitle').value = '';
+    document.getElementById('hwDesc').value = '';
+  });
 
-    setTimeout(() => {
-      const now = Date.now();
-      const item = document.createElement('div');
-      item.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
-      item.dataset.time = now;
-      item.innerHTML = `
-        <div>
-          <p class="text-white font-medium">${title}</p>
-          <p class="text-white/60 text-sm mt-1">${desc || 'No description'}</p>
-        </div>
-        <div class="flex gap-3 items-center">
-          <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn" data-time="${now}"></i>
-          <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
-        </div>`;
-      document.querySelector(listSelector).appendChild(item);
-      document.querySelector(emptySelector).classList.add('hidden');
-      document.querySelector(listSelector).classList.remove('hidden');
-      modal.classList.add('hidden');
-      document.getElementById(titleId).value = '';
-      document.getElementById(descId).value = '';
-    }, 800);
-  }
+  document.getElementById('addTestBtn').addEventListener('click', () => {
+    const title = document.getElementById('qtTitle').value.trim();
+    const desc = document.getElementById('qtDesc').value.trim();
+    if (!title) return showAlert("Title is required!");
+    addItem('quickTest', title, desc);
+    document.getElementById('testModal').classList.add('hidden');
+    document.getElementById('qtTitle').value = '';
+    document.getElementById('qtDesc').value = '';
+  });
 
-  // EDIT ITEM
+  // Edit
   document.addEventListener('click', e => {
     if (e.target.classList.contains('edit-btn')) {
-      const item = e.target.closest('[data-time]');
-      const created = parseInt(item.dataset.time);
-      if (Date.now() - created > 86400000) {
-        showAlert("This item is older than 24 hours and cannot be edited.");
+      const item = e.target.closest('[data-id]');
+      const timestamp = parseInt(item.dataset.time);
+      if (!isEditable(timestamp)) {
+        showAlert("Cannot edit items older than 24 hours.");
         return;
       }
-      itemToEdit = item;
-      document.getElementById('editTitle').value = item.querySelector('p').textContent;
-      document.getElementById('editDesc').value = item.querySelector('p:nth-child(2)').textContent;
+      const title = item.querySelector('p').textContent;
+      const desc = item.querySelector('p:nth-child(2)').textContent;
+      document.getElementById('editTitle').value = title;
+      document.getElementById('editDesc').value = desc === 'No description' ? '' : desc;
+      window.editTarget = item;
       document.getElementById('editModal').classList.remove('hidden');
     }
   });
@@ -776,15 +830,22 @@
     const title = document.getElementById('editTitle').value.trim();
     const desc = document.getElementById('editDesc').value.trim();
     if (!title) return showAlert("Title is required!");
-    itemToEdit.querySelector('p').textContent = title;
-    itemToEdit.querySelector('p:nth-child(2)').textContent = desc || 'No description';
+    const item = window.editTarget;
+    const id = item.dataset.id;
+    const type = item.closest('.tab-content').id;
+    const idx = items[type].findIndex(i => i.id == id);
+    items[type][idx].title = title;
+    items[type][idx].desc = desc;
+    saveItems(items);
+    renderList(type, items[type]);
     document.getElementById('editModal').classList.add('hidden');
   });
 
-  // DELETE ITEM
+  // Delete
+  let deleteTarget = null;
   document.addEventListener('click', e => {
     if (e.target.classList.contains('delete-btn')) {
-      itemToDelete = e.target.closest('.glass');
+      deleteTarget = e.target.closest('[data-id]');
       document.getElementById('deleteModal').classList.remove('hidden');
     }
   });
@@ -795,11 +856,14 @@
     bar.style.width = '0%';
     setTimeout(() => bar.style.width = '100%', 50);
     setTimeout(() => {
-      itemToDelete?.remove();
+      const id = deleteTarget.dataset.id;
+      const type = deleteTarget.closest('.tab-content').id;
+      items[type] = items[type].filter(i => i.id != id);
+      saveItems(items);
+      renderList(type, items[type]);
       document.getElementById('deleteModal').classList.add('hidden');
       document.getElementById('deleteProgress').classList.add('hidden');
       bar.style.width = '0%';
-      itemToDelete = null;
     }, 1000);
   });
 
@@ -807,13 +871,45 @@
     document.getElementById('deleteModal').classList.add('hidden');
   });
 
-  // ADD BUTTONS
-  document.getElementById('addClassBtn').addEventListener('click', () =>
-    addItem('cwTitle','cwDesc','#classWork .list','classModal','#classWork .empty-state'));
-  document.getElementById('addHomeBtn').addEventListener('click', () =>
-    addItem('hwTitle','hwDesc','#homeWork .list','homeModal','#homeWork .empty-state'));
-  document.getElementById('addTestBtn').addEventListener('click', () =>
-    addItem('qtTitle','qtDesc','#quickTest .list','testModal','#quickTest .empty-state'));
+  // Close modals
+  document.querySelectorAll('.close-modal').forEach(btn => {
+    btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
+  });
+
+  // Alert
+  function showAlert(msg) {
+    document.getElementById('alertMessage').textContent = msg;
+    document.getElementById('alertModal').classList.remove('hidden');
+  }
+  document.getElementById('closeAlert').addEventListener('click', () => {
+    document.getElementById('alertModal').classList.add('hidden');
+  });
+
+  // === AUTO-ARCHIVE AFTER 24H ===
+  setInterval(() => {
+    const now = Date.now();
+    const archive = loadArchive();
+    const today = new Date().toISOString().split('T')[0];
+
+    let changed = false;
+    ['classWork', 'homeWork', 'quickTest'].forEach(type => {
+      const old = items[type].filter(i => now - i.timestamp > 24 * 60 * 60 * 1000);
+      if (old.length > 0) {
+        archive[today] = archive[today] || { classWork: [], homeWork: [], quickTest: [] };
+        archive[today][type].push(...old);
+        items[type] = items[type].filter(i => now - i.timestamp <= 24 * 60 * 60 * 1000);
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      saveItems(items);
+      saveArchive(archive);
+      renderList('classWork', items.classWork);
+      renderList('homeWork', items.homeWork);
+      renderList('quickTest', items.quickTest);
+    }
+  }, 60 * 1000); // Check every minute
 </script>
 
 </body>
