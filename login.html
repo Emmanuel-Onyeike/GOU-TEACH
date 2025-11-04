@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0b0b14] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GoTeach Login | Godfrey Okoye University</title>
+  <link rel="icon" type="image/png" href="image.png" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #0b0b14 0%, #0e0e1a 100%);
+      min-height: 100vh;
+    }
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 2rem;
+      padding: 2.5rem 2rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Gradient Text */
+    .highlight {
+      background: linear-gradient(90deg, #ffcc00, #6a00ff, #00c6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    /* Input Wrapper */
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #00c6ff;
+      box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.25), 0 0 15px rgba(0, 198, 255, 0.4);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0a0a0;
+      transition: color 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .input-field:focus ~ .input-icon,
+    .input-field:not(:placeholder-shown) ~ .input-icon {
+      color: #00c6ff;
+    }
+
+    /* Floating Label */
+    .floating-label {
+      position: absolute;
+      left: 3rem;
+      top: 1rem;
+      font-size: 1rem;
+      color: #a0a0a0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      transform-origin: left;
+    }
+
+    .input-field:focus ~ .floating-label,
+    .input-field:not(:placeholder-shown) ~ .floating-label {
+      top: 0.5rem;
+      left: 3rem;
+      font-size: 0.75rem;
+      color: #00c6ff;
+    }
+
+    /* Button */
+    .btn-primary {
+      background: linear-gradient(90deg, #ffcc00, #6a00ff, #00c6ff);
+      color: white;
+      padding: 0.85rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+    }
+
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    /* Links */
+    .forgot-password {
+      color: #a0a0a0;
+      cursor: pointer;
+      transition: color 0.2s;
+      font-size: 0.875rem;
+    }
+
+    .forgot-password:hover {
+      color: #00c6ff;
+    }
+
+    .signup-text a {
+      color: #6a00ff;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .signup-text a:hover {
+      color: #00c6ff;
+    }
+
+    /* Modal */
+    .modal-bg {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+  <!-- Login Card -->
+  <div class="glass-card">
+    <h1 class="text-3xl md:text-4xl font-bold mb-8">Login to <span class="highlight">GoTeach</span></h1>
+
+    <form id="loginForm" novalidate>
+      <!-- Email Field -->
+      <div class="input-wrapper">
+        <input type="email" id="email" class="input-field" placeholder=" " required />
+        <span class="input-icon">Email</span>
+        <label class="floating-label">Email Address</label>
+      </div>
+
+      <!-- Password Field -->
+      <div class="input-wrapper">
+        <input type="password" id="password" class="input-field" placeholder=" " required />
+        <span class="input-icon">Lock</span>
+        <label class="floating-label">Password</label>
+      </div>
+
+      <!-- Login Button -->
+      <button type="submit" id="loginBtn" class="btn-primary mb-4">
+        <span id="btnText">Login</span>
+      </button>
+    </form>
+
+    <p class="forgot-password text-sm mb-4">Forgot your password?</p>
+    <p class="signup-text text-sm mt-6">Don't have an account? <a href="signup.html">Sign Up</a></p>
+  </div>
+
+  <!-- Message Modal -->
+  <div id="loginModal" class="fixed inset-0 hidden flex items-center justify-center modal-bg z-50 p-4">
+    <div class="glass-card w-full max-w-sm text-center p-6">
+      <h3 id="modalTitle" class="text-lg font-bold text-white mb-3">Message</h3>
+      <p id="modalContent" class="text-sm text-gray-300 mb-6"></p>
+      <button type="button" onclick="hideModal()" class="btn-primary py-2 text-white font-medium w-full">Close</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs (Updated to v10.14.2 for bug fixes) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, enableIndexedDbPersistence, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
+      authDomain: "goteach-1eaa3.firebaseapp.com",
+      projectId: "goteach-1eaa3",
+      storageBucket: "goteach-1eaa3.appspot.com",
+      messagingSenderId: "486448948939",
+      appId: "1:486448948939:web:3058788ea1a134804d1d4e",
+      measurementId: "G-FMSL801KQB"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Initialize Firestore with Long Polling (fixes WebChannel 400 errors)
+    const db = getFirestore(app, {
+      experimentalForceLongPolling: true  // Bypass WebSockets; use HTTP polling
+    });
+
+    // Conditional Persistence (only enable if online; reduces offline errors)
+    if (navigator.onLine) {
+      enableIndexedDbPersistence(db).catch(err => {
+        console.warn("Persistence failed (non-critical):", err.code);
+      });
+    }
+
+    // Optional: Uncomment for emulator testing
+    // connectFirestoreEmulator(db, 'localhost', 8080);
+
+    // DOM Helpers
+    const $ = id => document.getElementById(id);
+    const showModal = (title, content) => {
+      $('modalTitle').innerText = title;
+      $('modalContent').innerText = content;
+      $('loginModal').classList.remove('hidden');
+    };
+    window.hideModal = () => $('loginModal').classList.add('hidden');
+
+    // Retry Function for Offline Errors
+    async function getDocWithRetry(docRef, maxRetries = 3) {
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          return await getDoc(docRef);
+        } catch (err) {
+          if (err.code === 'unavailable' && err.message.includes('offline')) {
+            console.warn(`Offline error (attempt ${i + 1}/${maxRetries}). Retrying in 1s...`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            throw err;  // Re-throw non-offline errors
+          }
+        }
+      }
+      throw new Error('Max retries exceeded for offline error.');
+    }
+
+    // Floating Labels
+    document.querySelectorAll('.input-field').forEach(input => {
+      const updateLabel = () => {
+        const label = input.closest('.input-wrapper').querySelector('.floating-label');
+        if (input.value) {
+          label.style.top = '0.5rem';
+          label.style.fontSize = '0.75rem';
+          label.style.color = '#00c6ff';
+        } else {
+          label.style.top = '1rem';
+          label.style.fontSize = '1rem';
+          label.style.color = '#a0a0a0';
+        }
+      };
+
+      input.addEventListener('input', updateLabel);
+      input.addEventListener('focus', () => {
+        const label = input.closest('.input-wrapper').querySelector('.floating-label');
+        label.style.top = '0.5rem';
+        label.style.fontSize = '0.75rem';
+        label.style.color = '#00c6ff';
+      });
+      input.addEventListener('blur', updateLabel);
+      updateLabel();
+    });
+
+    // Login Form
+    $('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = $('email').value.trim();
+      const password = $('password').value.trim();
+      const loginBtn = $('loginBtn');
+      const btnText = $('btnText');
+
+      if (!email || !password) return showModal('Error', 'Please fill in all fields.');
+
+      loginBtn.disabled = true;
+      btnText.textContent = 'Signing in...';
+      loginBtn.classList.add('btn-loading');
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const user = cred.user;
+
+        if (!user.emailVerified) {
+          await auth.signOut();
+          return showModal('Verify Email', 'Please verify your email before logging in.');
+        }
+
+        // Retry getDoc on offline
+        const userDoc = await getDocWithRetry(doc(db, 'users', user.uid));
+        if (!userDoc.exists()) {
+          await auth.signOut();
+          return showModal('Profile Missing', 'User profile not found. Contact admin.');
+        }
+
+        const role = userDoc.data().role;
+        if (!['Teacher', 'Student'].includes(role)) {
+          await auth.signOut();
+          return showModal('Invalid Role', 'Your account role is invalid.');
+        }
+
+        showModal('Success!', `Welcome back, ${role}!`);
+        setTimeout(() => {
+          window.location.href = role === 'Teacher' ? 'teacherdashboard.html' : 'studentdashboard.html';
+        }, 1500);
+
+      } catch (err) {
+        console.error("Login error:", err);
+        let msg = "Login failed. Please try again.";
+        switch (err.code) {
+          case 'auth/user-not-found': msg = "No account with this email."; break;
+          case 'auth/wrong-password': msg = "Incorrect password."; break;
+          case 'auth/too-many-requests': msg = "Too many attempts. Try again later."; break;
+          case 'auth/network-request-failed': msg = "Check your internet connection."; break;
+          default: if (err.message.includes('offline')) msg = "Connection issue. Check your network and retry."; break;
+        }
+        showModal('Login Failed', msg);
+      } finally {
+        loginBtn.disabled = false;
+        btnText.textContent = 'Login';
+        loginBtn.classList.remove('btn-loading');
+      }
+    });
+
+    // Auto-redirect if already logged in (with retry)
+    onAuthStateChanged(auth, async user => {
+      if (user && user.emailVerified) {
+        try {
+          const snap = await getDocWithRetry(doc(db, 'users', user.uid));
+          if (snap.exists() && ['Teacher', 'Student'].includes(snap.data().role)) {
+            const role = snap.data().role;
+            if (window.location.pathname.includes('login.html') || window.location.pathname === '/') {
+              window.location.href = role === 'Teacher' ? 'teacherdashboard.html' : 'studentdashboard.html';
+            }
+          }
+        } catch (err) {
+          console.warn("Auto-redirect error:", err.message);
+          if (err.message.includes('offline')) {
+            showModal('Connection Issue', 'Check your internet and refresh the page.');
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

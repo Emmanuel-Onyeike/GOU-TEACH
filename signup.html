@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0b0b14] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GoTech University | Sign Up</title>
+  <link rel="icon" type="image/png" href="image.png" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, #0b0b14 40%, #0e0e1a 100%);
+      color: white;
+      min-height: 100vh;
+    }
+
+    /* Glassmorphism */
+    .gotech-glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Gradient Animation */
+    .gotech-gradient {
+      background: linear-gradient(135deg, #ffcc00, #6a00ff, #00c6ff);
+      background-size: 300% 300%;
+      animation: gradientShift 8s ease infinite;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Inputs */
+    input, select {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+    input:focus, select:focus {
+      border-color: #00c6ff;
+      box-shadow: 0 0 12px rgba(0, 198, 255, 0.35);
+      outline: none;
+    }
+    ::placeholder { color: #bbb; opacity: 0.8; }
+
+    /* Button */
+    .btn-gotech {
+      background: linear-gradient(90deg, #ffcc00, #6a00ff, #00c6ff);
+      background-size: 300% 300%;
+      animation: gradientShift 8s ease infinite;
+      color: white;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .btn-gotech:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(106, 0, 255, 0.4);
+    }
+    .shadow-glow {
+      box-shadow: 0 0 30px rgba(106, 0, 255, 0.4), 0 0 15px rgba(255, 204, 0, 0.2);
+    }
+
+    /* Modal */
+    .modal-bg {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center px-4 py-10">
+
+  <!-- Main Card -->
+  <div class="w-full max-w-lg rounded-2xl gotech-glass p-8 shadow-glow">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-extrabold gotech-gradient">GoTech Portal</h1>
+      <p class="text-gray-300 mt-1">Godfrey Okoye University</p>
+    </div>
+
+    <!-- Sign-Up Form -->
+    <form id="signup-form" class="space-y-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="firstName" class="block text-sm font-medium text-gray-200">First Name</label>
+          <input type="text" id="firstName" required placeholder="Emmanuel" class="mt-1 block w-full" />
+        </div>
+        <div>
+          <label for="lastName" class="block text-sm font-medium text-gray-200">Last Name</label>
+          <input type="text" id="lastName" required placeholder="Onyeike" class="mt-1 block w-full" />
+        </div>
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-200">Email Address</label>
+        <input type="email" id="email" required placeholder="example@gou.edu.ng" class="mt-1 block w-full" />
+      </div>
+
+      <div>
+        <label for="role" class="block text-sm font-medium text-gray-200">I am a...</label>
+        <select id="role" required class="mt-1 block w-full">
+          <option value="">Select Role</option>
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+        </select>
+      </div>
+
+      <!-- Conditional Fields -->
+      <div id="conditional-fields" class="space-y-4 hidden">
+        <div id="reg-number-field" class="hidden">
+          <label for="regNumber" class="block text-sm font-medium text-gray-200">Registration Number</label>
+          <input type="text" id="regNumber" placeholder="e.g., GOU/U23/CSC/1190" class="mt-1 block w-full" />
+        </div>
+
+        <div id="gotech-id-field" class="hidden">
+          <label for="gotechId" class="block text-sm font-medium text-gray-200">Your Unique GoTech ID</label>
+          <div class="mt-1 flex">
+            <input type="text" id="gotechId" readonly class="flex-1 block w-full rounded-l-lg px-4 py-3 bg-white/10 border border-white/20" placeholder="Waiting..." />
+            <button type="button" id="copyBtn" class="btn-gotech px-4 rounded-r-lg flex items-center gap-2">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+          <p id="id-status" class="text-xs mt-1 text-gray-400">Your unique ID will be generated here.</p>
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-200">Password</label>
+        <input type="password" id="password" required minlength="8" placeholder="********" class="mt-1 block w-full" />
+      </div>
+
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-200">Confirm Password</label>
+        <input type="password" id="confirmPassword" required placeholder="********" class="mt-1 block w-full" />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="signup-btn" class="w-full btn-gotech text-white font-semibold py-3 rounded-lg transition duration-200 shadow-glow flex items-center justify-center gap-2">
+        <span id="btn-text">Sign Up</span>
+        <i class="fas fa-spinner fa-spin hidden" id="loading-icon"></i>
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-sm">
+      <p class="text-gray-400">Already have an account? <a href="login.html" class="text-blue-400 hover:text-blue-300 font-medium">Log In Here</a></p>
+      <p class="mt-4 text-xs text-gray-500">Powered by <span class="text-yellow-400 font-bold">Tech Nxxt</span></p>
+    </div>
+  </div>
+
+  <!-- Redirect Modal -->
+  <div id="redirectModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[99999] hidden flex items-center justify-center p-4">
+    <div class="gotech-glass p-8 rounded-3xl max-w-md w-full text-center border border-white/20 shadow-2xl animate-pulse">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center">
+        <i class="fas fa-rocket text-white text-2xl animate-bounce"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2">Redirecting...</h3>
+      <p class="text-gray-300">Taking you to your dashboard in <span id="countdown">6</span> seconds</p>
+      <div class="mt-6 h-2 bg-white/20 rounded-full overflow-hidden">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-300 ease-linear" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Modal -->
+  <div id="message-modal" class="fixed inset-0 modal-bg hidden flex items-center justify-center z-50 p-4">
+    <div class="gotech-glass p-6 rounded-lg w-full max-w-sm text-center">
+      <h3 id="modal-title" class="text-lg font-bold text-white mb-3">Message</h3>
+      <p id="modal-content" class="text-sm text-gray-300 mb-4"></p>
+      <button onclick="hideModal()" class="w-full btn-gotech py-2 rounded-lg text-white font-medium">Close</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
+      authDomain: "goteach-1eaa3.firebaseapp.com",
+      projectId: "goteach-1eaa3",
+      storageBucket: "goteach-1eaa3.appspot.com",
+      messagingSenderId: "486448948939",
+      appId: "1:486448948939:web:3058788ea1a134804d1d4e",
+      measurementId: "G-FMSL801KQB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const roleSelect = document.getElementById("role");
+    const regNumberField = document.getElementById("reg-number-field");
+    const gotechIdField = document.getElementById("gotech-id-field");
+    const gotechIdInput = document.getElementById("gotechId");
+    const regNumberInput = document.getElementById("regNumber");
+    const signupForm = document.getElementById("signup-form");
+    const signupBtn = document.getElementById("signup-btn");
+    const btnText = document.getElementById("btn-text");
+    const loadingIcon = document.getElementById("loading-icon");
+    const conditionalFields = document.getElementById("conditional-fields");
+    const copyBtn = document.getElementById("copyBtn");
+
+    // Generate GoTech ID
+    function generateId(role) {
+      const unique = Math.random().toString(16).substring(2, 8).toUpperCase();
+      return role === "Student" ? `GOTECH-STUD${unique}` : `GOTECH-LEC${unique}`;
+    }
+
+    // Handle Role Change
+    function handleRoleChange() {
+      const role = roleSelect.value;
+      if (!role) {
+        conditionalFields.classList.add("hidden");
+        signupBtn.disabled = true;
+        return;
+      }
+
+      conditionalFields.classList.remove("hidden");
+      gotechIdField.classList.remove("hidden");
+      gotechIdInput.value = generateId(role);
+
+      if (role === "Student") {
+        regNumberField.classList.remove("hidden");
+        regNumberInput.setAttribute("required", "");
+      } else {
+        regNumberField.classList.add("hidden");
+        regNumberInput.removeAttribute("required");
+      }
+      signupBtn.disabled = false;
+    }
+
+    roleSelect.addEventListener("change", handleRoleChange);
+
+    // Copy GoTech ID
+    copyBtn.addEventListener("click", () => {
+      if (!gotechIdInput.value) return showModal("Error", "No GoTech ID generated yet.");
+      navigator.clipboard.writeText(gotechIdInput.value);
+      showModal("Copied!", "Your GoTech ID has been copied to clipboard.");
+    });
+
+    // Modal Functions
+    function showModal(title, content) {
+      document.getElementById("modal-title").innerText = title;
+      document.getElementById("modal-content").innerHTML = content;
+      document.getElementById("message-modal").classList.remove("hidden");
+    }
+
+    window.hideModal = () => {
+      document.getElementById("message-modal").classList.add("hidden");
+    };
+
+    // Redirect Modal Logic
+    const redirectModal = document.getElementById("redirectModal");
+    const countdownEl = document.getElementById("countdown");
+    const progressBar = document.getElementById("progressBar");
+
+    function showRedirectModal() {
+      redirectModal.classList.remove("hidden");
+      let seconds = 6;
+      countdownEl.textContent = seconds;
+      progressBar.style.width = "0%";
+
+      const interval = setInterval(() => {
+        seconds--;
+        countdownEl.textContent = seconds;
+        progressBar.style.width = `${((6 - seconds) / 6) * 100}%`;
+      }, 1000);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        window.location.href = 'studentdashboard.html'; // Change to your actual dashboard
+      }, 6000);
+    }
+
+    // Form Submit
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const role = roleSelect.value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const gotechId = gotechIdInput.value;
+      const regNumber = regNumberInput.value.trim();
+
+      if (!role) return showModal("Error", "Please select your role.");
+      if (password !== confirmPassword) return showModal("Error", "Passwords do not match.");
+      if (role === "Student" && !regNumber) return showModal("Error", "Registration number is required for students.");
+
+      signupBtn.disabled = true;
+      btnText.classList.add("hidden");
+      loadingIcon.classList.remove("hidden");
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await sendEmailVerification(user);
+        await setDoc(doc(db, "users", user.uid), {
+          firstName, lastName, email, role, gotechId, regNumber, createdAt: new Date()
+        });
+
+        showModal("Success", `Welcome ${firstName}!<br>Verification email sent to <b>${email}</b>.`);
+        
+        // Show redirect modal after success
+        setTimeout(showRedirectModal, 2000);
+
+      } catch (err) {
+        console.error(err);
+        showModal("Signup Failed", err.message);
+        signupBtn.disabled = false;
+        btnText.classList.remove("hidden");
+        loadingIcon.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>
