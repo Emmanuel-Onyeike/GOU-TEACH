@@ -668,37 +668,26 @@
   </script>
   <!----for the activity-->
 <script type="module">
-// ===============================
-// CONFIG & STORAGE
-// ===============================
+/* =========================
+   YOUR ORIGINAL CODE (unchanged)
+   ========================= */
 const STORAGE_KEY = 'goteach_activity_items_v2';
 const ARCHIVE_KEY = 'goteach_activity_archive_v2';
 let items = loadItems();
 
-// ===============================
-// LOADERS
-// ===============================
 function loadItems() {
   const data = localStorage.getItem(STORAGE_KEY);
   return data ? JSON.parse(data) : { classWork: [], homeWork: [], quickTest: [] };
 }
-function saveItems(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+function saveItems(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 function loadArchive() {
   const data = localStorage.getItem(ARCHIVE_KEY);
   return data ? JSON.parse(data) : {};
 }
-function saveArchive(data) {
-  localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data));
-}
+function saveArchive(data) { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data)); }
 
-// ===============================
-// TAB SWITCHING
-// ===============================
 const tabLinks = document.querySelectorAll('.tab-link');
 const tabContents = document.querySelectorAll('.tab-content');
-
 tabLinks.forEach(link => {
   link.addEventListener('click', () => {
     tabLinks.forEach(l => l.classList.remove('active-tab'));
@@ -708,9 +697,6 @@ tabLinks.forEach(link => {
   });
 });
 
-// ===============================
-// ALERT
-// ===============================
 function showAlert(msg) {
   const modal = document.getElementById('alertModal');
   const text = document.getElementById('alertMessage');
@@ -723,9 +709,6 @@ document.getElementById('closeAlert')?.addEventListener('click', () => {
   document.getElementById('alertModal').classList.add('hidden');
 });
 
-// ===============================
-// MODALS
-// ===============================
 document.querySelectorAll('.add-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const modal = document.getElementById(btn.dataset.modal);
@@ -737,15 +720,11 @@ document.querySelectorAll('.close-modal').forEach(btn => {
   btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
 });
 
-// ===============================
-// RENDERING
-// ===============================
 function renderAll(data) {
   renderList('#classWork .list', '#classWork .empty-state', data.classWork);
   renderList('#homeWork .list', '#homeWork .empty-state', data.homeWork);
   renderList('#quickTest .list', '#quickTest .empty-state', data.quickTest);
 }
-
 function renderList(listSel, emptySel, arr) {
   const list = document.querySelector(listSel);
   const empty = document.querySelector(emptySel);
@@ -755,7 +734,6 @@ function renderList(listSel, emptySel, arr) {
     return;
   }
   empty.classList.add('hidden');
-
   arr.forEach(i => {
     const el = document.createElement('div');
     el.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
@@ -776,38 +754,22 @@ function renderList(listSel, emptySel, arr) {
 }
 renderAll(items);
 
-// ===============================
-// ADD ITEMS (UNLIMITED)
-// ===============================
 function addItem(titleId, descId, type) {
   const title = document.getElementById(titleId).value.trim();
   const desc = document.getElementById(descId).value.trim();
   if (!title) return showAlert("Title is required!");
-
   const newItem = { id: Date.now() + Math.random(), title, desc, timestamp: Date.now() };
   items[type].push(newItem);
   saveItems(items);
   renderAll(items);
-
   document.getElementById(titleId).value = '';
   document.getElementById(descId).value = '';
-
   showAlert("Added successfully! You can add another.");
 }
+document.getElementById('addClassBtn')?.addEventListener('click', () => addItem('cwTitle', 'cwDesc', 'classWork'));
+document.getElementById('addHomeBtn')?.addEventListener('click', () => addItem('hwTitle', 'hwDesc', 'homeWork'));
+document.getElementById('addTestBtn')?.addEventListener('click', () => addItem('qtTitle', 'qtDesc', 'quickTest'));
 
-document.getElementById('addClassBtn')?.addEventListener('click', () =>
-  addItem('cwTitle', 'cwDesc', 'classWork')
-);
-document.getElementById('addHomeBtn')?.addEventListener('click', () =>
-  addItem('hwTitle', 'hwDesc', 'homeWork')
-);
-document.getElementById('addTestBtn')?.addEventListener('click', () =>
-  addItem('qtTitle', 'qtDesc', 'quickTest')
-);
-
-// ===============================
-// DELETE
-// ===============================
 document.addEventListener('click', e => {
   if (e.target.classList.contains('delete-btn')) {
     const id = e.target.dataset.id;
@@ -819,15 +781,11 @@ document.addEventListener('click', e => {
   }
 });
 
-// ===============================
-// AUTO ARCHIVE (24 HOURS)
-// ===============================
 setInterval(() => {
   const now = Date.now();
   const archive = loadArchive();
   const today = new Date().toISOString().split('T')[0];
   let changed = false;
-
   ['classWork', 'homeWork', 'quickTest'].forEach(type => {
     const old = items[type].filter(i => now - i.timestamp > 86400000);
     if (old.length > 0) {
@@ -837,7 +795,6 @@ setInterval(() => {
       changed = true;
     }
   });
-
   if (changed) {
     saveItems(items);
     saveArchive(archive);
@@ -845,86 +802,173 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-// ===============================
-// BASIC AI / CAMERA / VOICE / BUILD (PURE JS)
-// ===============================
+/* =========================
+   NEW REAL FEATURES (replaces your simulated block)
+   ========================= */
 
-// 🧠 AI correction & simplification
-function correctAndSimplifyText(titleId, descId) {
-  const title = document.getElementById(titleId);
-  const desc = document.getElementById(descId);
+/* ---- 1. Load Tesseract OCR (once) ---- */
+const tesseractScript = document.createElement('script');
+tesseractScript.src = 'https://unpkg.com/tesseract.js@v4.0.2/dist/tesseract.min.js';
+tesseractScript.onload = initRealFeatures;
+document.head.appendChild(tesseractScript);
 
-  if (!title.value && !desc.value) return showAlert("Enter some text first.");
+function initRealFeatures() {
 
-  // simple replacements
-  const corrections = { "teh": "the", "recieve": "receive", "occurence": "occurrence", "seperated": "separated" };
-  for (let [wrong, right] of Object.entries(corrections)) {
-    title.value = title.value.replace(new RegExp(wrong, "gi"), right);
-    desc.value = desc.value.replace(new RegExp(wrong, "gi"), right);
+  /* ---- 2. CAMERA → OCR (gallery → title + numbered description) ---- */
+  async function ocrFromFile(file, titleEl, descEl) {
+    if (!file) return;
+    showAlert('Running OCR…');
+    try {
+      const { createWorker } = Tesseract;
+      const worker = await createWorker();
+      await worker.load();
+      await worker.loadLanguage('eng');
+      await worker.initialize('eng');
+      const { data: { text } } = await worker.recognize(file);
+      await worker.terminate();
+
+      const lines = text.split('\n')
+        .map(l => l.trim())
+        .filter(l => l);
+
+      // Title = first line (or first numbered line)
+      let title = lines[0] || 'Untitled';
+      // Preserve numbers in description
+      const numbered = lines.map((l, i) => {
+        const numMatch = l.match(/^(\d+[\.\)]\s?)/);
+        return numMatch ? l : `${i + 1}. ${l}`;
+      }).join('\n');
+
+      titleEl.value = title;
+      descEl.value = numbered;
+      showAlert('OCR done – title & numbered text ready!');
+    } catch (e) {
+      console.error(e);
+      titleEl.value = 'OCR error';
+      descEl.value = 'Failed to read image.';
+      showAlert('OCR failed – try another image.');
+    }
   }
 
-  // simplify big words
-  const simplifyMap = {
-    "utilize": "use",
-    "commence": "start",
-    "terminate": "end",
-    "approximately": "about",
-    "assistance": "help",
-    "individual": "person",
-  };
-  for (let [hard, simple] of Object.entries(simplifyMap)) {
-    title.value = title.value.replace(new RegExp(hard, "gi"), simple);
-    desc.value = desc.value.replace(new RegExp(hard, "gi"), simple);
+  function bindCamera(btnId, fileId, titleId, descId) {
+    const btn = document.getElementById(btnId);
+    const fileInput = document.getElementById(fileId);
+    const titleEl = document.getElementById(titleId);
+    const descEl = document.getElementById(descId);
+    if (!btn || !fileInput) return;
+    btn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      const f = fileInput.files?.[0];
+      if (f) ocrFromFile(f, titleEl, descEl);
+    });
   }
 
-  showAlert("AI has cleaned and simplified your text!");
-}
-
-// 📷 Camera extract (fake open file for now)
-function handleCameraInput(titleId, descId) {
-  const file = prompt("📸 Simulate: Paste image text or type short text from your document:");
-  if (file) {
-    document.getElementById(titleId).value = "Extracted: " + file.slice(0, 30);
-    document.getElementById(descId).value = file;
-    showAlert("Text extracted from your input!");
+  /* ---- 3. AI (locked – placeholder for next update) ---- */
+  function aiAssist(titleId, descId) {
+    showAlert('AI assistance is coming in the next update.');
+    // Future: real grammar, sentence correction, etc.
   }
-}
 
-// 🎙️ Voice recording
-function handleVoiceInput(descId) {
-  const spoken = prompt("🎤 Say or type what you want recorded:");
-  if (spoken) {
-    document.getElementById(descId).value += "\n(Voice input): " + spoken;
-    showAlert("Voice text added!");
+  /* ---- 4. VOICE RECORDING (mic overlay → title + description) ---- */
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+
+  function startVoice(descEl, titleEl) {
+    if (!SpeechRecognition) {
+      showAlert('SpeechRecognition not supported.');
+      return;
+    }
+    if (recognition) recognition.stop();
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    let final = '';
+    let interim = '';
+
+    recognition.onresult = e => {
+      interim = '';
+      for (let i = e.resultIndex; i < e.results.length; ++i) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += t + ' ';
+        else interim += t;
+      }
+      descEl.value = final + interim;
+    };
+
+    recognition.onerror = () => {
+      showAlert('Voice error – try again.');
+      recognition = null;
+    };
+
+    recognition.onend = () => {
+      if (final) {
+        // Try to pick a title from the first sentence
+        const firstSentence = final.split(/[.!?]/)[0].trim();
+        if (firstSentence) titleEl.value = firstSentence.length > 50 ? firstSentence.slice(0,47)+'...' : firstSentence;
+        descEl.value = final.trim() + '\n(Voice note)';
+        showAlert('Voice recorded & title suggested!');
+      }
+      recognition = null;
+      document.getElementById('voiceOverlay')?.remove();
+    };
+
+    // ---- overlay mic UI ----
+    const overlay = document.createElement('div');
+    overlay.id = 'voiceOverlay';
+    overlay.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
+    overlay.innerHTML = `
+      <div class="bg-white rounded-xl p-6 text-center animate-pulse">
+        <i class="fas fa-microphone text-6xl text-red-500 mb-4"></i>
+        <p class="text-lg font-medium">Recording…</p>
+        <button id="stopVoiceBtn" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg">Done</button>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#stopVoiceBtn').addEventListener('click', () => recognition.stop());
+    recognition.start();
+    showAlert('Speak now…');
   }
+
+  function bindVoice(btnId, descId, titleId) {
+    const btn = document.getElementById(btnId);
+    const descEl = document.getElementById(descId);
+    const titleEl = document.getElementById(titleId);
+    if (!btn) return;
+    btn.addEventListener('click', () => startVoice(descEl, titleEl));
+  }
+
+  /* ---- 5. BUILD QUESTION (topic → generated question) ---- */
+  function buildQuestion(titleId, descId) {
+    const topic = document.getElementById(titleId).value.trim() || 'this topic';
+    const question = `**Quick Test**\n\n**Topic:** ${topic}\n\n**Question:**\n1. What are the three main points of ${topic}?\n2. Explain one point with an example.\n3. Why is it important?`;
+    document.getElementById(descId).value = question;
+    showAlert('Question generated – edit as needed!');
+  }
+
+  /* ---- 6. BIND ALL BUTTONS ---- */
+  // ClassWork
+  bindCamera('cwCamera', 'cwFileInput', 'cwTitle', 'cwDesc');
+  document.getElementById('cwAI')?.addEventListener('click', () => aiAssist('cwTitle', 'cwDesc'));
+  bindVoice('cwVoice', 'cwDesc', 'cwTitle');
+  document.getElementById('cwBuild')?.addEventListener('click', () => buildQuestion('cwTitle', 'cwDesc'));
+
+  // HomeWork
+  bindCamera('hwCamera', 'hwFileInput', 'hwTitle', 'hwDesc');
+  document.getElementById('hwAI')?.addEventListener('click', () => aiAssist('hwTitle', 'hwDesc'));
+  bindVoice('hwVoice', 'hwDesc', 'hwTitle');
+  document.getElementById('hwBuild')?.addEventListener('click', () => buildQuestion('hwTitle', 'hwDesc'));
+
+  // QuickTest
+  bindCamera('qtCamera', 'qtFileInput', 'qtTitle', 'qtDesc');
+  document.getElementById('qtAI')?.addEventListener('click', () => aiAssist('qtTitle', 'qtDesc'));
+  bindVoice('qtVoice', 'qtDesc', 'qtTitle');
+  document.getElementById('qtBuild')?.addEventListener('click', () => buildQuestion('qtTitle', 'qtDesc'));
+
+  console.log('Real OCR / Voice / Build ready (AI locked for next update).');
 }
-
-// 🏗️ Build question
-function handleBuild(titleId, descId) {
-  const topic = document.getElementById(titleId).value || "General topic";
-  const question = `Create a short test question about "${topic}".\nExample: What are key points about ${topic}?`;
-  document.getElementById(descId).value = question;
-  showAlert("Question generated based on your topic!");
-}
-
-// ===============================
-// ATTACH HANDLERS
-// ===============================
-document.getElementById("cwCamera").onclick = () => handleCameraInput("cwTitle", "cwDesc");
-document.getElementById("cwAI").onclick = () => correctAndSimplifyText("cwTitle", "cwDesc");
-document.getElementById("cwVoice").onclick = () => handleVoiceInput("cwDesc");
-document.getElementById("cwBuild").onclick = () => handleBuild("cwTitle", "cwDesc");
-
-document.getElementById("hwCamera").onclick = () => handleCameraInput("hwTitle", "hwDesc");
-document.getElementById("hwAI").onclick = () => correctAndSimplifyText("hwTitle", "hwDesc");
-document.getElementById("hwVoice").onclick = () => handleVoiceInput("hwDesc");
-document.getElementById("hwBuild").onclick = () => handleBuild("hwTitle", "hwDesc");
-
-document.getElementById("qtCamera").onclick = () => handleCameraInput("qtTitle", "qtDesc");
-document.getElementById("qtAI").onclick = () => correctAndSimplifyText("qtTitle", "qtDesc");
-document.getElementById("qtVoice").onclick = () => handleVoiceInput("qtDesc");
-document.getElementById("qtBuild").onclick = () => handleBuild("qtTitle", "qtDesc");
-
 </script>
 
 </body>
