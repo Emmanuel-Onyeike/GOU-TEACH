@@ -1233,6 +1233,39 @@ function saveDeployments() {
   localStorage.setItem('attendance_deployments', JSON.stringify(deployedCodes));
 }
 
+// ===============================
+// ARCHIVE SYSTEM (24HR AUTO SAVE)
+// ===============================
+function archiveOldCodes() {
+  const now = new Date();
+  const lastArchiveTime = JSON.parse(localStorage.getItem('last_archive_time') || '0');
+  const elapsed = now - new Date(lastArchiveTime);
+
+  // Only archive if 24 hours (86400000ms) have passed since last archive
+  if (elapsed >= 86400000 && deployedCodes.length > 0) {
+    const dateKey = now.toISOString().split('T')[0];
+    const archiveName = `attendance_archive_${dateKey}`;
+    const existingArchive = JSON.parse(localStorage.getItem(archiveName) || '[]');
+
+    const newArchive = [...existingArchive, ...deployedCodes];
+    localStorage.setItem(archiveName, JSON.stringify(newArchive));
+
+    // Clear today's active codes
+    deployedCodes = [];
+    saveDeployments();
+    localStorage.setItem('last_archive_time', JSON.stringify(now));
+
+    showToast(`All codes from ${dateKey} saved to archive.`, 'success');
+    renderDeployments();
+  }
+}
+
+// Run archive check every time page loads
+archiveOldCodes();
+
+// ===============================
+// RENDER DEPLOYMENTS
+// ===============================
 function renderDeployments() {
   activeCodesList.innerHTML = '';
   inactiveCodesList.innerHTML = '';
