@@ -518,7 +518,7 @@
     <!-- Attendance -->
 <section id="attendance" class="mb-10 relative font-inter h-[75vh] flex justify-center items-center">
   <div class="glass p-6 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden 
-              h-full w-[90%] max-w-4xl flex flex-col">
+              h-full w-[90%] max-w-3xl flex flex-col">
 
     <!-- Glow background -->
     <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 rounded-2xl pointer-events-none"></div>
@@ -530,7 +530,6 @@
         Attendance Code Generator
       </h2>
 
-      <!-- Generate Button -->
       <button id="generateCodeBtn"
         class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 
         text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 
@@ -552,7 +551,6 @@
         <p class="text-sm text-gray-500 mt-1">Generate and deploy an attendance code to start recording.</p>
       </div>
 
-      <!-- ACTIVE CODES -->
       <div id="activeSection" class="hidden">
         <h3 class="text-green-400 text-base font-semibold mb-2 flex items-center gap-2">
           <i class="fas fa-check-circle"></i> Active Codes
@@ -560,7 +558,6 @@
         <div id="activeCodesList" class="space-y-3"></div>
       </div>
 
-      <!-- INACTIVE CODES -->
       <div id="inactiveSection" class="hidden">
         <h3 class="text-red-400 text-base font-semibold mb-2 flex items-center gap-2">
           <i class="fas fa-times-circle"></i> Inactive Codes
@@ -571,112 +568,57 @@
     </div>
   </div>
 
-  <!-- ==========================
-        MODAL
-  =========================== -->
+  <!-- MODAL -->
   <div id="codeModal"
     class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 transition-all">
-    <div class="bg-[#1f2937] border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md 
-      text-center relative shadow-2xl shadow-black/50 animate-fadeIn scale-100">
+    <div class="bg-[#1f2937] border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl shadow-black/50 animate-fadeIn scale-100">
 
-      <!-- Close Button -->
-      <button id="closeModal"
-        class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl transition">
+      <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl transition">
         <i class="fas fa-times"></i>
       </button>
 
-      <!-- Title -->
-      <h3 id="modalTitle"
-        class="text-2xl text-white font-bold mb-6 flex justify-center items-center gap-2">
-        <i class="fas fa-lock text-green-400"></i>
-        Code Management
+      <h3 id="modalTitle" class="text-2xl text-white font-bold mb-6 flex justify-center items-center gap-2">
+        <i class="fas fa-lock text-green-400"></i> Code Management
       </h3>
 
-      <!-- Code Box -->
-      <p id="generatedCode"
-        class="text-4xl font-mono tracking-widest font-extrabold text-green-400 bg-gray-800/70 
+      <p id="generatedCode" class="text-4xl font-mono tracking-widest font-extrabold text-green-400 bg-gray-800/70 
         p-5 rounded-xl mb-6 select-all border border-gray-700 shadow-inner">
         GOU-ATT00AAA
       </p>
 
-      <!-- Warning -->
       <p id="deploymentWarning" class="text-red-400 text-xs font-medium mb-6 italic">
         <i class="fas fa-exclamation-triangle mr-1"></i>
-        Once deployed, this code cannot be redeployed again.
+        You can redeploy new codes anytime.
       </p>
 
-      <!-- Buttons -->
       <div class="flex justify-center gap-4 pt-4 border-t border-gray-800">
         <button id="changeCodeBtn"
-          class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2 rounded-lg font-semibold 
-          transition-all flex items-center gap-2 hover:shadow-md hover:shadow-gray-600/20">
+          class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2 rounded-lg font-semibold transition-all flex items-center gap-2">
           <i class="fas fa-sync-alt"></i> Change
         </button>
 
         <button id="deployCodeBtn"
           class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 
-          text-white px-5 py-2 rounded-lg font-semibold transition-all 
-          shadow-md hover:shadow-green-500/30 flex items-center gap-2">
+          text-white px-5 py-2 rounded-lg font-semibold transition-all shadow-md flex items-center gap-2">
           <i class="fas fa-paper-plane"></i> Deploy
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==========================
-        TOAST ALERTS
-  =========================== -->
+  <!-- TOAST -->
   <div id="toastContainer" class="fixed top-5 right-5 z-[60] space-y-3"></div>
-
-  <!-- Custom Scrollbar -->
-  <style>
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-      border-radius: 8px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(to bottom, #60a5fa, #a78bfa);
-    }
-  </style>
 </section>
 
-
 <style>
-  body {
-    background-color: #111827;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .glass {
-    background-color: rgba(31, 41, 55, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-  }
+  body { background-color: #111827; font-family: 'Inter', sans-serif; }
+  .glass { background-color: rgba(31, 41, 55, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-
-  /* Scrollbar styling */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 116, 139, 0.4);
-    border-radius: 10px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(100, 116, 139, 0.6);
-  }
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #3b82f6, #8b5cf6); border-radius: 8px; }
 </style>
+
 
     <!-- Analytics -->
     <section id="analytics" class="mb-10">
@@ -1238,13 +1180,13 @@ function bindCamera(btnId, fileId, titleId, descId) {
   
 <script>
 // ===============================
-// STATE MANAGEMENT
+// STATE
 // ===============================
 let currentCode = '';
 let deployedCodes = JSON.parse(localStorage.getItem('attendance_deployments') || '[]');
 
 // ===============================
-// DOM ELEMENTS
+// ELEMENTS
 // ===============================
 const generateBtn = document.getElementById('generateCodeBtn');
 const codeModal = document.getElementById('codeModal');
@@ -1256,9 +1198,11 @@ const toastContainer = document.getElementById('toastContainer');
 const emptyState = document.getElementById('emptyState');
 const activeCodesList = document.getElementById('activeCodesList');
 const inactiveCodesList = document.getElementById('inactiveCodesList');
+const activeSection = document.getElementById('activeSection');
+const inactiveSection = document.getElementById('inactiveSection');
 
 // ===============================
-// UTILS
+// HELPERS
 // ===============================
 function generateAttendanceCode() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -1267,12 +1211,10 @@ function generateAttendanceCode() {
     ...Array.from({ length: 2 }, () => digits[Math.floor(Math.random() * digits.length)]),
     ...Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)])
   ];
-
   for (let i = chars.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
-
   return `GOU-ATT-${chars.join('')}`;
 }
 
@@ -1281,41 +1223,34 @@ function showToast(message, type = 'info') {
   let bg = 'bg-blue-600', icon = 'fa-info-circle';
   if (type === 'success') { bg = 'bg-green-600'; icon = 'fa-check-circle'; }
   if (type === 'error') { bg = 'bg-red-600'; icon = 'fa-times-circle'; }
-
-  toast.className = `
-    px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium 
-    flex items-center gap-3 ${bg} animate-fadeIn`;
+  toast.className = `px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium flex items-center gap-3 ${bg} animate-fadeIn`;
   toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
   toastContainer.appendChild(toast);
-  setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 4000);
+  setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 3500);
 }
 
 function saveDeployments() {
   localStorage.setItem('attendance_deployments', JSON.stringify(deployedCodes));
 }
 
-// ===============================
-// RENDER DEPLOYMENTS
-// ===============================
 function renderDeployments() {
   activeCodesList.innerHTML = '';
   inactiveCodesList.innerHTML = '';
 
   if (deployedCodes.length === 0) {
     emptyState.classList.remove('hidden');
+    activeSection.classList.add('hidden');
+    inactiveSection.classList.add('hidden');
     return;
   } else {
     emptyState.classList.add('hidden');
+    activeSection.classList.remove('hidden');
+    inactiveSection.classList.remove('hidden');
   }
 
   deployedCodes.forEach((code, index) => {
     const card = document.createElement('div');
-    card.className = `
-      glass border border-gray-700 rounded-xl p-4 transition-all duration-300
-      hover:shadow-lg hover:shadow-gray-800/30
-      ${code.active ? 'opacity-100' : 'opacity-60 grayscale'}
-    `;
-
+    card.className = `glass border border-gray-700 rounded-xl p-4 transition-all duration-300 ${code.active ? 'opacity-100' : 'opacity-60 grayscale'}`;
     card.innerHTML = `
       <div class="flex justify-between items-center">
         <div>
@@ -1323,18 +1258,11 @@ function renderDeployments() {
           <p class="text-sm text-gray-400 flex items-center gap-2">
             <i class="far fa-clock text-gray-500"></i> ${code.date}
           </p>
-          <p class="text-xs text-gray-500 mt-1">
-            Deployment #${index + 1}
-          </p>
+          <p class="text-xs text-gray-500 mt-1">Deployment #${index + 1}</p>
         </div>
-
         <div class="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
-          <button class="activateBtn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1">
-            <i class="fas fa-toggle-on"></i> Activate
-          </button>
-          <button class="deactivateBtn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1">
-            <i class="fas fa-toggle-off"></i> Deactivate
-          </button>
+          <button class="activateBtn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1"><i class="fas fa-toggle-on"></i> Activate</button>
+          <button class="deactivateBtn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1"><i class="fas fa-toggle-off"></i> Deactivate</button>
         </div>
       </div>
     `;
@@ -1346,7 +1274,7 @@ function renderDeployments() {
       code.active = true;
       saveDeployments();
       renderDeployments();
-      showToast(`${code.code} reactivated successfully.`, 'success');
+      showToast(`${code.code} activated successfully!`, 'success');
     });
 
     deactivateBtn.addEventListener('click', () => {
@@ -1356,19 +1284,15 @@ function renderDeployments() {
       showToast(`${code.code} deactivated.`, 'error');
     });
 
-    if (code.active) {
-      activeCodesList.appendChild(card);
-    } else {
-      inactiveCodesList.appendChild(card);
-    }
+    (code.active ? activeCodesList : inactiveCodesList).appendChild(card);
   });
 }
 
 // ===============================
-// EVENT HANDLERS
+// EVENTS
 // ===============================
 generateBtn.addEventListener('click', () => {
-  if (!currentCode) currentCode = generateAttendanceCode();
+  currentCode = generateAttendanceCode();
   generatedCodeEl.textContent = currentCode;
   codeModal.classList.remove('hidden');
 });
@@ -1378,33 +1302,25 @@ closeModalBtn.addEventListener('click', () => codeModal.classList.add('hidden'))
 changeBtn.addEventListener('click', () => {
   currentCode = generateAttendanceCode();
   generatedCodeEl.textContent = currentCode;
-  showToast('New code generated successfully!', 'info');
+  showToast('Code changed!', 'info');
 });
 
 deployBtn.addEventListener('click', () => {
-  if (!currentCode) return showToast('Generate a code before deploying.', 'error');
-
-  const newDeployment = {
-    code: currentCode,
-    date: new Date().toLocaleString(),
-    active: true
-  };
-
+  if (!currentCode) return showToast('Generate a code first.', 'error');
+  const newDeployment = { code: currentCode, date: new Date().toLocaleString(), active: true };
   deployedCodes.push(newDeployment);
   saveDeployments();
   renderDeployments();
   showToast(`Code ${currentCode} deployed successfully!`, 'success');
-
   currentCode = '';
   codeModal.classList.add('hidden');
 });
 
 // ===============================
-// INITIAL LOAD
+// INIT
 // ===============================
 renderDeployments();
 </script>
-
 
 </body>
 </html> 
