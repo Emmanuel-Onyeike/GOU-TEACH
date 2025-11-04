@@ -815,54 +815,93 @@ document.head.appendChild(tesseractScript);
 function initRealFeatures() {
 
   /* ---- 2. CAMERA → OCR (gallery → title + numbered description) ---- */
-  async function ocrFromFile(file, titleEl, descEl) {
-    if (!file) return;
-    showAlert('Running OCR…');
-    try {
-      const { createWorker } = Tesseract;
-      const worker = await createWorker();
-      await worker.load();
-      await worker.loadLanguage('eng');
-      await worker.initialize('eng');
-      const { data: { text } } = await worker.recognize(file);
-      await worker.terminate();
+ /* --------------------------------------------------------------
+   1. OCR – real image → title + numbered description
+   -------------------------------------------------------------- */
+async function ocrFromFile(file, titleEl, descEl) {
+  if (!file) return;
+  showAlert('Running OCR…');
 
-      const lines = text.split('\n')
-        .map(l => l.trim())
-        .filter(l => l);
-
-      // Title = first line (or first numbered line)
-      let title = lines[0] || 'Untitled';
-      // Preserve numbers in description
-      const numbered = lines.map((l, i) => {
-        const numMatch = l.match(/^(\d+[\.\)]\s?)/);
-        return numMatch ? l : `${i + 1}. ${l}`;
-      }).join('\n');
-
-      titleEl.value = title;
-      descEl.value = numbered;
-      showAlert('OCR done – title & numbered text ready!');
-    } catch (e) {
-      console.error(e);
-      titleEl.value = 'OCR error';
-      descEl.value = 'Failed to read image.';
-      showAlert('OCR failed – try another image.');
-    }
-  }
-
-  function bindCamera(btnId, fileId, titleId, descId) {
-    const btn = document.getElementById(btnId);
-    const fileInput = document.getElementById(fileId);
-    const titleEl = document.getElementById(titleId);
-    const descEl = document.getElementById(descId);
-    if (!btn || !fileInput) return;
-    btn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', () => {
-      const f = fileInput.files?.[0];
-      if (f) ocrFromFile(f, titleEl, descEl);
+  try {
+    const { createWorker } = Tesseract;               // Tesseract is loaded earlier
+    const worker = await createWorker({
+      logger: m => console.log(m)                     // optional progress
     });
+
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+
+    const { data: { text } } = await worker.recognize(file);
+    await worker.terminate();
+
+    // ---- split into clean lines ----
+    const lines = text
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+
+    if (lines.length === 0) {
+      titleEl.value = 'Untitled';
+      descEl.value = 'No text found in the image.';
+      showAlert('OCR finished – no text detected.');
+      return;
+    }
+
+    // ---- title = first line (or first numbered line) ----
+    let title = lines[0];
+
+    // ---- keep existing numbers, otherwise add 1., 2., … ----
+    const numbered = lines.map((line, idx) => {
+      const hasNumber = /^\d+[\.\)]\s/.test(line);
+      return hasNumber ? line : `${idx + 1}. ${line}`;
+    }).join('\n');
+
+    titleEl.value = title;
+    descEl.value = numbered;
+
+    showAlert('OCR complete – title & numbered text ready!');
+  } catch (err) {
+    console.error('OCR error:', err);
+    titleEl.value = 'OCR error';
+    descEl.value = 'Failed to read image. Try another picture.';
+    showAlert('OCR failed – check console.');
+  }
+}
+
+/* --------------------------------------------------------------
+   2. Bind the button → hidden <input type="file">
+   -------------------------------------------------------------- */
+function bindCamera(btnId, fileId, titleId, descId) {
+  const btn       = document.getElementById(btnId);
+  const fileInput = document.getElementById(fileId);
+  const titleEl   = document.getElementById(titleId);
+  const descEl    = document.getElementById(descId);
+
+  // ---- safety first -------------------------------------------------
+  if (!btn || !fileInput || !titleEl || !descEl) {
+    console.warn(`bindCamera: missing element(s) → ${btnId}/${fileId}/${titleId}/${descId}`);
+    return;
   }
 
+  // ---- make sure the file input accepts images only ----
+  fileInput.setAttribute('accept', 'image/*');
+  // mobile devices need `capture` to open the camera directly
+  fileInput.setAttribute('capture', 'environment');   // back camera (optional)
+
+  // ---- click the button → open picker / camera --------------------
+  btn.addEventListener('click', () => {
+    // reset previous selection so the `change` event fires again
+    fileInput.value = '';
+    fileInput.click();
+  });
+
+  // ---- user picked a file → run OCR -------------------------------
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (file) ocrFromFile(file, titleEl, descEl);
+  });
+}
   /* ---- 3. AI (locked – placeholder for next update) ---- */
   function aiAssist(titleId, descId) {
     showAlert('AI assistance is coming in the next update.');
