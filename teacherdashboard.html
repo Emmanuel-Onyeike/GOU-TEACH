@@ -198,7 +198,7 @@
         <h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">
           Welcome back, <span id="teacherName" class="text-accent">User</span>
         </h1>
-        <p class="text-muted">Here's your teaching overview for today.</p>
+        <p class="text-muted">Good Day  Let's Dive in.</p>
       </div>
     </section>
 
@@ -219,10 +219,23 @@
         <h3 class="text-2xl font-bold text-white" id="presentToday">0</h3>
         <p class="text-xs text-muted">Present Today</p>
       </div>
+        <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
+    Coming Soon!
+  </div>
+  <i class="fas fa-users text-3xl text-accent mb-2"></i>
+  <h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
+  <p class="text-xs text-muted">Exam Mode</p>
+</div>
+
       <div class="glass p-5 text-center border border-white/10">
         <i class="fas fa-percentage text-3xl text-yellow-400 mb-2"></i>
         <h3 class="text-2xl font-bold text-white" id="avgAttendance">0%</h3>
         <p class="text-xs text-muted">Avg. Attendance</p>
+      </div>
+       <div class="glass p-5 text-center border border-white/10">
+        <i class="fas fa-percentage text-3xl text-yellow-400 mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="avgAttendance">0%</h3>
+        <p class="text-xs text-muted">Activities</p>
       </div>
       <div class="glass p-5 text-center border border-white/10">
         <i class="fas fa-clock text-3xl text-primary mb-2"></i>
@@ -262,101 +275,128 @@
 }
 </style>
 
-      <!-- Activity -->
-<section id="activity" class="mb-10">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-    <!-- Section Header -->
+<section id="activity" class="mb-10 h-[80vh] overflow-y-auto">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative">
+    <!-- Header -->
     <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
       <i class="fas fa-history"></i> Activity
     </h2>
 
-    <!-- Tabs Header -->
+    <!-- Tabs -->
     <div class="flex justify-center mb-6">
       <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
-        <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full transition-all duration-300" data-target="classWork">
-          Class Work
-        </button>
-        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full transition-all duration-300" data-target="homeWork">
-          Home Work
-        </button>
-        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full transition-all duration-300" data-target="quickTest">
-          Quick Test
-        </button>
+        <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Home Work</button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
       </div>
     </div>
 
-    <!-- Tab Contents -->
- <div id="tabContents">
-  <!-- 🧩 Class Work -->
-  <div id="classWork" class="tab-content">
-    <div class="space-y-3 max-h-80 overflow-y-auto">
-      <!-- Example Class Work items -->
-      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
-        <div class="flex justify-between items-center">
-          <p class="text-white font-medium">JavaScript Basics</p>
-          <span class="text-xs text-accent font-semibold">Due: 12 Nov</span>
+    <!-- Tabs Content -->
+    <div id="tabContents" class="relative">
+      <!-- CLASS WORK -->
+      <div id="classWork" class="tab-content">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No class work yet. Click ➕ to add one.</p>
         </div>
-        <p class="text-white/60 text-sm mt-1">Intro to JS variables and functions — submit on GoTeach.</p>
+        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
+        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="classModal">
+          <i class="fas fa-plus"></i>
+        </button>
       </div>
 
-      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
-        <div class="flex justify-between items-center">
-          <p class="text-white font-medium">Web Design Layout</p>
-          <span class="text-xs text-accent font-semibold">Due: 18 Nov</span>
+      <!-- HOME WORK -->
+      <div id="homeWork" class="tab-content hidden">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No homework yet. Click ➕ to add one.</p>
         </div>
-        <p class="text-white/60 text-sm mt-1">Create a responsive homepage using TailwindCSS.</p>
+        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
+        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="homeModal">
+          <i class="fas fa-plus"></i>
+        </button>
       </div>
-    </div>
 
-    <!-- Empty state -->
-    <p id="noActivity" class="text-center text-muted mt-4 hidden">
-      No class work yet.
-    </p>
-  </div>
-
-  <!-- 🏠 Home Work -->
-  <div id="homeWork" class="tab-content hidden">
-    <div class="space-y-3 max-h-80 overflow-y-auto">
-      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
-        <div class="flex justify-between items-center">
-          <p class="text-white font-medium">Database Schema Design</p>
-          <span class="text-xs text-accent font-semibold">Due: 20 Nov</span>
+      <!-- QUICK TEST -->
+      <div id="quickTest" class="tab-content hidden">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No quick tests yet. Click ➕ to add one.</p>
         </div>
-        <p class="text-white/60 text-sm mt-1">Draw a relational schema for the student attendance system.</p>
+        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
+        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="testModal">
+          <i class="fas fa-plus"></i>
+        </button>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- ⚡ Quick Test -->
-  <div id="quickTest" class="tab-content hidden">
-    <div class="space-y-3 max-h-80 overflow-y-auto">
-      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
-        <div class="flex justify-between items-center">
-          <p class="text-white font-medium">HTML Assessment</p>
-          <span class="text-xs text-accent font-semibold">Opens: 15 Nov</span>
-        </div>
-        <p class="text-white/60 text-sm mt-1">Quick 10-minute test covering basic HTML tags and structure.</p>
-      </div>
+<!-- MODALS -->
+<!-- CLASS WORK MODAL -->
+<div id="classModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Add Class Work</h3>
+    <input type="text" id="cwTitle" placeholder="Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="cwDesc" placeholder="Description" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="addClassBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
     </div>
   </div>
 </div>
 
-  
-</section>
+<!-- HOME WORK MODAL -->
+<div id="homeModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Add Homework</h3>
+    <input type="text" id="hwTitle" placeholder="Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="hwDesc" placeholder="Description" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="addHomeBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK TEST MODAL -->
+<div id="testModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Add Quick Test</h3>
+    <input type="text" id="qtTitle" placeholder="Test Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="qtDesc" placeholder="Instructions" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="addTestBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE WARNING MODAL -->
+<div id="deleteModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-sm border border-white/10 text-center">
+    <h3 class="text-lg font-bold text-white mb-2">Confirm Delete</h3>
+    <p class="text-white/60 mb-4 text-sm">This file will be deleted permanently. Continue?</p>
+    <div id="deleteProgress" class="hidden w-full bg-white/10 h-2 rounded mb-4 overflow-hidden">
+      <div id="deleteBar" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
+    </div>
+    <div class="flex justify-center gap-3">
+      <button id="cancelDelete" class="px-4 py-2 bg-gray-600 rounded text-white">Cancel</button>
+      <button id="confirmDelete" class="px-4 py-2 bg-red-600 rounded text-white">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
 <style>
-.tab-content {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.tab-content.hidden {
-  opacity: 0;
-  transform: translateY(10px);
-}
-.active-tab {
-  background: linear-gradient(to right, #a855f7, #3b82f6);
-  color: #fff !important;
-  box-shadow: 0 0 8px rgba(59,130,246,0.5);
-}
+.tab-content { transition: opacity 0.3s ease, transform 0.3s ease; }
+.tab-content.hidden { opacity: 0; transform: translateY(10px); }
+.active-tab { background: linear-gradient(to right, #a855f7, #3b82f6); color: #fff !important; }
+.modal { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.locked { opacity: 0.5; cursor: not-allowed; }
 </style>
+
+
 
     <!-- Attendance -->
     <section id="attendance" class="mb-10">
@@ -609,22 +649,105 @@
     }
   </script>
   <!----for the activity-->
-  <script>
-  const tabLinks = document.querySelectorAll('.tab-link');
-  const tabContents = document.querySelectorAll('.tab-content');
+ <script>
+const tabLinks = document.querySelectorAll('.tab-link');
+const tabContents = document.querySelectorAll('.tab-content');
+let itemToDelete = null;
 
-  tabLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      // Remove active styles from all
-      tabLinks.forEach(l => l.classList.remove('active-tab', 'bg-accent', 'text-white'));
-      tabContents.forEach(c => c.classList.add('hidden'));
-
-      // Activate clicked tab
-      link.classList.add('active-tab', 'bg-accent', 'text-white');
-      const target = document.getElementById(link.dataset.target);
-      target.classList.remove('hidden');
-    });
+// SWITCH TABS
+tabLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    tabLinks.forEach(l => l.classList.remove('active-tab'));
+    tabContents.forEach(c => c.classList.add('hidden'));
+    link.classList.add('active-tab');
+    document.getElementById(link.dataset.target).classList.remove('hidden');
   });
+});
+
+// OPEN/CLOSE MODALS
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => document.getElementById(btn.dataset.modal).classList.remove('hidden'));
+});
+document.querySelectorAll('.close-modal').forEach(btn => {
+  btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
+});
+
+// GLOBAL ADD FUNCTION
+function addItem(titleId, descId, listSelector, modalId, emptySelector) {
+  const title = document.getElementById(titleId).value.trim();
+  const desc = document.getElementById(descId).value.trim();
+  if (!title) return alert('Please enter a title');
+  const modal = document.getElementById(modalId);
+  modal.innerHTML = '<div class="text-white text-center"><i class="fas fa-spinner fa-spin text-3xl mb-3"></i><p>Adding...</p></div>';
+
+  setTimeout(() => {
+    const now = Date.now();
+    const itemHTML = `
+      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start">
+        <div>
+          <p class="text-white font-medium">${title}</p>
+          <p class="text-white/60 text-sm mt-1">${desc}</p>
+        </div>
+        <div class="flex gap-3 items-center">
+          <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn" data-time="${now}"></i>
+          <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
+        </div>
+      </div>`;
+    const list = document.querySelector(listSelector);
+    list.insertAdjacentHTML('beforeend', itemHTML);
+    list.classList.remove('hidden');
+    document.querySelector(emptySelector).classList.add('hidden');
+    modal.classList.add('hidden');
+  }, 5000);
+}
+
+// ADD BUTTON EVENTS
+document.getElementById('addClassBtn').addEventListener('click', () =>
+  addItem('cwTitle','cwDesc','#classWork .list','classModal','#classWork .empty-state'));
+document.getElementById('addHomeBtn').addEventListener('click', () =>
+  addItem('hwTitle','hwDesc','#homeWork .list','homeModal','#homeWork .empty-state'));
+document.getElementById('addTestBtn').addEventListener('click', () =>
+  addItem('qtTitle','qtDesc','#quickTest .list','testModal','#quickTest .empty-state'));
+
+// DELETE ITEM
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('delete-btn')) {
+    itemToDelete = e.target.closest('.glass');
+    document.getElementById('deleteModal').classList.remove('hidden');
+  }
+});
+
+// DELETE CONFIRMATION
+document.getElementById('confirmDelete').addEventListener('click', () => {
+  const bar = document.getElementById('deleteBar');
+  document.getElementById('deleteProgress').classList.remove('hidden');
+  bar.style.width = '0%';
+  setTimeout(() => (bar.style.width = '100%'), 50);
+
+  setTimeout(() => {
+    if (itemToDelete) itemToDelete.remove();
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteProgress').classList.add('hidden');
+    bar.style.width = '0%';
+  }, 3000);
+});
+
+// CANCEL DELETE
+document.getElementById('cancelDelete').addEventListener('click', () => {
+  document.getElementById('deleteModal').classList.add('hidden');
+});
+
+// LOCK EDIT AFTER 24HRS
+setInterval(() => {
+  const now = Date.now();
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    const created = parseInt(btn.dataset.time);
+    if (now - created > 86400000) {
+      btn.classList.add('locked');
+      btn.classList.remove('cursor-pointer');
+    }
+  });
+}, 60000);
 </script>
 
 </body>
