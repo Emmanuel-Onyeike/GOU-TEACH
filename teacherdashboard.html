@@ -516,15 +516,16 @@
 .locked { opacity: 0.5; cursor: not-allowed; }
 </style>
     <!-- Attendance -->
-<section id="attendance" class="mb-10 relative font-inter h-[90vh] overflow-hidden">
-  <div class="glass p-8 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden h-full flex flex-col">
+<section id="attendance" class="mb-10 relative font-inter h-[75vh] flex justify-center items-center">
+  <div class="glass p-6 border border-gray-700 shadow-2xl rounded-2xl relative overflow-hidden 
+              h-full w-[90%] max-w-4xl flex flex-col">
 
     <!-- Glow background -->
     <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 rounded-2xl pointer-events-none"></div>
 
     <!-- HEADER -->
-    <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4 relative z-10 shrink-0">
-      <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+    <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3 relative z-10 shrink-0">
+      <h2 class="text-xl font-extrabold text-white flex items-center gap-3">
         <i class="fas fa-key text-yellow-400 drop-shadow-md"></i>
         Attendance Code Generator
       </h2>
@@ -532,36 +533,36 @@
       <!-- Generate Button -->
       <button id="generateCodeBtn"
         class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 
-        text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-300 
-        shadow-lg hover:shadow-blue-500/40 flex items-center gap-2">
+        text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 
+        shadow-lg hover:shadow-blue-500/40 flex items-center gap-2 text-sm">
         <i class="fas fa-bolt animate-pulse"></i> Generate Code
       </button>
     </div>
 
     <!-- CONTENT (Scrollable Container) -->
-    <div class="relative z-10 flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar">
+    <div class="relative z-10 flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar">
 
       <!-- EMPTY STATE -->
-      <div id="emptyState" class="flex flex-col items-center justify-center py-14 text-center">
+      <div id="emptyState" class="flex flex-col items-center justify-center py-12 text-center">
         <div class="relative">
-          <i class="fas fa-user-times text-8xl text-gray-700 mb-5 drop-shadow-lg"></i>
+          <i class="fas fa-user-times text-6xl text-gray-700 mb-4 drop-shadow-lg"></i>
           <div class="absolute inset-0 blur-3xl bg-blue-500/10 rounded-full animate-pulse"></div>
         </div>
-        <p class="text-gray-300 font-semibold text-lg">No attendance session active</p>
+        <p class="text-gray-300 font-semibold text-base">No attendance session active</p>
         <p class="text-sm text-gray-500 mt-1">Generate and deploy an attendance code to start recording.</p>
       </div>
 
       <!-- ACTIVE CODES -->
-      <div>
-        <h3 class="text-green-400 text-lg font-semibold mb-2 flex items-center gap-2">
+      <div id="activeSection" class="hidden">
+        <h3 class="text-green-400 text-base font-semibold mb-2 flex items-center gap-2">
           <i class="fas fa-check-circle"></i> Active Codes
         </h3>
         <div id="activeCodesList" class="space-y-3"></div>
       </div>
 
       <!-- INACTIVE CODES -->
-      <div>
-        <h3 class="text-red-400 text-lg font-semibold mb-2 flex items-center gap-2">
+      <div id="inactiveSection" class="hidden">
+        <h3 class="text-red-400 text-base font-semibold mb-2 flex items-center gap-2">
           <i class="fas fa-times-circle"></i> Inactive Codes
         </h3>
         <div id="inactiveCodesList" class="space-y-3"></div>
@@ -626,7 +627,22 @@
         TOAST ALERTS
   =========================== -->
   <div id="toastContainer" class="fixed top-5 right-5 z-[60] space-y-3"></div>
+
+  <!-- Custom Scrollbar -->
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #60a5fa, #a78bfa);
+    }
+  </style>
 </section>
+
 
 <style>
   body {
