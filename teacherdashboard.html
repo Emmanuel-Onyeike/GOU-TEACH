@@ -232,12 +232,36 @@
     </section>
 
     <!-- Students -->
-    <section id="students" class="mb-10">
-      <div class="glass p-6 border border-white/10">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-users"></i> My Students</h2>
-        <div id="studentsList" class="space-y-3 max-h-80 overflow-y-auto"></div>
-      </div>
-    </section>
+<section id="students" class="mb-10">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+    <!-- Header -->
+    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+      <i class="fas fa-users"></i> My Students
+    </h2>
+
+    <!-- Notice -->
+    <div class="bg-red-600/20 border border-red-600/40 text-red-400 text-sm font-medium px-4 py-2 rounded-lg mb-4 flex items-center gap-2 notice-pulse">
+      <i class="fas fa-info-circle"></i>
+      <span>Students data not automated — check in next update.</span>
+    </div>
+
+    <!-- Students List -->
+    <div id="studentsList" class="space-y-3 max-h-80 overflow-y-auto">
+      <!-- Dynamic student entries will appear here -->
+    </div>
+  </div>
+</section>
+
+<style>
+.notice-pulse {
+  animation: noticePulse 1.8s infinite;
+}
+@keyframes noticePulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+</style>
+
       <!-- Activity -->
 <section id="activity" class="mb-10">
   <div class="glass p-6 border border-white/10">
