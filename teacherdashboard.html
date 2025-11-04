@@ -286,30 +286,61 @@
     </div>
 
     <!-- Tab Contents -->
-    <div id="tabContents">
-      <!-- Class Work -->
-      <div id="classWork" class="tab-content">
-        <div id="activityList" class="space-y-3 max-h-80 overflow-y-auto">
-          <!-- Items will be injected by JS -->
+ <div id="tabContents">
+  <!-- 🧩 Class Work -->
+  <div id="classWork" class="tab-content">
+    <div class="space-y-3 max-h-80 overflow-y-auto">
+      <!-- Example Class Work items -->
+      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
+        <div class="flex justify-between items-center">
+          <p class="text-white font-medium">JavaScript Basics</p>
+          <span class="text-xs text-accent font-semibold">Due: 12 Nov</span>
         </div>
-        <p id="noActivity" class="text-center text-muted mt-4 hidden">No class work yet.</p>
+        <p class="text-white/60 text-sm mt-1">Intro to JS variables and functions — submit on GoTeach.</p>
       </div>
 
-      <!-- Home Work -->
-      <div id="homeWork" class="tab-content hidden">
-        <div class="glass bg-white/5 p-4 rounded-lg border border-white/10">
-          <p class="text-white/70 text-sm">No homework assigned yet.</p>
+      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
+        <div class="flex justify-between items-center">
+          <p class="text-white font-medium">Web Design Layout</p>
+          <span class="text-xs text-accent font-semibold">Due: 18 Nov</span>
         </div>
+        <p class="text-white/60 text-sm mt-1">Create a responsive homepage using TailwindCSS.</p>
       </div>
+    </div>
 
-      <!-- Quick Test -->
-      <div id="quickTest" class="tab-content hidden">
-        <div class="glass bg-white/5 p-4 rounded-lg border border-white/10">
-          <p class="text-white/70 text-sm">No quick tests available yet.</p>
+    <!-- Empty state -->
+    <p id="noActivity" class="text-center text-muted mt-4 hidden">
+      No class work yet.
+    </p>
+  </div>
+
+  <!-- 🏠 Home Work -->
+  <div id="homeWork" class="tab-content hidden">
+    <div class="space-y-3 max-h-80 overflow-y-auto">
+      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
+        <div class="flex justify-between items-center">
+          <p class="text-white font-medium">Database Schema Design</p>
+          <span class="text-xs text-accent font-semibold">Due: 20 Nov</span>
         </div>
+        <p class="text-white/60 text-sm mt-1">Draw a relational schema for the student attendance system.</p>
       </div>
     </div>
   </div>
+
+  <!-- ⚡ Quick Test -->
+  <div id="quickTest" class="tab-content hidden">
+    <div class="space-y-3 max-h-80 overflow-y-auto">
+      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition">
+        <div class="flex justify-between items-center">
+          <p class="text-white font-medium">HTML Assessment</p>
+          <span class="text-xs text-accent font-semibold">Opens: 15 Nov</span>
+        </div>
+        <p class="text-white/60 text-sm mt-1">Quick 10-minute test covering basic HTML tags and structure.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
   
 </section>
 <style>
