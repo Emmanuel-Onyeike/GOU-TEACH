@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GoTeach | Teacher Dashboard</title>
   <link rel="icon" type="image/png" href="image.png" />
-  <!-- Tailwind + Fonts -->
+  <!-- Tailwind + Google Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
@@ -14,111 +14,157 @@
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
-            navy: '#0a1a2e', deep: '#0f1b2d', primary: '#1e40af',
-            accent: '#3b82f6', glass: 'rgba(255, 255, 255, 0.08)',
-            border: 'rgba(255, 255, 255, 0.12)', text: '#e2e8f0', muted: '#94a3b8',
+            navy: '#0a1a2e',
+            deep: '#0f1b2d',
+            primary: '#1e40af',
+            accent: '#3b82f6',
+            glass: 'rgba(255, 255, 255, 0.08)',
+            border: 'rgba(255, 255, 255, 0.12)',
+            text: '#e2e8f0',
+            muted: '#94a3b8',
           }
         }
       }
     }
   </script>
-  <!-- Icons + Chart -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    :root { --glass: rgba(255,255,255,0.08); --border: rgba(255,255,255,0.12); --shadow: 0 8px 32px rgba(0,0,0,0.4); }
-    body { background: #0a1a2e; color: #e2e8f0; font-family: 'Inter', sans-serif; min-height: 100vh; }
-    .glass { background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 1rem; transition: all 0.3s; }
-    .glass:hover { background: rgba(255,255,255,0.12); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(30,64,175,0.25); }
-    .sidebar-link { @apply flex items-center gap-3 px-5 py-3.5 rounded-xl transition-all duration-300 text-muted; }
-    .sidebar-link:hover, .sidebar-link.active { @apply bg-accent/10 text-white border-l-4 border-accent; }
-    .mobile-menu { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+    :root {
+      --glass: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    body {
+      background: #0a1a2e;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+    /* Glass Card */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(30, 64, 175, 0.25);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    /* Sidebar link */
+    .sidebar-link {
+      @apply flex items-center gap-3 px-5 py-3.5 rounded-xl transition-all duration-300 text-muted;
+    }
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      @apply bg-accent/10 text-white border-l-4 border-accent;
+    }
+    .sidebar-link i { @apply w-5 text-center; }
+    /* Mobile Menu */
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
     .mobile-menu.open { transform: translateX(0); }
-    ::-webkit-scrollbar { width: 6px; }
+    .chart-container { position: relative; height: 320px; }
+    ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
-    .notice-pulse { animation: noticePulse 1.8s infinite; }
-    @keyframes noticePulse { 0%,100% { opacity:0.8; transform:scale(1); } 50% { opacity:1; transform:scale(1.03); } }
-    .tab-content.hidden { opacity:0; transform:translateY(10px); }
-    .active-tab { background: linear-gradient(to right, #a855f7, #3b82f6); color:#fff !important; }
-    @keyframes fadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
-    .modal { animation: fadeIn 0.3s ease; }
-    .scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent; }
-    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
   </style>
 </head>
 <body class="text-text">
-
   <!-- Mobile Overlay -->
   <div id="mobileOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
-
-  <!-- Mobile Menu -->
-  <aside id="mobileMenu" class="mobile-menu fixed top-0 right-0 h-full w-72 z-50 bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-xl border-l border-white/10 shadow-2xl p-6 rounded-l-3xl">
+  <!-- Mobile Right-Slide Menu -->
+  <aside id="mobileMenu"
+         class="mobile-menu fixed top-0 right-0 h-full w-72 z-50 bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-xl border-l border-white/10 shadow-2xl p-6 rounded-l-3xl">
     <div class="flex justify-between items-center mb-8">
       <h2 class="text-2xl font-extrabold text-white tracking-wide"></h2>
-      <button id="closeMobileMenu" class="text-white/60 hover:text-white text-xl"><i class="fas fa-times"></i></button>
+      <button id="closeMobileMenu" class="text-white/60 hover:text-white transition text-xl">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
     <nav class="space-y-3">
       <a href="#home" class="sidebar-link active"><i class="fas fa-home"></i> Home</a>
       <a href="#students" class="sidebar-link"><i class="fas fa-users"></i> Students</a>
-      <a href="#activity" class="sidebar-link"><i class="fas fa-history"></i> Activity</a>
       <a href="#attendance" class="sidebar-link"><i class="fas fa-clipboard-check"></i> Attendance</a>
       <a href="#analytics" class="sidebar-link"><i class="fas fa-chart-line"></i> Analytics</a>
       <a href="#profile" class="sidebar-link"><i class="fas fa-user-cog"></i> Profile</a>
     </nav>
-    <button id="mobileLogout" class="mt-10 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg">
+    <button id="mobileLogout"
+            class="mt-10 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-900/30">
       <i class="fas fa-sign-out-alt"></i> Logout
     </button>
   </aside>
-
-  <!-- Desktop Sidebar -->
-  <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
-    <div class="flex items-center gap-3 mb-10">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-        <i class="fas fa-graduation-cap text-white text-xl"></i>
+  <!-- Desktop Sidebar (Left) -->
+ <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
+ 
+  <!-- Logo / Header -->
+  <div class="flex items-center gap-3 mb-10">
+    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
+      <i class="fas fa-graduation-cap text-white text-xl"></i>
+    </div>
+    <div>
+      <h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach</h1>
+      <p class="text-xs text-white/50">Godfrey Okoye University</p>
+    </div>
+  </div>
+  <!-- Navigation Links -->
+  <nav class="flex-1 space-y-2">
+    <a href="#home" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 bg-white/10 hover:bg-white/15 transition-all duration-200">
+      <i class="fas fa-home text-white/70"></i>
+      <span class="font-medium">Dashboard</span>
+    </a>
+    <a href="#students" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-users text-white/70"></i>
+      <span class="font-medium">Students</span>
+    </a>
+      <a href="#activity" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+   <i class="fas fa-history"></i>
+      <span class="font-medium">Activity</span>
+    </a>
+    <a href="#attendance" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-clipboard-check text-white/70"></i>
+      <span class="font-medium">Attendance</span>
+    </a>
+    <a href="#analytics" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-chart-line text-white/70"></i>
+      <span class="font-medium">Analytics</span>
+    </a>
+    <a href="#profile" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+      <i class="fas fa-user-cog text-white/70"></i>
+      <span class="font-medium">Profile</span>
+    </a>
+  </nav>
+  <!-- User Info & Logout -->
+  <div class="border-t border-white/10 pt-5 mt-5">
+    <div class="flex items-center gap-3 mb-3">
+      <div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-accent/20">
+        T
       </div>
       <div>
-        <h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach</h1>
-        <p class="text-xs text-white/50">Godfrey Okoye University</p>
+        <p id="sidebarName" class="font-semibold text-white leading-tight">Loading...</p>
+        <p class="text-xs text-white/50">Lecturer</p>
       </div>
     </div>
-    <nav class="flex-1 space-y-2">
-      <a href="#home" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 bg-white/10 hover:bg-white/15">
-        <i class="fas fa-home text-white/70"></i> <span class="font-medium">Dashboard</span>
-      </a>
-      <a href="#students" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10">
-        <i class="fas fa-users text-white/70"></i> <span class="font-medium">Students</span>
-      </a>
-      <a href="#activity" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10">
-        <i class="fas fa-history"></i> <span class="font-medium">Activity</span>
-      </a>
-      <a href="#attendance" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10">
-        <i class="fas fa-clipboard-check text-white/70"></i> <span class="font-medium">Attendance</span>
-      </a>
-      <a href="#analytics" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10">
-        <i class="fas fa-chart-line text-white/70"></i> <span class="font-medium">Analytics</span>
-      </a>
-      <a href="#profile" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10">
-        <i class="fas fa-user-cog text-white/70"></i> <span class="font-medium">Profile</span>
-      </a>
-    </nav>
-    <div class="border-t border-white/10 pt-5 mt-5">
-      <div class="flex items-center gap-3 mb-3">
-        <div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md">T</div>
-        <div>
-          <p id="sidebarName" class="font-semibold text-white">Loading...</p>
-          <p class="text-xs text-white/50">Lecturer</p>
-        </div>
-      </div>
-      <button id="desktopLogout" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
-    </div>
-  </aside>
-
+    <button
+      id="desktopLogout"
+      class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm"
+    >
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </div>
+</aside>
   <!-- Main Content -->
   <main class="lg:ml-72 p-4 lg:p-8 min-h-screen">
+    <!-- Mobile Header -->
     <header class="lg:hidden flex justify-between items-center mb-6 glass p-4 rounded-xl border border-white/10">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
@@ -128,115 +174,209 @@
       </div>
       <button id="openMobileMenu" class="text-2xl text-white/70 hover:text-white">Menu</button>
     </header>
-
     <!-- Welcome -->
     <section id="home" class="mb-10">
       <div class="glass p-6 lg:p-8 border border-white/10">
-        <h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">Welcome back, <span id="teacherName" class="text-accent">User</span></h1>
+        <h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">
+          Welcome back, <span id="teacherName" class="text-accent">User</span>
+        </h1>
         <p class="text-muted">Good Day Let's Dive in.</p>
       </div>
     </section>
-
-    <!-- Stats -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-      <div class="relative glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
-          Coming Soon!
-        </div>
-        <i class="fas fa-users text-3xl text-accent mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
-        <p class="text-xs text-muted">Total Students</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="presentToday">0</h3>
-        <p class="text-xs text-muted">Present Today</p>
-      </div>
-      <div class="relative glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
-          Coming Soon!
-        </div>
-        <i class="fas fa-book text-3xl text-purple-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="examMode">0</h3>
-        <p class="text-xs text-muted">Exam Mode</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-percentage text-3xl text-yellow-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="avgAttendance">0%</h3>
-        <p class="text-xs text-muted">Avg. Attendance</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-tasks text-3xl text-blue-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="activities">0</h3>
-        <p class="text-xs text-muted">Activities</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-clock text-3xl text-primary mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="nextClassTime">08:30 AM</h3>
-        <p class="text-xs text-muted">Next Class</p>
-      </div>
-    </section>
-
+ <!-- Stats -->
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+  <!-- Total Students -->
+  <div class="relative glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
+      Coming Soon!
+    </div>
+    <i class="fas fa-users text-3xl text-accent mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
+    <p class="text-xs text-muted">Total Students</p>
+  </div>
+  <!-- Present Today -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="presentToday">0</h3>
+    <p class="text-xs text-muted">Present Today</p>
+  </div>
+  <!-- Exam Mode -->
+  <div class="relative glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-md">
+      Coming Soon!
+    </div>
+    <i class="fas fa-book text-3xl text-purple-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="examMode">0</h3>
+    <p class="text-xs text-muted">Exam Mode</p>
+  </div>
+  <!-- Avg. Attendance -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-percentage text-3xl text-yellow-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="avgAttendance">0%</h3>
+    <p class="text-xs text-muted">Avg. Attendance</p>
+  </div>
+  <!-- Activities -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-tasks text-3xl text-blue-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="activities">0</h3>
+    <p class="text-xs text-muted">Activities</p>
+  </div>
+  <!-- Next Class -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-clock text-3xl text-primary mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="nextClassTime">08:30 AM</h3>
+    <p class="text-xs text-muted">Next Class</p>
+  </div>
+</section>
     <!-- Students -->
-    <section id="students" class="mb-10">
-      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-users"></i> My Students</h2>
-        <div class="bg-red-600/20 border border-red-600/40 text-red-400 text-sm font-medium px-4 py-2 rounded-lg mb-4 flex items-center gap-2 notice-pulse">
-          <i class="fas fa-info-circle"></i> <span>Students data not automated — check in next update.</span>
-        </div>
-        <div id="studentsList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+<section id="students" class="mb-10">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+    <!-- Header -->
+    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+      <i class="fas fa-users"></i> My Students
+    </h2>
+    <!-- Notice -->
+    <div class="bg-red-600/20 border border-red-600/40 text-red-400 text-sm font-medium px-4 py-2 rounded-lg mb-4 flex items-center gap-2 notice-pulse">
+      <i class="fas fa-info-circle"></i>
+      <span>Students data not automated — check in next update.</span>
+    </div>
+    <!-- Students List -->
+    <div id="studentsList" class="space-y-3 max-h-80 overflow-y-auto">
+      <!-- Dynamic student entries will appear here -->
+    </div>
+  </div>
+</section>
+<style>
+.notice-pulse {
+  animation: noticePulse 1.8s infinite;
+}
+@keyframes noticePulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+</style>
+<section id="activity" class="mb-10 h-[80vh] overflow-y-auto">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative">
+    <!-- Header -->
+    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+      <i class="fas fa-history"></i> Activity
+    </h2>
+    <!-- Tabs -->
+    <div class="flex justify-center mb-6">
+      <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
+        <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Home Work</button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
       </div>
-    </section>
-
-    <!-- Activity Section -->
-    <section id="activity" class="mb-10">
-      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-        <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2"><i class="fas fa-history"></i> Activity</h2>
-        <div class="flex justify-center mb-6">
-          <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
-            <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full" data-target="classWork">Class Work</button>
-            <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="homeWork">Homework</button>
-            <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full" data-target="quickTest">Quick Test</button>
-          </div>
+    </div>
+    <!-- Tabs Content -->
+    <div id="tabContents" class="relative">
+      <!-- CLASS WORK -->
+      <div id="classWork" class="tab-content">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No class work yet. Click ➕ to add one.</p>
         </div>
-        <div id="tabContents" class="h-[60vh] overflow-y-auto pr-2 scrollbar-thin">
-          <div id="classWork" class="tab-content">
-            <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-              <i class="fas fa-folder-open text-4xl mb-2"></i>
-              <p>No class work yet. Click + to add one.</p>
-            </div>
-            <div id="classWorkList" class="list space-y-3"></div>
-          </div>
-          <div id="homeWork" class="tab-content hidden">
-            <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-              <i class="fas fa-folder-open text-4xl mb-2"></i>
-              <p>No homework yet. Click + to add one.</p>
-            </div>
-            <div id="homeWorkList" class="list space-y-3"></div>
-          </div>
-          <div id="quickTest" class="tab-content hidden">
-            <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
-              <i class="fas fa-folder-open text-4xl mb-2"></i>
-              <p>No quick tests yet. Click + to add one.</p>
-            </div>
-            <div id="quickTestList" class="list space-y-3"></div>
-          </div>
-        </div>
-        <button id="addActivityBtn" class="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition z-10">
+        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
+        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="classModal">
           <i class="fas fa-plus"></i>
         </button>
       </div>
-    </section>
-
+      <!-- HOME WORK -->
+      <div id="homeWork" class="tab-content hidden">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No homework yet. Click ➕ to add one.</p>
+        </div>
+        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
+        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="homeModal">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <!-- QUICK TEST -->
+      <div id="quickTest" class="tab-content hidden">
+        <div class="empty-state flex flex-col items-center justify-center text-center py-12 text-white/60">
+          <i class="fas fa-folder-open text-4xl mb-2"></i>
+          <p>No quick tests yet. Click ➕ to add one.</p>
+        </div>
+        <div class="list space-y-3 max-h-[60vh] overflow-y-auto pr-2 hidden"></div>
+        <button class="add-btn absolute bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white p-4 rounded-full shadow-lg hover:scale-105 transition" data-modal="testModal">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- MODALS -->
+<!-- CLASS WORK MODAL -->
+<div id="classModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Add Class Work</h3>
+    <input type="text" id="cwTitle" placeholder="Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="cwDesc" placeholder="Description" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="addClassBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
+    </div>
+  </div>
+</div>
+<!-- HOME WORK MODAL -->
+<div id="homeModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Add Homework</h3>
+    <input type="text" id="hwTitle" placeholder="Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="hwDesc" placeholder="Description" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="addHomeBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
+    </div>
+  </div>
+</div>
+<!-- QUICK TEST MODAL -->
+<div id="testModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
+    <h3 class="text-lg font-bold text-white mb-4">Add Quick Test</h3>
+    <input type="text" id="qtTitle" placeholder="Test Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
+    <textarea id="qtDesc" placeholder="Instructions" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
+      <button id="addTestBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
+    </div>
+  </div>
+</div>
+<!-- DELETE WARNING MODAL -->
+<div id="deleteModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-sm border border-white/10 text-center">
+    <h3 class="text-lg font-bold text-white mb-2">Confirm Delete</h3>
+    <p class="text-white/60 mb-4 text-sm">This file will be deleted permanently. Continue?</p>
+    <div id="deleteProgress" class="hidden w-full bg-white/10 h-2 rounded mb-4 overflow-hidden">
+      <div id="deleteBar" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
+    </div>
+    <div class="flex justify-center gap-3">
+      <button id="cancelDelete" class="px-4 py-2 bg-gray-600 rounded text-white">Cancel</button>
+      <button id="confirmDelete" class="px-4 py-2 bg-red-600 rounded text-white">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+<style>
+.tab-content { transition: opacity 0.3s ease, transform 0.3s ease; }
+.tab-content.hidden { opacity: 0; transform: translateY(10px); }
+.active-tab { background: linear-gradient(to right, #a855f7, #3b82f6); color: #fff !important; }
+.modal { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.locked { opacity: 0.5; cursor: not-allowed; }
+</style>
     <!-- Attendance -->
     <section id="attendance" class="mb-10">
       <div class="glass p-6 border border-white/10">
         <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-clipboard-check"></i> Take Attendance</h2>
         <div id="attendanceList" class="space-y-3 mb-4"></div>
-        <button id="saveAttendance" class="w-full bg-accent hover:bg-accent/90 text-white font-bold py-3 rounded-xl transition">Save Attendance</button>
+        <button id="saveAttendance"
+                class="w-full bg-accent hover:bg-accent/90 text-white font-bold py-3 rounded-xl transition">
+          Save Attendance
+        </button>
       </div>
     </section>
-
     <!-- Analytics -->
     <section id="analytics" class="mb-10">
       <div class="glass p-6 border border-white/10">
@@ -244,7 +384,6 @@
         <div class="chart-container"><canvas id="attendanceChart"></canvas></div>
       </div>
     </section>
-
     <!-- Profile -->
     <section id="profile">
       <div class="glass p-6 border border-white/10">
@@ -265,534 +404,298 @@
       </div>
     </section>
   </main>
-
-  <!-- MODALS -->
-  <!-- Class Work Modal -->
-  <div id="classModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-lg border border-white/10">
-      <h3 class="text-lg font-bold text-white mb-4">Add Class Work</h3>
-      <input type="text" id="cwTitle" placeholder="Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
-      <textarea id="cwDesc" placeholder="Description" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20 h-24"></textarea>
-      <div class="flex justify-center gap-3 mb-4">
-        <button id="cwCamera" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Snap"><i class="fas fa-camera text-white"></i></button>
-        <button id="cwAI" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="AI"><i class="fas fa-robot text-white"></i></button>
-        <button id="cwMic" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Record"><i class="fas fa-microphone text-white"></i></button>
-        <button id="cwBuild" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Build"><i class="fas fa-cogs text-white"></i></button>
-      </div>
-      <input type="file" id="cwFileInput" accept="image/*" capture="environment" class="hidden">
-      <div class="flex justify-end gap-2">
-        <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
-        <button id="addClassBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Homework Modal -->
-  <div id="homeModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-lg border border-white/10">
-      <h3 class="text-lg font-bold text-white mb-4">Add Homework</h3>
-      <input type="text" id="hwTitle" placeholder="Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
-      <textarea id="hwDesc" placeholder="Description" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20 h-24"></textarea>
-      <div class="flex justify-center gap-3 mb-4">
-        <button id="hwCamera" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Snap"><i class="fas fa-camera text-white"></i></button>
-        <button id="hwAI" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="AI"><i class="fas fa-robot text-white"></i></button>
-        <button id="hwMic" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Record"><i class="fas fa-microphone text-white"></i></button>
-        <button id="hwBuild" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Build"><i class="fas fa-cogs text-white"></i></button>
-      </div>
-      <input type="file" id="hwFileInput" accept="image/*" capture="environment" class="hidden">
-      <div class="flex justify-end gap-2">
-        <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
-        <button id="addHomeBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Test Modal -->
-  <div id="testModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-lg border border-white/10">
-      <h3 class="text-lg font-bold text-white mb-4">Add Quick Test</h3>
-      <input type="text" id="qtTitle" placeholder="Test Title" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
-      <textarea id="qtDesc" placeholder="Instructions" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20 h-24"></textarea>
-      <div class="flex justify-center gap-3 mb-4">
-        <button id="qtCamera" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Snap"><i class="fas fa-camera text-white"></i></button>
-        <button id="qtAI" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="AI"><i class="fas fa-robot text-white"></i></button>
-        <button id="qtMic" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Record"><i class="fas fa-microphone text-white"></i></button>
-        <button id="qtBuild" class="p-3 bg-white/10 rounded-full hover:bg-white/20 transition" title="Build"><i class="fas fa-cogs text-white"></i></button>
-      </div>
-      <input type="file" id="qtFileInput" accept="image/*" capture="environment" class="hidden">
-      <div class="flex justify-end gap-2">
-        <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
-        <button id="addTestBtn" class="px-4 py-2 bg-blue-600 rounded text-white">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI Help Modal -->
-  <div id="aiModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
-      <h3 class="text-lg font-bold text-white mb-4">AI Assistant</h3>
-      <div class="space-y-3">
-        <button class="w-full text-left p-3 bg-white/10 rounded hover:bg-white/20 transition" data-action="correct">Correct Spelling & Grammar</button>
-        <button class="w-full text-left p-3 bg-white/10 rounded hover:bg-white/20 transition" data-action="simplify">Simplify Language</button>
-        <button class="w-full text-left p-3 bg-white/10 rounded hover:bg-white/20 transition" data-action="expand">Expand into Full Assignment</button>
-      </div>
-      <div class="mt-4 flex justify-end">
-        <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Build Modal -->
-  <div id="buildModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
-      <h3 class="text-lg font-bold text-white mb-4">Build with AI</h3>
-      <textarea id="buildPrompt" placeholder="e.g., Create a 5-question quiz on Python loops" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20 h-32"></textarea>
-      <div class="flex justify-end gap-2">
-        <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
-        <button id="generateBuild" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 rounded text-white">Generate</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Alert Modal -->
-  <div id="alertModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-sm border border-white/10 text-center">
-      <i class="fas fa-exclamation-triangle text-yellow-400 text-3xl mb-3"></i>
-      <p id="alertMessage" class="text-white mb-4"></p>
-      <button id="closeAlert" class="px-4 py-2 bg-blue-600 rounded text-white">OK</button>
-    </div>
-  </div>
-
-  <!-- Edit Modal -->
-  <div id="editModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-md border border-white/10">
-      <h3 class="text-lg font-bold text-white mb-4">Edit Item</h3>
-      <input type="text" id="editTitle" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20">
-      <textarea id="editDesc" class="w-full p-2 mb-3 rounded bg-white/10 text-white border border-white/20"></textarea>
-      <div class="flex justify-end gap-2">
-        <button class="close-modal px-4 py-2 bg-gray-700 rounded text-white">Cancel</button>
-        <button id="saveEdit" class="px-4 py-2 bg-green-600 rounded text-white">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Modal -->
-  <div id="deleteModal" class="modal hidden fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div class="bg-gray-900 p-6 rounded-xl w-11/12 max-w-sm border border-white/10 text-center">
-      <h3 class="text-lg font-bold text-white mb-2">Confirm Delete</h3>
-      <p class="text-white/60 mb-4 text-sm">This item will be deleted permanently.</p>
-      <div id="deleteProgress" class="hidden w-full bg-white/10 h-2 rounded mb-4 overflow-hidden">
-        <div id="deleteBar" class="bg-red-500 h-full w-0 transition-all duration-500"></div>
-      </div>
-      <div class="flex justify-center gap-3">
-        <button id="cancelDelete" class="px-4 py-2 bg-gray-600 rounded text-white">Cancel</button>
-        <button id="confirmDelete" class="px-4 py-2 bg-red-600 rounded text-white">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FULL SCRIPT -->
+  <!-- Firebase + Logic -->
   <script type="module">
-    // Load Tesseract First
-    const tesseractScript = document.createElement('script');
-    tesseractScript.src = 'https://unpkg.com/tesseract.js@v4.0.2/dist/tesseract.min.js';
-    tesseractScript.onload = initApp;
-    document.head.appendChild(tesseractScript);
-
-    async function initApp() {
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.14.2/firebase-app.js");
-      const { getAuth, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.14.2/firebase-auth.js");
-      const { getFirestore, doc, getDoc, collection, getDocs, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.14.2/firebase-firestore.js");
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
-        authDomain: "goteach-1eaa3.firebaseapp.com",
-        projectId: "goteach-1eaa3",
-        storageBucket: "goteach-1eaa3.appspot.com",
-        messagingSenderId: "486448948939",
-        appId: "1:486448948939:web:3058788ea1a134804d1d4e"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
-
-      // DOM Elements
-      const teacherName = document.getElementById('teacherName');
-      const totalStudents = document.getElementById('totalStudents');
-      const presentToday = document.getElementById('presentToday');
-      const avgAttendance = document.getElementById('avgAttendance');
-      const studentsList = document.getElementById('studentsList');
-      const attendanceList = document.getElementById('attendanceList');
-      const profileName = document.getElementById('profileName');
-      const profileEmail = document.getElementById('profileEmail');
-      const profileId = document.getElementById('profileId');
-      const profileInitial = document.getElementById('profileInitial');
-      const sidebarName = document.getElementById('sidebarName');
-      const sidebarAvatar = document.getElementById('sidebarAvatar');
-
-      let currentUser = null;
-      let students = [];
-      let chart = null;
-
-      // Activity System
-      const STORAGE_KEY = 'goteach_activity_items';
-      let items = { classWork: [], homeWork: [], quickTest: [] };
-
-      function loadItems() {
-        const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : { classWork: [], homeWork: [], quickTest: [] };
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
+      authDomain: "goteach-1eaa3.firebaseapp.com",
+      projectId: "goteach-1eaa3",
+      storageBucket: "goteach-1eaa3.appspot.com",
+      messagingSenderId: "486448948939",
+      appId: "1:486448948939:web:3058788ea1a134804d1d4e"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    // DOM Elements
+    const teacherName = document.getElementById('teacherName');
+    const totalStudents = document.getElementById('totalStudents');
+    const presentToday = document.getElementById('presentToday');
+    const avgAttendance = document.getElementById('avgAttendance');
+    const studentsList = document.getElementById('studentsList');
+    const attendanceList = document.getElementById('attendanceList');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profileId = document.getElementById('profileId');
+    const profileInitial = document.getElementById('profileInitial');
+    const sidebarName = document.getElementById('sidebarName');
+    const sidebarAvatar = document.getElementById('sidebarAvatar');
+    let currentUser = null;
+    let students = [];
+    let chart = null;
+    /* ---------- Mobile Menu ---------- */
+    const openBtn = document.getElementById('openMobileMenu');
+    const closeBtn = document.getElementById('closeMobileMenu');
+    const overlay = document.getElementById('mobileOverlay');
+    const menu = document.getElementById('mobileMenu');
+    openBtn?.addEventListener('click', () => {
+      menu.classList.add('open');
+      overlay.classList.remove('hidden');
+    });
+    closeBtn?.addEventListener('click', closeMenu);
+    overlay?.addEventListener('click', closeMenu);
+    function closeMenu() {
+      menu.classList.remove('open');
+      overlay.classList.add('hidden');
+    }
+    /* ---------- Sidebar Active State ---------- */
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        closeMenu();
+      });
+    });
+    /* ---------- Logout ---------- */
+    document.getElementById('desktopLogout')?.addEventListener('click', logout);
+    document.getElementById('mobileLogout')?.addEventListener('click', logout);
+    async function logout() {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    }
+    /* ---------- Auth State ---------- */
+    onAuthStateChanged(auth, async user => {
+      if (!user || !user.emailVerified) { window.location.href = 'login.html'; return; }
+      currentUser = user;
+      const userSnap = await getDoc(doc(db, 'users', user.uid));
+      if (!userSnap.exists() || userSnap.data().role !== 'Teacher') {
+        alert('Access denied.');
+        logout();
+        return;
       }
-
-      function saveItems(data) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
-
-      function renderList(type, listItems) {
-        const list = document.getElementById(`${type}List`);
-        const empty = list.previousElementSibling;
-        list.innerHTML = '';
-        if (listItems.length === 0) { empty.classList.remove('hidden'); return; }
-        empty.classList.add('hidden');
-        listItems.slice(-50).forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
-          div.dataset.id = item.id;
-          div.dataset.time = item.timestamp;
-          div.innerHTML = `
-            <div class="flex-1">
-              <p class="text-white font-medium">${item.title}</p>
-              <p class="text-white/60 text-sm mt-1">${item.desc || 'No description'}</p>
-              <p class="text-xs text-muted mt-1">${new Date(item.timestamp).toLocaleString()}</p>
+      const d = userSnap.data();
+      const full = `${d.firstName} ${d.lastName}`;
+      const ini = d.firstName[0].toUpperCase();
+      teacherName.textContent = d.firstName;
+      profileName.textContent = full;
+      profileEmail.textContent = d.email;
+      profileId.textContent = d.gotechId || 'N/A';
+      profileInitial.textContent = ini;
+      sidebarName.textContent = d.firstName;
+      sidebarAvatar.textContent = ini;
+      loadStudents();
+      loadAttendanceForm();
+      loadAnalytics();
+    });
+    /* ---------- Load Students ---------- */
+    async function loadStudents() {
+      const snap = await getDocs(collection(db, 'users'));
+      students = snap.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(u => u.role === 'Student');
+      totalStudents.textContent = students.length;
+      studentsList.innerHTML = '';
+      students.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/10';
+        el.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-sm">
+              ${s.firstName[0]}
             </div>
-            <div class="flex gap-3 items-center">
-              <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn ${Date.now() - item.timestamp < 24*60*60*1000 ? '' : 'opacity-50 cursor-not-allowed'}"></i>
-              <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
-            </div>`;
-          list.appendChild(div);
-        });
-      }
-
-      items = loadItems();
-      renderList('classWork', items.classWork);
-      renderList('homeWork', items.homeWork);
-      renderList('quickTest', items.quickTest);
-
-      // Plus Button
-      document.getElementById('addActivityBtn').addEventListener('click', () => {
-        const active = document.querySelector('.tab-link.active-tab').dataset.target;
-        const map = { classWork: 'classModal', homeWork: 'homeModal', quickTest: 'testModal' };
-        const modal = document.getElementById(map[active]);
-        modal.classList.remove('hidden');
-        modal.querySelector('input').focus();
+            <div>
+              <p class="font-medium text-white">${s.firstName} ${s.lastName}</p>
+              <p class="text-xs text-muted">${s.regNumber}</p>
+            </div>
+          </div>
+          <span class="text-xs bg-green-600/20 text-green-400 px-3 py-1 rounded-full">Active</span>
+        `;
+        studentsList.appendChild(el);
       });
-
-      // Tab Switching
-      document.querySelectorAll('.tab-link').forEach(link => {
-        link.addEventListener('click', () => {
-          document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active-tab'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-          link.classList.add('active-tab');
-          document.getElementById(link.dataset.target).classList.remove('hidden');
-        });
+    }
+    /* ---------- Attendance Form ---------- */
+    async function loadAttendanceForm() {
+      attendanceList.innerHTML = '';
+      students.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10';
+        el.innerHTML = `
+          <span class="text-white">${s.firstName} ${s.lastName}</span>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" data-id="${s.id}" class="attendance-checkbox w-5 h-5 rounded accent-accent">
+            <span class="text-sm text-muted">Present</span>
+          </label>
+        `;
+        attendanceList.appendChild(el);
       });
-
-      // OCR
-      async function ocr(file, titleEl, descEl) {
-        try {
-          const { createWorker } = Tesseract;
-          const worker = await createWorker();
-          await worker.load();
-          await worker.loadLanguage('eng');
-          await worker.initialize('eng');
-          const { data: { text } } = await worker.recognize(file);
-          await worker.terminate();
-          const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-          titleEl.value = lines[0] || "Untitled";
-          descEl.value = lines.slice(1).join('\n') || "No description.";
-        } catch (e) {
-          titleEl.value = "Image Processed";
-          descEl.value = "OCR failed.";
-        }
-      }
-
-      function setupCamera(btnId, fileId, titleId, descId) {
-        const btn = document.getElementById(btnId);
-        const file = document.getElementById(fileId);
-        const title = document.getElementById(titleId);
-        const desc = document.getElementById(descId);
-        btn.onclick = () => file.click();
-        file.onchange = () => file.files[0] && ocr(file.files[0], title, desc);
-      }
-
-      // AI
-      function setupAI(btnId, titleId, descId) {
-        const btn = document.getElementById(btnId);
-        const titleEl = document.getElementById(titleId);
-        const descEl = document.getElementById(descId);
-        let target;
-        btn.onclick = () => {
-          target = descEl.value ? descEl : titleEl;
-          document.getElementById('aiModal').classList.remove('hidden');
-        };
-        document.querySelectorAll('#aiModal [data-action]').forEach(b => {
-          b.onclick = () => {
-            const action = b.dataset.action;
-            const text = target.value;
-            setTimeout(() => {
-              let result = text;
-              if (action === 'correct') result = text.replace(/teh/g, 'the').replace(/recieve/g, 'receive');
-              if (action === 'simplify') result = text.replace(/utilize/g, 'use').replace(/facilitate/g, 'help');
-              if (action === 'expand') result = `**Assignment**\n\n**Title:** ${text}\n\n**Instructions:**\n1. Read carefully.\n2. Answer all.\n3. Submit on time.\n\n**Questions:**\n1. What is X?\n2. Explain Y.`;
-              target.value = result;
-              document.getElementById('aiModal').classList.add('hidden');
-            }, 800);
-          };
-        });
-      }
-
-      // Mic
-      function setupMic(btnId, descId) {
-        const btn = document.getElementById(btnId);
-        const descEl = document.getElementById(descId);
-        let recording = false;
-        btn.onclick = () => {
-          if (!recording) {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-              const recorder = new MediaRecorder(stream);
-              recorder.start();
-              btn.innerHTML = '<i class="fas fa-stop text-red-400"></i>';
-              recorder.onstop = () => {
-                setTimeout(() => descEl.value += "\n[Voice Note: Transcribed automatically]", 1000);
-              };
-              setTimeout(() => recorder.stop(), 3000);
-              recording = true;
-            });
-          } else {
-            btn.innerHTML = '<i class="fas fa-microphone text-white"></i>';
-            recording = false;
-          }
-        };
-      }
-
-      // Build
-      function setupBuild(btnId, titleId, descId) {
-        const btn = document.getElementById(btnId);
-        const titleEl = document.getElementById(titleId);
-        const descEl = document.getElementById(descId);
-        btn.onclick = () => document.getElementById('buildModal').classList.remove('hidden');
-        document.getElementById('generateBuild').onclick = () => {
-          const prompt = document.getElementById('buildPrompt').value.trim();
-          if (!prompt) return;
-          titleEl.value = prompt;
-          descEl.value = `**Generated Assignment**\n\n**Title:** ${prompt}\n\n**Instructions:**\n- Complete all tasks.\n- Submit by deadline.\n\n**Details:**\n1. Research.\n2. Write summary.\n3. Include diagrams.`;
-          document.getElementById('buildModal').classList.add('hidden');
-          document.getElementById('buildPrompt').value = '';
-        };
-      }
-
-      // Initialize
-      setupCamera('cwCamera', 'cwFileInput', 'cwTitle', 'cwDesc');
-      setupAI('cwAI', 'cwTitle', 'cwDesc');
-      setupMic('cwMic', 'cwDesc');
-      setupBuild('cwBuild', 'cwTitle', 'cwDesc');
-
-      setupCamera('hwCamera', 'hwFileInput', 'hwTitle', 'hwDesc');
-      setupAI('hwAI', 'hwTitle', 'hwDesc');
-      setupMic('hwMic', 'hwDesc');
-      setupBuild('hwBuild', 'hwTitle', 'hwDesc');
-
-      setupCamera('qtCamera', 'qtFileInput', 'qtTitle', 'qtDesc');
-      setupAI('qtAI', 'qtTitle', 'qtDesc');
-      setupMic('qtMic', 'qtDesc');
-      setupBuild('qtBuild', 'qtTitle', 'qtDesc');
-
-      // Add Item
-      function addItem(type, title, desc) {
-        const newItem = { id: Date.now() + Math.random(), title, desc, timestamp: Date.now() };
-        items[type].push(newItem);
-        saveItems(items);
-        renderList(type, items[type]);
-      }
-
-      document.getElementById('addClassBtn').onclick = () => {
-        const title = document.getElementById('cwTitle').value.trim();
-        const desc = document.getElementById('cwDesc').value.trim();
-        if (!title) return showAlert("Title is required!");
-        addItem('classWork', title, desc);
-        document.getElementById('classModal').classList.add('hidden');
-        document.getElementById('cwTitle').value = '';
-        document.getElementById('cwDesc').value = '';
+      document.getElementById('saveAttendance').onclick = saveAttendance;
+    }
+    /* ---------- Save Attendance ---------- */
+    async function saveAttendance() {
+      const checked = document.querySelectorAll('.attendance-checkbox:checked');
+      const present = checked.length;
+      presentToday.textContent = present;
+      avgAttendance.textContent = students.length
+        ? Math.round((present / students.length) * 100) + '%'
+        : '0%';
+      const payload = {
+        date: new Date().toISOString().split('T')[0],
+        present: Array.from(checked).map(c => c.dataset.id),
+        total: students.length,
+        timestamp: serverTimestamp()
       };
-
-      document.getElementById('addHomeBtn').onclick = () => {
-        const title = document.getElementById('hwTitle').value.trim();
-        const desc = document.getElementById('hwDesc').value.trim();
-        if (!title) return showAlert("Title is required!");
-        addItem('homeWork', title, desc);
-        document.getElementById('homeModal').classList.add('hidden');
-        document.getElementById('hwTitle').value = '';
-        document.getElementById('hwDesc').value = '';
-      };
-
-      document.getElementById('addTestBtn').onclick = () => {
-        const title = document.getElementById('qtTitle').value.trim();
-        const desc = document.getElementById('qtDesc').value.trim();
-        if (!title) return showAlert("Title is required!");
-        addItem('quickTest', title, desc);
-        document.getElementById('testModal').classList.add('hidden');
-        document.getElementById('qtTitle').value = '';
-        document.getElementById('qtDesc').value = '';
-      };
-
-      // Edit & Delete
-      let editTarget = null;
-      document.addEventListener('click', e => {
-        if (e.target.classList.contains('edit-btn')) {
-          const item = e.target.closest('[data-id]');
-          if (Date.now() - item.dataset.time > 24*60*60*1000) return showAlert("Cannot edit after 24 hours.");
-          editTarget = item;
-          document.getElementById('editTitle').value = item.querySelector('p').textContent;
-          document.getElementById('editDesc').value = item.querySelector('p:nth-child(2)').textContent === 'No description' ? '' : item.querySelector('p:nth-child(2)').textContent;
-          document.getElementById('editModal').classList.remove('hidden');
-        }
-        if (e.target.classList.contains('delete-btn')) {
-          window.deleteTarget = e.target.closest('[data-id]');
-          document.getElementById('deleteModal').classList.remove('hidden');
-        }
-      });
-
-      document.getElementById('saveEdit').onclick = () => {
-        const title = document.getElementById('editTitle').value.trim();
-        const desc = document.getElementById('editDesc').value.trim();
-        if (!title) return showAlert("Title required!");
-        const id = editTarget.dataset.id;
-        const type = editTarget.closest('.tab-content').id;
-        const idx = items[type].findIndex(i => i.id == id);
-        items[type][idx].title = title;
-        items[type][idx].desc = desc;
-        saveItems(items);
-        renderList(type, items[type]);
-        document.getElementById('editModal').classList.add('hidden');
-      };
-
-      document.getElementById('confirmDelete').onclick = () => {
-        const bar = document.getElementById('deleteBar');
-        document.getElementById('deleteProgress').classList.remove('hidden');
-        bar.style.width = '0%';
-        setTimeout(() => bar.style.width = '100%', 50);
-        setTimeout(() => {
-          const id = window.deleteTarget.dataset.id;
-          const type = window.deleteTarget.closest('.tab-content').id;
-          items[type] = items[type].filter(i => i.id != id);
-          saveItems(items);
-          renderList(type, items[type]);
-          document.getElementById('deleteModal').classList.add('hidden');
-          document.getElementById('deleteProgress').classList.add('hidden');
-          bar.style.width = '0%';
-        }, 1000);
-      };
-
-      // Close Modals
-      document.querySelectorAll('.close-modal').forEach(btn => {
-        btn.onclick = () => btn.closest('.modal').classList.add('hidden');
-      });
-      document.getElementById('cancelDelete').onclick = () => document.getElementById('deleteModal').classList.add('hidden');
-      document.getElementById('closeAlert').onclick = () => document.getElementById('alertModal').classList.add('hidden');
-
-      function showAlert(msg) {
-        document.getElementById('alertMessage').textContent = msg;
-        document.getElementById('alertModal').classList.remove('hidden');
-      }
-
-      // Mobile Menu
-      document.getElementById('openMobileMenu').onclick = () => {
-        document.getElementById('mobileMenu').classList.add('open');
-        document.getElementById('mobileOverlay').classList.remove('hidden');
-      };
-      document.getElementById('closeMobileMenu').onclick = () => {
-        document.getElementById('mobileMenu').classList.remove('open');
-        document.getElementById('mobileOverlay').classList.add('hidden');
-      };
-      document.getElementById('mobileOverlay').onclick = () => {
-        document.getElementById('mobileMenu').classList.remove('open');
-        document.getElementById('mobileOverlay').classList.add('hidden');
-      };
-
-      // Logout
-      document.getElementById('desktopLogout').onclick = () => signOut(auth).then(() => location.href = 'login.html');
-      document.getElementById('mobileLogout').onclick = () => signOut(auth).then(() => location.href = 'login.html');
-
-      // Auth & Load Data
-      onAuthStateChanged(auth, async user => {
-        if (!user || !user.emailVerified) { location.href = 'login.html'; return; }
-        currentUser = user;
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        if (!snap.exists() || snap.data().role !== 'Teacher') { alert('Access denied.'); signOut(auth); return; }
-        const d = snap.data();
-        teacherName.textContent = d.firstName;
-        profileName.textContent = `${d.firstName} ${d.lastName}`;
-        profileEmail.textContent = d.email;
-        profileId.textContent = d.gotechId || 'N/A';
-        profileInitial.textContent = d.firstName[0].toUpperCase();
-        sidebarName.textContent = d.firstName;
-        sidebarAvatar.textContent = d.firstName[0].toUpperCase();
-        loadStudents();
-        loadAttendanceForm();
-        loadAnalytics();
-      });
-
-      async function loadStudents() {
-        const snap = await getDocs(collection(db, 'users'));
-        students = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(u => u.role === 'Student');
-        totalStudents.textContent = students.length;
-        studentsList.innerHTML = '';
-        students.forEach(s => {
-          const el = document.createElement('div');
-          el.className = 'flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/10';
-          el.innerHTML = `<div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-sm">${s.firstName[0]}</div><div><p class="font-medium text-white">${s.firstName} ${s.lastName}</p><p class="text-xs text-muted">${s.regNumber}</p></div></div><span class="text-xs bg-green-600/20 text-green-400 px-3 py-1 rounded-full">Active</span>`;
-          studentsList.appendChild(el);
-        });
-      }
-
-      async function loadAttendanceForm() {
-        attendanceList.innerHTML = '';
-        students.forEach(s => {
-          const el = document.createElement('div');
-          el.className = 'flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10';
-          el.innerHTML = `<span class="text-white">${s.firstName} ${s.lastName}</span><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" data-id="${s.id}" class="attendance-checkbox w-5 h-5 rounded accent-accent"><span class="text-sm text-muted">Present</span></label>`;
-          attendanceList.appendChild(el);
-        });
-        document.getElementById('saveAttendance').onclick = saveAttendance;
-      }
-
-      async function saveAttendance() {
-        const checked = document.querySelectorAll('.attendance-checkbox:checked');
-        const present = checked.length;
-        presentToday.textContent = present;
-        avgAttendance.textContent = students.length ? Math.round((present / students.length) * 100) + '%' : '0%';
-        const payload = { date: new Date().toISOString().split('T')[0], present: Array.from(checked).map(c => c.dataset.id), total: students.length, timestamp: serverTimestamp() };
-        await setDoc(doc(db, 'attendance', payload.date), payload);
-        alert('Attendance saved!');
-        loadAnalytics();
-      }
-
-      async function loadAnalytics() {
-        const snap = await getDocs(collection(db, 'attendance'));
-        const labels = [], data = [];
-        snap.docs.sort((a, b) => a.data().timestamp?.toMillis() - b.data().timestamp?.toMillis()).slice(-7).forEach(d => {
+      await setDoc(doc(db, 'attendance', payload.date), payload);
+      alert('Attendance saved successfully!');
+      loadAnalytics();
+    }
+    /* ---------- Analytics Chart ---------- */
+    async function loadAnalytics() {
+      const snap = await getDocs(collection(db, 'attendance'));
+      const labels = [], data = [];
+      snap.docs
+        .sort((a, b) => a.data().timestamp?.toMillis() - b.data().timestamp?.toMillis())
+        .slice(-7)
+        .forEach(d => {
           const dt = d.data();
           labels.push(dt.date);
           data.push(Math.round((dt.present.length / dt.total) * 100));
         });
-        if (chart) chart.destroy();
-        chart = new Chart(document.getElementById('attendanceChart'), {
-          type: 'line',
-          data: { labels, datasets: [{ label: 'Attendance %', data, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#3b82f6', pointRadius: 5 }] },
-          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
-        });
-      }
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById('attendanceChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Attendance %',
+            data,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#3b82f6',
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
     }
   </script>
+  <!----for the activity-->
+<script>
+const tabLinks = document.querySelectorAll('.tab-link');
+const tabContents = document.querySelectorAll('.tab-content');
+let itemToDelete = null;
+// SWITCH TABS
+tabLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    tabLinks.forEach(l => l.classList.remove('active-tab'));
+    tabContents.forEach(c => c.classList.add('hidden'));
+    link.classList.add('active-tab');
+    document.getElementById(link.dataset.target).classList.remove('hidden');
+  });
+});
+// OPEN/CLOSE MODALS
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => document.getElementById(btn.dataset.modal).classList.remove('hidden'));
+});
+document.querySelectorAll('.close-modal').forEach(btn => {
+  btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
+});
+// GLOBAL ADD FUNCTION
+function addItem(titleId, descId, listSelector, modalId, emptySelector) {
+  const title = document.getElementById(titleId).value.trim();
+  const desc = document.getElementById(descId).value.trim();
+  if (!title) {
+    showAlert("Please enter a title before submitting.");
+    return;
+  }
+  const modal = document.getElementById(modalId);
+  modal.innerHTML = `
+    <div class="text-white text-center py-6">
+      <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
+      <p>Adding...</p>
+    </div>`;
+  setTimeout(() => {
+    const now = Date.now();
+    const itemHTML = `
+      <div class="glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start">
+        <div>
+          <p class="text-white font-medium">${title}</p>
+          <p class="text-white/60 text-sm mt-1">${desc}</p>
+        </div>
+        <div class="flex gap-3 items-center">
+          <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn" data-time="${now}"></i>
+          <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
+        </div>
+      </div>`;
+    const list = document.querySelector(listSelector);
+    list.insertAdjacentHTML('beforeend', itemHTML);
+    list.classList.remove('hidden');
+    document.querySelector(emptySelector).classList.add('hidden');
+    modal.classList.add('hidden');
+  }, 5000);
+}
+// ADD BUTTON EVENTS
+document.getElementById('addClassBtn').addEventListener('click', () =>
+  addItem('cwTitle','cwDesc','#classWork .list','classModal','#classWork .empty-state'));
+document.getElementById('addHomeBtn').addEventListener('click', () =>
+  addItem('hwTitle','hwDesc','#homeWork .list','homeModal','#homeWork .empty-state'));
+document.getElementById('addTestBtn').addEventListener('click', () =>
+  addItem('qtTitle','qtDesc','#quickTest .list','testModal','#quickTest .empty-state'));
+// DELETE ITEM
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('delete-btn')) {
+    itemToDelete = e.target.closest('.glass');
+    document.getElementById('deleteModal').classList.remove('hidden');
+  }
+});
+// DELETE CONFIRMATION
+document.getElementById('confirmDelete').addEventListener('click', () => {
+  const bar = document.getElementById('deleteBar');
+  document.getElementById('deleteProgress').classList.remove('hidden');
+  bar.style.width = '0%';
+  setTimeout(() => (bar.style.width = '100%'), 50);
+  setTimeout(() => {
+    if (itemToDelete) itemToDelete.remove();
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteProgress').classList.add('hidden');
+    bar.style.width = '0%';
+  }, 3000);
+});
+// CANCEL DELETE
+document.getElementById('cancelDelete').addEventListener('click', () => {
+  document.getElementById('deleteModal').classList.add('hidden');
+});
+// LOCK EDIT AFTER 24HRS
+setInterval(() => {
+  const now = Date.now();
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    const created = parseInt(btn.dataset.time);
+    if (now - created > 86400000) {
+      btn.classList.add('locked');
+      btn.classList.remove('cursor-pointer');
+    }
+  });
+}, 60000);
+// ALERT MODAL FUNCTION
+function showAlert(message) {
+  const modal = document.getElementById('alertModal');
+  document.getElementById('alertMessage').textContent = message;
+  modal.classList.remove('hidden');
+}
+document.getElementById('closeAlert').addEventListener('click', () => {
+  document.getElementById('alertModal').classList.add('hidden');
+});
+</script>
 </body>
-</html>
+</html> 
