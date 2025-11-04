@@ -264,22 +264,54 @@
 
       <!-- Activity -->
 <section id="activity" class="mb-10">
-  <div class="glass p-6 border border-white/10">
-    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-      <i class="fas fa-history"></i> Recent Activity
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+    <!-- Section Header -->
+    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+      <i class="fas fa-history"></i> Activity
     </h2>
 
-    <!-- Activity List (scrollable) -->
-    <div id="activityList" class="space-y-3 max-h-80 overflow-y-auto">
-      <!-- Items will be injected by JS -->
+    <!-- Tabs Header -->
+    <div class="flex justify-center mb-6">
+      <div class="flex bg-white/10 rounded-full p-1 border border-white/10 backdrop-blur-md shadow-inner">
+        <button class="tab-link active-tab px-4 py-2 text-sm font-semibold text-white rounded-full transition-all duration-300" data-target="classWork">
+          Class Work
+        </button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full transition-all duration-300" data-target="homeWork">
+          Home Work
+        </button>
+        <button class="tab-link px-4 py-2 text-sm font-semibold text-white/70 hover:text-white rounded-full transition-all duration-300" data-target="quickTest">
+          Quick Test
+        </button>
+      </div>
     </div>
 
-    <!-- Empty state -->
-    <p id="noActivity" class="text-center text-muted mt-4 hidden">
-      No activity yet.
-    </p>
+    <!-- Tab Contents -->
+    <div id="tabContents">
+      <!-- Class Work -->
+      <div id="classWork" class="tab-content">
+        <div id="activityList" class="space-y-3 max-h-80 overflow-y-auto">
+          <!-- Items will be injected by JS -->
+        </div>
+        <p id="noActivity" class="text-center text-muted mt-4 hidden">No class work yet.</p>
+      </div>
+
+      <!-- Home Work -->
+      <div id="homeWork" class="tab-content hidden">
+        <div class="glass bg-white/5 p-4 rounded-lg border border-white/10">
+          <p class="text-white/70 text-sm">No homework assigned yet.</p>
+        </div>
+      </div>
+
+      <!-- Quick Test -->
+      <div id="quickTest" class="tab-content hidden">
+        <div class="glass bg-white/5 p-4 rounded-lg border border-white/10">
+          <p class="text-white/70 text-sm">No quick tests available yet.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
     <!-- Attendance -->
     <section id="attendance" class="mb-10">
       <div class="glass p-6 border border-white/10">
