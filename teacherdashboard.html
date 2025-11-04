@@ -1195,6 +1195,9 @@ const generatedCodeEl = document.getElementById('generatedCode');
 const changeBtn = document.getElementById('changeCodeBtn');
 const deployBtn = document.getElementById('deployCodeBtn');
 
+/**
+ * Generate random attendance code: GOU-ATT + (2 digits + 3 letters)
+ */
 function generateAttendanceCode() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const digits = '0123456789';
@@ -1207,6 +1210,9 @@ function generateAttendanceCode() {
   return `GOU-ATT-${chars.join('')}`;
 }
 
+/**
+ * Toast Notification
+ */
 function showToast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
@@ -1220,38 +1226,41 @@ function showToast(message, type = 'info') {
   setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 4000);
 }
 
-// Open modal
+// =========================
+// EVENTS
+// =========================
+
+// Open Modal
 generateBtn.addEventListener('click', () => {
-  if (!currentCode || !deployed) currentCode = generateAttendanceCode();
+  if (!currentCode) currentCode = generateAttendanceCode();
   generatedCodeEl.textContent = currentCode;
   codeModal.classList.remove('hidden');
 });
 
-// Close modal
+// Close Modal
 closeModalBtn.addEventListener('click', () => codeModal.classList.add('hidden'));
 
-// Change code
+// Change Code (always available)
 changeBtn.addEventListener('click', () => {
-  if (deployed) return showToast('Code cannot be changed after deployment.', 'error');
   currentCode = generateAttendanceCode();
   generatedCodeEl.textContent = currentCode;
-  showToast('Code changed successfully!', 'info');
+  deployed = false; // Reset state since code changed
+  showToast('New code generated successfully!', 'info');
 });
 
-// Deploy code
+// Deploy Code (can redeploy freely)
 deployBtn.addEventListener('click', () => {
-  if (deployed) return showToast('Code already deployed before.', 'error');
-  deployed = true;
-  changeBtn.disabled = true;
-  deployBtn.disabled = true;
-  deployBtn.innerHTML = '<i class="fas fa-lock"></i> Deployed';
-  deployBtn.classList.replace('from-green-600', 'from-gray-600');
-  deployBtn.classList.replace('to-emerald-600', 'to-gray-700');
-  deployBtn.classList.add('cursor-not-allowed', 'opacity-70');
-  showToast(`Code ${currentCode} has been deployed successfully!`, 'success');
+  if (!currentCode) {
+    showToast('Generate a code before deploying.', 'error');
+    return;
+  }
+
+  deployed = true; // Just flag for status display, but doesn’t block future redeploys
+  showToast(`Code ${currentCode} deployed successfully!`, 'success');
   codeModal.classList.add('hidden');
 });
 </script>
+
 
 </body>
 </html> 
