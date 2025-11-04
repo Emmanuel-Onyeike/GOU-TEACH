@@ -310,7 +310,22 @@
       </div>
     </div>
   </div>
+  
 </section>
+<style>
+.tab-content {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.tab-content.hidden {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.active-tab {
+  background: linear-gradient(to right, #a855f7, #3b82f6);
+  color: #fff !important;
+  box-shadow: 0 0 8px rgba(59,130,246,0.5);
+}
+</style>
 
     <!-- Attendance -->
     <section id="attendance" class="mb-10">
@@ -562,5 +577,24 @@
       });
     }
   </script>
+  <!----for the activity-->
+  <script>
+  const tabLinks = document.querySelectorAll('.tab-link');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      // Remove active styles from all
+      tabLinks.forEach(l => l.classList.remove('active-tab', 'bg-accent', 'text-white'));
+      tabContents.forEach(c => c.classList.add('hidden'));
+
+      // Activate clicked tab
+      link.classList.add('active-tab', 'bg-accent', 'text-white');
+      const target = document.getElementById(link.dataset.target);
+      target.classList.remove('hidden');
+    });
+  });
+</script>
+
 </body>
 </html>
