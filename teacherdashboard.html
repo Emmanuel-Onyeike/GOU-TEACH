@@ -668,166 +668,188 @@
   </script>
   <!----for the activity-->
 <script type="module">
-// Load OCR, AI, Voice, and persistent activity system
-const tesseractScript = document.createElement('script');
-tesseractScript.src = 'https://unpkg.com/tesseract.js@v4.0.2/dist/tesseract.min.js';
-tesseractScript.onload = initAllFeatures;
-document.head.appendChild(tesseractScript);
+// ===============================
+// CONFIG & STORAGE
+// ===============================
+const STORAGE_KEY = 'goteach_activity_items_v2';
+const ARCHIVE_KEY = 'goteach_activity_archive_v2';
+let items = loadItems();
+let itemToDelete = null;
+let itemToEdit = null;
 
-function initAllFeatures() {
-  const STORAGE_KEY = 'goteach_activity_items_v2';
-  const ARCHIVE_KEY = 'goteach_activity_archive_v2';
-  let itemToDelete = null, itemToEdit = null;
-
-  // --- Helper: Alerts ---
-  function showAlert(msg) {
-    const msgBox = document.getElementById('alertMessage');
-    const modal = document.getElementById('alertModal');
-    if (msgBox && modal) {
-      msgBox.textContent = msg;
-      modal.classList.remove('hidden');
-    }
-  }
-  document.getElementById('closeAlert')?.addEventListener('click', () =>
-    document.getElementById('alertModal')?.classList.add('hidden')
-  );
-
-  // --- Local Storage ---
-  const load = (k, d) => JSON.parse(localStorage.getItem(k)) || d;
-  const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  let items = load(STORAGE_KEY, { classWork: [], homeWork: [], quickTest: [] });
-  const archive = load(ARCHIVE_KEY, {});
-
-  // --- Rendering ---
-  function renderAll() {
-    render('#classWork .list', '#classWork .empty-state', items.classWork);
-    render('#homeWork .list', '#homeWork .empty-state', items.homeWork);
-    render('#quickTest .list', '#quickTest .empty-state', items.quickTest);
-  }
-  function render(listSel, emptySel, arr) {
-    const list = document.querySelector(listSel);
-    const empty = document.querySelector(emptySel);
-    if (!list) return;
-    list.innerHTML = '';
-    if (!arr.length) return empty?.classList.remove('hidden');
-    empty?.classList.add('hidden');
-    arr.forEach(i => {
-      const el = document.createElement('div');
-      el.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
-      el.dataset.id = i.id;
-      el.innerHTML = `
-        <div>
-          <p class="text-white font-medium">${i.title}</p>
-          <p class="text-white/60 text-sm mt-1">${i.desc || 'No description'}</p>
-          <p class="text-xs text-muted mt-1">${new Date(i.timestamp).toLocaleString()}</p>
-        </div>
-        <div class="flex gap-3 items-center">
-          <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn" data-id="${i.id}"></i>
-          <i class="fas fa-trash text-red-400 cursor-pointer delete-btn"></i>
-        </div>`;
-      list.appendChild(el);
-    });
-  }
-
-  // --- Add Items ---
-  function addItem(titleId, descId, type, modalId) {
-    const title = document.getElementById(titleId).value.trim();
-    const desc = document.getElementById(descId).value.trim();
-    if (!title) return showAlert('Title required!');
-    items[type].push({ id: Date.now() + Math.random(), title, desc, timestamp: Date.now() });
-    save(STORAGE_KEY, items);
-    renderAll();
-    document.getElementById(modalId).classList.add('hidden');
-    document.getElementById(titleId).value = '';
-    document.getElementById(descId).value = '';
-  }
-
-  document.getElementById('addClassBtn').addEventListener('click', () => addItem('cwTitle','cwDesc','classWork','classModal'));
-  document.getElementById('addHomeBtn').addEventListener('click', () => addItem('hwTitle','hwDesc','homeWork','homeModal'));
-  document.getElementById('addTestBtn').addEventListener('click', () => addItem('qtTitle','qtDesc','quickTest','testModal'));
-
-  // --- Edit & Delete ---
-  document.addEventListener('click', e => {
-    if (e.target.classList.contains('edit-btn')) {
-      const id = e.target.dataset.id;
-      const type = e.target.closest('.tab-content').id;
-      const found = items[type].find(i => i.id == id);
-      if (!found) return;
-      if (Date.now() - found.timestamp > 86400000) return showAlert('Can’t edit after 24h.');
-      itemToEdit = { type, id };
-      document.getElementById('editTitle').value = found.title;
-      document.getElementById('editDesc').value = found.desc;
-      document.getElementById('editModal').classList.remove('hidden');
-    }
-    if (e.target.classList.contains('delete-btn')) {
-      itemToDelete = e.target.closest('.glass');
-      document.getElementById('deleteModal').classList.remove('hidden');
-    }
-  });
-
-  document.getElementById('saveEdit')?.addEventListener('click', () => {
-    if (!itemToEdit) return;
-    const t = document.getElementById('editTitle').value.trim();
-    const d = document.getElementById('editDesc').value.trim();
-    if (!t) return showAlert('Title required!');
-    const arr = items[itemToEdit.type];
-    const idx = arr.findIndex(i => i.id == itemToEdit.id);
-    arr[idx].title = t; arr[idx].desc = d;
-    save(STORAGE_KEY, items); renderAll();
-    document.getElementById('editModal').classList.add('hidden');
-  });
-
-  document.getElementById('confirmDelete')?.addEventListener('click', () => {
-    if (!itemToDelete) return;
-    const id = itemToDelete.dataset.id;
-    const type = itemToDelete.closest('.tab-content').id;
-    items[type] = items[type].filter(i => i.id != id);
-    save(STORAGE_KEY, items);
-    renderAll();
-    document.getElementById('deleteModal').classList.add('hidden');
-    itemToDelete = null;
-  });
-
-  document.getElementById('cancelDelete')?.addEventListener('click', () =>
-    document.getElementById('deleteModal').classList.add('hidden')
-  );
-
-  // --- OCR, AI, Voice, Build bindings ---
-  function bindCamera(btn, title, desc) {
-    document.getElementById(btn)?.addEventListener('click', () => showAlert('OCR ready – add image file next update.'));
-  }
-  function bindAI(btn, title, desc) {
-    document.getElementById(btn)?.addEventListener('click', () => {
-      const t = document.getElementById(title), d = document.getElementById(desc);
-      t.value = t.value.replace(/\bteh\b/g,'the'); d.value = d.value + '\nAI improved.';
-      showAlert('AI corrections applied!');
-    });
-  }
-  function bindVoice(btn, desc) {
-    document.getElementById(btn)?.addEventListener('click', () => showAlert('Voice input available next update.'));
-  }
-  document.getElementById('cwBuild')?.addEventListener('click', () => document.getElementById('buildModal').classList.remove('hidden'));
-  document.getElementById('hwBuild')?.addEventListener('click', () => document.getElementById('buildModal').classList.remove('hidden'));
-  document.getElementById('qtBuild')?.addEventListener('click', () => document.getElementById('buildModal').classList.remove('hidden'));
-
-  // --- Archive after 24h ---
-  setInterval(() => {
-    const now = Date.now();
-    const today = new Date().toISOString().split('T')[0];
-    ['classWork','homeWork','quickTest'].forEach(type => {
-      const old = items[type].filter(i => now - i.timestamp > 86400000);
-      if (old.length) {
-        archive[today] = archive[today] || { classWork:[], homeWork:[], quickTest:[] };
-        archive[today][type].push(...old);
-        items[type] = items[type].filter(i => now - i.timestamp <= 86400000);
-      }
-    });
-    save(STORAGE_KEY, items); save(ARCHIVE_KEY, archive); renderAll();
-  }, 60000);
-
-  renderAll();
+// ===============================
+// LOADERS
+// ===============================
+function loadItems() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : { classWork: [], homeWork: [], quickTest: [] };
 }
+function saveItems(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function loadArchive() {
+  const data = localStorage.getItem(ARCHIVE_KEY);
+  return data ? JSON.parse(data) : {};
+}
+function saveArchive(data) {
+  localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data));
+}
+
+// ===============================
+// TAB SWITCHING (FIXED)
+// ===============================
+const tabLinks = document.querySelectorAll('.tab-link');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    tabLinks.forEach(l => l.classList.remove('active-tab'));
+    tabContents.forEach(c => c.classList.add('hidden'));
+    link.classList.add('active-tab');
+    document.getElementById(link.dataset.target).classList.remove('hidden');
+  });
+});
+
+// ===============================
+// ALERT SYSTEM
+// ===============================
+function showAlert(msg) {
+  const modal = document.getElementById('alertModal');
+  const text = document.getElementById('alertMessage');
+  if (modal && text) {
+    text.textContent = msg;
+    modal.classList.remove('hidden');
+  }
+}
+document.getElementById('closeAlert')?.addEventListener('click', () => {
+  document.getElementById('alertModal').classList.add('hidden');
+});
+
+// ===============================
+// MODALS (RESTORED IDs)
+// ===============================
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modal = document.getElementById(btn.dataset.modal);
+    modal?.classList.remove('hidden');
+    modal?.querySelector('input, textarea')?.focus();
+  });
+});
+
+document.querySelectorAll('.close-modal').forEach(btn => {
+  btn.addEventListener('click', () => btn.closest('.modal').classList.add('hidden'));
+});
+
+// ===============================
+// RENDERING
+// ===============================
+function renderAll(data) {
+  renderList('#classWork .list', '#classWork .empty-state', data.classWork);
+  renderList('#homeWork .list', '#homeWork .empty-state', data.homeWork);
+  renderList('#quickTest .list', '#quickTest .empty-state', data.quickTest);
+}
+
+function renderList(listSel, emptySel, arr) {
+  const list = document.querySelector(listSel);
+  const empty = document.querySelector(emptySel);
+  list.innerHTML = '';
+  if (!arr || arr.length === 0) {
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  arr.forEach(i => {
+    const el = document.createElement('div');
+    el.className = 'glass bg-white/5 p-4 rounded-lg border border-white/10 flex justify-between items-start';
+    el.dataset.id = i.id;
+    el.innerHTML = `
+      <div>
+        <p class="text-white font-medium">${i.title}</p>
+        <p class="text-white/60 text-sm mt-1">${i.desc || 'No description'}</p>
+        <p class="text-xs text-gray-400 mt-1">${new Date(i.timestamp).toLocaleString()}</p>
+      </div>
+      <div class="flex gap-3 items-center">
+        <i class="fas fa-edit text-blue-400 cursor-pointer edit-btn" data-id="${i.id}"></i>
+        <i class="fas fa-trash text-red-400 cursor-pointer delete-btn" data-id="${i.id}"></i>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+renderAll(items);
+
+// ===============================
+// ADD ITEMS (UNLIMITED + KEEP IDs)
+// ===============================
+function addItem(titleId, descId, type, modalId) {
+  const title = document.getElementById(titleId).value.trim();
+  const desc = document.getElementById(descId).value.trim();
+  if (!title) return showAlert("Title is required!");
+
+  const newItem = { id: Date.now() + Math.random(), title, desc, timestamp: Date.now() };
+  items[type].push(newItem);
+  saveItems(items);
+  renderAll(items);
+
+  // reset fields
+  document.getElementById(titleId).value = '';
+  document.getElementById(descId).value = '';
+
+  // keep modal open for multiple entries
+  showAlert("Added successfully! You can add another.");
+}
+document.getElementById('addClassBtn')?.addEventListener('click', () =>
+  addItem('cwTitle', 'cwDesc', 'classWork', 'classModal')
+);
+document.getElementById('addHomeBtn')?.addEventListener('click', () =>
+  addItem('hwTitle', 'hwDesc', 'homeWork', 'homeModal')
+);
+document.getElementById('addTestBtn')?.addEventListener('click', () =>
+  addItem('qtTitle', 'qtDesc', 'quickTest', 'testModal')
+);
+
+// ===============================
+// DELETE
+// ===============================
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('delete-btn')) {
+    const id = e.target.dataset.id;
+    const type = e.target.closest('.tab-content').id;
+    items[type] = items[type].filter(i => i.id != id);
+    saveItems(items);
+    renderAll(items);
+    showAlert("Deleted successfully.");
+  }
+});
+
+// ===============================
+// AUTO ARCHIVE (24hr)
+// ===============================
+setInterval(() => {
+  const now = Date.now();
+  const archive = loadArchive();
+  const today = new Date().toISOString().split('T')[0];
+  let changed = false;
+
+  ['classWork', 'homeWork', 'quickTest'].forEach(type => {
+    const old = items[type].filter(i => now - i.timestamp > 86400000);
+    if (old.length > 0) {
+      archive[today] = archive[today] || { classWork: [], homeWork: [], quickTest: [] };
+      archive[today][type].push(...old);
+      items[type] = items[type].filter(i => now - i.timestamp <= 86400000);
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveItems(items);
+    saveArchive(archive);
+    renderAll(items);
+  }
+}, 60 * 1000);
 </script>
+
 
 </body>
 </html> 
