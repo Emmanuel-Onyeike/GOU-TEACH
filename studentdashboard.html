@@ -190,28 +190,74 @@
     </section>
 
     <!-- Stats -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-book-open text-3xl text-accent mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="totalCourses">0</h3>
-        <p class="text-xs text-muted">Enrolled Courses</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="attendanceRate">0%</h3>
-        <p class="text-xs text-muted">Attendance Rate</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-tasks text-3xl text-yellow-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="pendingTasks">0</h3>
-        <p class="text-xs text-muted">Pending Tasks</p>
-      </div>
-      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-        <i class="fas fa-clock text-3xl text-primary mb-2"></i>
-        <h3 class="text-2xl font-bold text-white">08:30 AM</h3>
-        <p class="text-xs text-muted">Next Class</p>
-      </div>
-    </section>
+  <section class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+  <!-- Enrolled Courses -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-book-open text-3xl text-accent mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="totalCourses">0</h3>
+    <p class="text-xs text-muted">Enrolled Courses</p>
+  </div>
+
+  <!-- Attendance Rate -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="attendanceRate">0%</h3>
+    <p class="text-xs text-muted">Attendance Rate</p>
+  </div>
+
+  <!-- Pending Tasks -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-tasks text-3xl text-yellow-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="pendingTasks">0</h3>
+    <p class="text-xs text-muted">Pending Tasks</p>
+  </div>
+
+  <!-- Next Class -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-clock text-3xl text-primary mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="nextClassTime">08:30 AM</h3>
+    <p class="text-xs text-muted">Next Class</p>
+  </div>
+
+  <!-- Total Students -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+    <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
+    <i class="fas fa-user-graduate text-3xl text-blue-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
+    <p class="text-xs text-muted">Total Students</p>
+  </div>
+
+  <!-- Students Online -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-signal text-3xl text-green-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="studentsOnline">0</h3>
+    <p class="text-xs text-muted">Students Online</p>
+  </div>
+
+  <!-- Active Attendance -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+    <i class="fas fa-user-check text-3xl text-accent mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="activeAttendance">0</h3>
+    <p class="text-xs text-muted">Active Attendance</p>
+  </div>
+
+  <!-- Rank -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+    <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
+    <i class="fas fa-medal text-3xl text-purple-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="rank">—</h3>
+    <p class="text-xs text-muted">Rank</p>
+  </div>
+
+  <!-- Notifications -->
+  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+    <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
+    <i class="fas fa-bell text-3xl text-pink-400 mb-2"></i>
+    <h3 class="text-2xl font-bold text-white" id="notifications">0</h3>
+    <p class="text-xs text-muted">Notifications</p>
+  </div>
+</section>
+
 
     <!-- Courses -->
     <section id="courses" class="mb-10">
@@ -488,3 +534,4 @@
   </script>
 </body>
 </html>
+
