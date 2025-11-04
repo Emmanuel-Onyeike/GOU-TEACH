@@ -1185,19 +1185,34 @@ function bindCamera(btnId, fileId, titleId, descId) {
 <!----for the attendance-->
   
 <script>
+// ===============================
+// STATE MANAGEMENT
+// ===============================
 let currentCode = '';
-let deployed = false;
+let deployedCodes = JSON.parse(localStorage.getItem('attendance_deployments') || '[]');
 
+// ===============================
+// DOM ELEMENTS
+// ===============================
 const generateBtn = document.getElementById('generateCodeBtn');
 const codeModal = document.getElementById('codeModal');
 const closeModalBtn = document.getElementById('closeModal');
 const generatedCodeEl = document.getElementById('generatedCode');
 const changeBtn = document.getElementById('changeCodeBtn');
 const deployBtn = document.getElementById('deployCodeBtn');
+const toastContainer = document.getElementById('toastContainer');
 
-/**
- * Generate random attendance code: GOU-ATT + (2 digits + 3 letters)
- */
+// Create activity area if not already there
+let activityContainer = document.getElementById('attendanceList');
+if (!activityContainer) {
+  activityContainer = document.createElement('div');
+  activityContainer.id = 'attendanceList';
+  document.querySelector('#attendance .glass').appendChild(activityContainer);
+}
+
+// ===============================
+// GENERATION & TOASTS
+// ===============================
 function generateAttendanceCode() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const digits = '0123456789';
@@ -1210,11 +1225,7 @@ function generateAttendanceCode() {
   return `GOU-ATT-${chars.join('')}`;
 }
 
-/**
- * Toast Notification
- */
 function showToast(message, type = 'info') {
-  const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   let bg = 'bg-blue-600', icon = 'fa-info-circle';
   if (type === 'success') { bg = 'bg-green-600'; icon = 'fa-check-circle'; }
@@ -1222,45 +1233,121 @@ function showToast(message, type = 'info') {
 
   toast.className = `px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium flex items-center gap-3 ${bg} animate-fadeIn`;
   toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-  container.appendChild(toast);
+  toastContainer.appendChild(toast);
   setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 4000);
 }
 
-// =========================
-// EVENTS
-// =========================
+// ===============================
+// DEPLOYMENT LOGIC
+// ===============================
+function renderDeployments() {
+  activityContainer.innerHTML = '';
 
-// Open Modal
+  if (deployedCodes.length === 0) {
+    activityContainer.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-10 text-gray-400">
+        <i class="fas fa-user-times text-6xl mb-3"></i>
+        <p>No attendance recorded yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  deployedCodes.forEach((code, index) => {
+    const card = document.createElement('div');
+    card.className = `
+      glass border border-gray-700 rounded-xl p-4 mb-3 transition-all
+      ${code.active ? 'opacity-100' : 'opacity-50'}
+    `;
+
+    card.innerHTML = `
+      <div class="flex justify-between items-center">
+        <div>
+          <h4 class="text-white text-lg font-bold">${code.code}</h4>
+          <p class="text-sm text-gray-400">
+            <i class="far fa-clock"></i> ${code.date}
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            Deployment #${index + 1}
+          </p>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="toggle-active bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition">
+            Active
+          </button>
+          <button class="toggle-inactive bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-xs font-semibold transition">
+            Inactive
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Attach toggle handlers
+    const activeBtn = card.querySelector('.toggle-active');
+    const inactiveBtn = card.querySelector('.toggle-inactive');
+
+    activeBtn.addEventListener('click', () => {
+      code.active = true;
+      saveDeployments();
+      renderDeployments();
+      showToast(`Code ${code.code} reactivated.`, 'success');
+    });
+
+    inactiveBtn.addEventListener('click', () => {
+      code.active = false;
+      saveDeployments();
+      renderDeployments();
+      showToast(`Code ${code.code} marked inactive.`, 'error');
+    });
+
+    activityContainer.appendChild(card);
+  });
+}
+
+function saveDeployments() {
+  localStorage.setItem('attendance_deployments', JSON.stringify(deployedCodes));
+}
+
+// ===============================
+// EVENT HANDLERS
+// ===============================
 generateBtn.addEventListener('click', () => {
   if (!currentCode) currentCode = generateAttendanceCode();
   generatedCodeEl.textContent = currentCode;
   codeModal.classList.remove('hidden');
 });
 
-// Close Modal
 closeModalBtn.addEventListener('click', () => codeModal.classList.add('hidden'));
 
-// Change Code (always available)
 changeBtn.addEventListener('click', () => {
   currentCode = generateAttendanceCode();
   generatedCodeEl.textContent = currentCode;
-  deployed = false; // Reset state since code changed
   showToast('New code generated successfully!', 'info');
 });
 
-// Deploy Code (can redeploy freely)
 deployBtn.addEventListener('click', () => {
-  if (!currentCode) {
-    showToast('Generate a code before deploying.', 'error');
-    return;
-  }
+  if (!currentCode) return showToast('Generate a code before deploying.', 'error');
 
-  deployed = true; // Just flag for status display, but doesn’t block future redeploys
+  const newDeployment = {
+    code: currentCode,
+    date: new Date().toLocaleString(),
+    active: true
+  };
+
+  deployedCodes.push(newDeployment);
+  saveDeployments();
+  renderDeployments();
+
   showToast(`Code ${currentCode} deployed successfully!`, 'success');
   codeModal.classList.add('hidden');
 });
-</script>
 
+// ===============================
+// INITIAL RENDER
+// ===============================
+renderDeployments();
+</script>
 
 </body>
 </html> 
