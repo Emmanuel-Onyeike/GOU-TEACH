@@ -612,255 +612,65 @@
     }
   </style>
 
-<script>
-  const chatInput = document.getElementById('chatInput');
-  const sendMessageBtn = document.getElementById('sendMessage');
-  const chatMessages = document.getElementById('chatMessages');
-  const menu = document.getElementById('messageMenu');
-  const recordBtn = document.getElementById('recordBtn');
-  const callBtn = document.getElementById('callBtn'); // optional: your video/voice call button
-
-  let mediaRecorder;
-  let audioChunks = [];
-  let activeMessage = null;
-
-  // --- SEND MESSAGE ---
-  sendMessageBtn.addEventListener('click', sendChatMessage);
-  chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
-
-  function sendChatMessage() {
-    const text = chatInput.value.trim();
-    if (!text) return;
-    createMessageBubble(text, 'me');
-    chatInput.value = '';
-  }
-
-  // --- CREATE MESSAGE BUBBLE ---
-  function createMessageBubble(content, sender, isAudio = false) {
-    const bubble = document.createElement('div');
-    const now = new Date();
-    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    bubble.className = `relative chat-bubble ${sender}`;
-    bubble.dataset.pinned = "false";
-    bubble.dataset.sender = sender;
-
-    bubble.innerHTML = isAudio
-      ? `
-        <audio controls class="w-full rounded-lg mt-1">
-          <source src="${content}" type="audio/webm">
-        </audio>
-        <span class="chat-time">${time}</span>
-        <i class="fas fa-ellipsis-v message-menu-btn"></i>`
-      : `
-        <p class="message-text">${content}</p>
-        <span class="chat-time">${time}</span>
-        <i class="fas fa-ellipsis-v message-menu-btn"></i>`;
-
-    const dots = bubble.querySelector('.message-menu-btn');
-    dots.addEventListener('click', (e) => {
-      e.stopPropagation();
-      activeMessage = bubble;
-      openMenu(e, bubble, sender === 'me');
-    });
-
-    chatMessages.appendChild(bubble);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  // --- MENU (POP DOWN INSIDE CHAT) ---
-  function openMenu(e, messageBubble, isOwner) {
-    const bubbleRect = messageBubble.getBoundingClientRect();
-    const containerRect = chatMessages.getBoundingClientRect();
-    const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
-
-    menu.classList.remove('hidden');
-    menu.style.top = offsetTop + 'px';
-    menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
-
-    const [editBtn, pinBtn, replyBtn, deleteBtn] = menu.querySelectorAll('.menu-item');
-    editBtn.style.display = isOwner ? 'flex' : 'none';
-
-    // Assign dynamic handlers
-    editBtn.onclick = () => editMessage(activeMessage);
-    deleteBtn.onclick = () => deleteMessage(activeMessage);
-    replyBtn.onclick = () => replyToMessage(activeMessage);
-    pinBtn.onclick = () => pinMessage(activeMessage);
-  }
-
-  // Hide menu on blank area click
-  chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
-
-  // --- EDIT MESSAGE ---
-  function editMessage(msg) {
-    menu.classList.add('hidden');
-    const textEl = msg.querySelector('.message-text');
-    if (!textEl) return showInlineAlert("Cannot edit voice messages.");
-
-    const originalText = textEl.textContent;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = originalText;
-    input.className = "w-full bg-white/10 border border-white/20 text-white rounded-md px-2 py-1 text-sm mt-1";
-
-    msg.replaceChild(input, textEl);
-    input.focus();
-
-    input.addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
-        const newText = input.value.trim();
-        if (newText) {
-          const newP = document.createElement('p');
-          newP.textContent = newText;
-          newP.className = "message-text";
-          msg.replaceChild(newP, input);
-          showInlineAlert("Message edited.");
-        }
-      }
-    });
-  }
-
-  // --- DELETE MESSAGE ---
-  function deleteMessage(msg) {
-    menu.classList.add('hidden');
-    msg.classList.add('opacity-50');
-    setTimeout(() => msg.remove(), 300);
-    showInlineAlert("Message deleted.");
-  }
-
-  // --- REPLY TO MESSAGE ---
-  function replyToMessage(msg) {
-    menu.classList.add('hidden');
-    const textEl = msg.querySelector('.message-text');
-    const replyText = textEl ? textEl.textContent : "Voice message";
-
-    const replyBox = document.createElement('div');
-    replyBox.className = "bg-white/10 text-white text-sm p-2 rounded-md border-l-4 border-accent mb-2";
-    replyBox.textContent = `Replying to: ${replyText}`;
-
-    const inputContainer = chatInput.parentElement;
-    inputContainer.insertBefore(replyBox, chatInput);
-    chatInput.focus();
-
-    chatInput.addEventListener('keydown', function handleReply(e) {
-      if (e.key === 'Enter') {
-        createMessageBubble(`Reply to "${replyText}": ${chatInput.value.trim()}`, 'me');
-        replyBox.remove();
-        chatInput.removeEventListener('keydown', handleReply);
-        chatInput.value = '';
-        showInlineAlert("Reply sent.");
-      }
-    });
-  }
-
-  // --- PIN MESSAGE ---
-  function pinMessage(msg) {
-    menu.classList.add('hidden');
-    const pinned = msg.dataset.pinned === "true";
-    msg.dataset.pinned = !pinned;
-
-    if (!pinned) {
-      msg.style.border = "1px solid gold";
-      msg.style.order = "-1";
-      showInlineAlert("Message pinned to top.");
-    } else {
-      msg.style.border = "";
-      msg.style.order = "initial";
-      showInlineAlert("Message unpinned.");
-    }
-  }
-
-  // --- AUDIO RECORDING ---
-  recordBtn.addEventListener('click', async () => {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
-      recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-      recordBtn.classList.remove('bg-red-600');
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
-
-      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        createMessageBubble(audioUrl, 'me', true);
-      };
-
-      mediaRecorder.start();
-      recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
-      recordBtn.classList.add('bg-red-600');
-    } catch (err) {
-      showInlineAlert('Microphone access denied.');
-    }
-  });
-
-  // --- INLINE ALERT INSIDE CHAT ---
-  function showInlineAlert(msg) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className =
-      "bg-accent/10 text-accent border border-accent/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
-    alertDiv.textContent = msg;
-    chatMessages.appendChild(alertDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    setTimeout(() => alertDiv.remove(), 3000);
-  }
-
-  // --- VOICE/VIDEO CALL TEST HANDLER ---
-  if (callBtn) {
-    callBtn.addEventListener('click', async () => {
-      showInlineAlert("🔔 Call feature testing…");
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        video.autoplay = true;
-        video.muted = true;
-        video.className = "rounded-lg border border-white/20 mt-3";
-        chatMessages.appendChild(video);
-        showInlineAlert("🎥 You’re live (testing mode only)");
-      } catch (err) {
-        showInlineAlert("❌ Camera or mic access denied.");
-      }
-    });
-  }
-</script>
 
 </section>
 
 
 
     <!-- Profile -->
-    <section id="profile" class="mb-10">
-      <div class="glass p-8 border border-white/10 rounded-xl shadow-md">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-            <i class="fas fa-user text-accent"></i> Profile
-          </h2>
-          <button id="editProfileBtn" class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition">
-            <i class="fas fa-edit mr-1"></i> Edit
-          </button>
-        </div>
-        <div class="flex flex-col sm:flex-row items-center gap-8">
-          <div class="relative group">
-            <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-accent/50 shadow-xl bg-gray-800 flex items-center justify-center">
-              <span id="profileInitial" class="text-4xl font-bold text-white">S</span>
-            </div>
-          </div>
-          <div class="text-center sm:text-left flex-1">
-            <h3 id="profileName" class="text-xl font-bold text-white mb-1">Loading...</h3>
-            <p id="profileEmail" class="text-muted text-sm mb-3">student@gouni.edu.ng</p>
-            <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
-              <span class="px-3 py-1 bg-accent/20 text-accent text-xs font-semibold rounded-full">Student</span>
-              <span id="profileReg" class="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">GOU-2025-XXXX</span>
-            </div>
-          </div>
+  <!-- PROFILE SECTION -->
+<section id="profile" class="mb-10">
+  <div class="glass p-8 border border-white/10 rounded-xl shadow-md">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+        <i class="fas fa-user text-accent"></i> Profile
+      </h2>
+      <button id="editProfileBtn" class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition">
+        <i class="fas fa-edit mr-1"></i> Edit
+      </button>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center gap-8">
+      <div class="relative group">
+        <div id="profilePic" class="w-28 h-28 rounded-full overflow-hidden border-4 border-accent/50 shadow-xl bg-gray-800 flex items-center justify-center">
+          <span id="profileInitial" class="text-4xl font-bold text-white">S</span>
         </div>
       </div>
-    </section>
+      <div class="text-center sm:text-left flex-1">
+        <h3 id="profileName" class="text-xl font-bold text-white mb-1">Loading...</h3>
+        <p id="profileEmail" class="text-muted text-sm mb-3">student@gouni.edu.ng</p>
+        <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+          <span class="px-3 py-1 bg-accent/20 text-accent text-xs font-semibold rounded-full">Student</span>
+          <span id="profileReg" class="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">GOU-2025-XXXX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div id="profileModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div class="bg-gray-900 p-6 rounded-xl w-96 relative">
+    <h3 class="text-xl font-bold text-white mb-4">Edit Profile</h3>
+    <label class="block mb-2 text-white font-semibold">Name</label>
+    <input type="text" id="modalName" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-3">
+
+    <label class="block mb-2 text-white font-semibold">Email</label>
+    <input type="email" id="modalEmail" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-3">
+
+    <label class="block mb-2 text-white font-semibold">Profile Picture</label>
+    <input type="file" id="modalPic" accept="image/*" class="w-full mb-3">
+
+    <label class="block mb-2 text-white font-semibold">Registration ID</label>
+    <input type="text" id="modalReg" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-4">
+
+    <div class="flex justify-end gap-2">
+      <button id="closeProfileModal" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Cancel</button>
+      <button id="saveProfileBtn" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition">Save</button>
+    </div>
+  </div>
+</div>
+
+
   </main>
 
   <!-- Firebase + Logic -->
@@ -1157,10 +967,276 @@ renderDeployedCodes();
       });
     });
   </script>
+<!----for the chat room------->
+<script>
+  const chatInput = document.getElementById('chatInput');
+  const sendMessageBtn = document.getElementById('sendMessage');
+  const chatMessages = document.getElementById('chatMessages');
+  const menu = document.getElementById('messageMenu');
+  const recordBtn = document.getElementById('recordBtn');
+  const callBtn = document.getElementById('callBtn'); // optional: your video/voice call button
 
+  let mediaRecorder;
+  let audioChunks = [];
+  let activeMessage = null;
+
+  // --- SEND MESSAGE ---
+  sendMessageBtn.addEventListener('click', sendChatMessage);
+  chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
+
+  function sendChatMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    createMessageBubble(text, 'me');
+    chatInput.value = '';
+  }
+
+  // --- CREATE MESSAGE BUBBLE ---
+  function createMessageBubble(content, sender, isAudio = false) {
+    const bubble = document.createElement('div');
+    const now = new Date();
+    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    bubble.className = `relative chat-bubble ${sender}`;
+    bubble.dataset.pinned = "false";
+    bubble.dataset.sender = sender;
+
+    bubble.innerHTML = isAudio
+      ? `
+        <audio controls class="w-full rounded-lg mt-1">
+          <source src="${content}" type="audio/webm">
+        </audio>
+        <span class="chat-time">${time}</span>
+        <i class="fas fa-ellipsis-v message-menu-btn"></i>`
+      : `
+        <p class="message-text">${content}</p>
+        <span class="chat-time">${time}</span>
+        <i class="fas fa-ellipsis-v message-menu-btn"></i>`;
+
+    const dots = bubble.querySelector('.message-menu-btn');
+    dots.addEventListener('click', (e) => {
+      e.stopPropagation();
+      activeMessage = bubble;
+      openMenu(e, bubble, sender === 'me');
+    });
+
+    chatMessages.appendChild(bubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // --- MENU (POP DOWN INSIDE CHAT) ---
+  function openMenu(e, messageBubble, isOwner) {
+    const bubbleRect = messageBubble.getBoundingClientRect();
+    const containerRect = chatMessages.getBoundingClientRect();
+    const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
+
+    menu.classList.remove('hidden');
+    menu.style.top = offsetTop + 'px';
+    menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
+
+    const [editBtn, pinBtn, replyBtn, deleteBtn] = menu.querySelectorAll('.menu-item');
+    editBtn.style.display = isOwner ? 'flex' : 'none';
+
+    // Assign dynamic handlers
+    editBtn.onclick = () => editMessage(activeMessage);
+    deleteBtn.onclick = () => deleteMessage(activeMessage);
+    replyBtn.onclick = () => replyToMessage(activeMessage);
+    pinBtn.onclick = () => pinMessage(activeMessage);
+  }
+
+  // Hide menu on blank area click
+  chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
+
+  // --- EDIT MESSAGE ---
+  function editMessage(msg) {
+    menu.classList.add('hidden');
+    const textEl = msg.querySelector('.message-text');
+    if (!textEl) return showInlineAlert("Cannot edit voice messages.");
+
+    const originalText = textEl.textContent;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = originalText;
+    input.className = "w-full bg-white/10 border border-white/20 text-white rounded-md px-2 py-1 text-sm mt-1";
+
+    msg.replaceChild(input, textEl);
+    input.focus();
+
+    input.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        const newText = input.value.trim();
+        if (newText) {
+          const newP = document.createElement('p');
+          newP.textContent = newText;
+          newP.className = "message-text";
+          msg.replaceChild(newP, input);
+          showInlineAlert("Message edited.");
+        }
+      }
+    });
+  }
+
+  // --- DELETE MESSAGE ---
+  function deleteMessage(msg) {
+    menu.classList.add('hidden');
+    msg.classList.add('opacity-50');
+    setTimeout(() => msg.remove(), 300);
+    showInlineAlert("Message deleted.");
+  }
+
+  // --- REPLY TO MESSAGE ---
+  function replyToMessage(msg) {
+    menu.classList.add('hidden');
+    const textEl = msg.querySelector('.message-text');
+    const replyText = textEl ? textEl.textContent : "Voice message";
+
+    const replyBox = document.createElement('div');
+    replyBox.className = "bg-white/10 text-white text-sm p-2 rounded-md border-l-4 border-accent mb-2";
+    replyBox.textContent = `Replying to: ${replyText}`;
+
+    const inputContainer = chatInput.parentElement;
+    inputContainer.insertBefore(replyBox, chatInput);
+    chatInput.focus();
+
+    chatInput.addEventListener('keydown', function handleReply(e) {
+      if (e.key === 'Enter') {
+        createMessageBubble(`Reply to "${replyText}": ${chatInput.value.trim()}`, 'me');
+        replyBox.remove();
+        chatInput.removeEventListener('keydown', handleReply);
+        chatInput.value = '';
+        showInlineAlert("Reply sent.");
+      }
+    });
+  }
+
+  // --- PIN MESSAGE ---
+  function pinMessage(msg) {
+    menu.classList.add('hidden');
+    const pinned = msg.dataset.pinned === "true";
+    msg.dataset.pinned = !pinned;
+
+    if (!pinned) {
+      msg.style.border = "1px solid gold";
+      msg.style.order = "-1";
+      showInlineAlert("Message pinned to top.");
+    } else {
+      msg.style.border = "";
+      msg.style.order = "initial";
+      showInlineAlert("Message unpinned.");
+    }
+  }
+
+  // --- AUDIO RECORDING ---
+  recordBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+      recordBtn.classList.remove('bg-red-600');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        createMessageBubble(audioUrl, 'me', true);
+      };
+
+      mediaRecorder.start();
+      recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+      recordBtn.classList.add('bg-red-600');
+    } catch (err) {
+      showInlineAlert('Microphone access denied.');
+    }
+  });
+
+  // --- INLINE ALERT INSIDE CHAT ---
+  function showInlineAlert(msg) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className =
+      "bg-accent/10 text-accent border border-accent/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
+    alertDiv.textContent = msg;
+    chatMessages.appendChild(alertDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    setTimeout(() => alertDiv.remove(), 3000);
+  }
+
+  // --- VOICE/VIDEO CALL TEST HANDLER ---
+  if (callBtn) {
+    callBtn.addEventListener('click', async () => {
+      showInlineAlert("🔔 Call feature testing…");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.muted = true;
+        video.className = "rounded-lg border border-white/20 mt-3";
+        chatMessages.appendChild(video);
+        showInlineAlert("🎥 You’re live (testing mode only)");
+      } catch (err) {
+        showInlineAlert("❌ Camera or mic access denied.");
+      }
+    });
+  }
+</script>
+<!-----for the profile----->
+  <script>
+  const editBtn = document.getElementById('editProfileBtn');
+  const modal = document.getElementById('profileModal');
+  const closeModal = document.getElementById('closeProfileModal');
+  const saveBtn = document.getElementById('saveProfileBtn');
+
+  const profileName = document.getElementById('profileName');
+  const profileEmail = document.getElementById('profileEmail');
+  const profileReg = document.getElementById('profileReg');
+  const profileInitial = document.getElementById('profileInitial');
+  const profilePic = document.getElementById('profilePic');
+
+  const modalName = document.getElementById('modalName');
+  const modalEmail = document.getElementById('modalEmail');
+  const modalReg = document.getElementById('modalReg');
+  const modalPic = document.getElementById('modalPic');
+
+  // Open modal
+  editBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    // Populate modal with current info
+    modalName.value = profileName.textContent;
+    modalEmail.value = profileEmail.textContent;
+    modalReg.value = profileReg.textContent;
+  });
+
+  // Close modal
+  closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+
+  // Save changes
+  saveBtn.addEventListener('click', () => {
+    profileName.textContent = modalName.value || "Unnamed";
+    profileEmail.textContent = modalEmail.value || "email@gouni.edu.ng";
+    profileReg.textContent = modalReg.value || "GOU-2025-XXXX";
+    profileInitial.textContent = modalName.value.charAt(0).toUpperCase() || "S";
+
+    // Update profile pic
+    if (modalPic.files && modalPic.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        profilePic.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`;
+      };
+      reader.readAsDataURL(modalPic.files[0]);
+    }
+
+    modal.classList.add('hidden');
+  });
+</script>
 
 </body>
 </html>
+
 
 
 
