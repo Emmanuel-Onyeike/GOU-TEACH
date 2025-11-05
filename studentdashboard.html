@@ -294,24 +294,90 @@
 </section>
 
 
-    <!-- Attendance -->
-    <section id="attendance" class="mb-10">
-      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <i class="fas fa-clipboard-check"></i> Submit Attendance
-        </h2>
-        <div class="bg-yellow-600/20 border border-yellow-600/40 text-yellow-400 p-4 rounded-lg mb-4">
-          <p><i class="fas fa-info-circle mr-2"></i> Enter the code provided by your lecturer.</p>
-        </div>
-        <div class="flex gap-3">
-          <input type="text" id="attendanceCode" placeholder="Enter Code (e.g. GOU-ATT123)" class="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent">
-          <button id="submitAttendance" class="bg-gradient-to-r from-accent to-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition shadow-lg">
-            Submit
-          </button>
-        </div>
-        <div id="attendanceStatus" class="mt-4 text-sm"></div>
+   <!-- Attendance -->
+<section id="attendance" class="mb-10">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative overflow-hidden">
+    
+    <!-- HEADER -->
+    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+      <i class="fas fa-clipboard-check text-green-400"></i> Submit Attendance
+    </h2>
+
+    <!-- Info Banner -->
+    <div class="bg-yellow-600/20 border border-yellow-600/40 text-yellow-400 p-4 rounded-lg mb-6">
+      <p><i class="fas fa-info-circle mr-2"></i> Enter or select the code provided by your lecturer.</p>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="flex gap-3 mb-6">
+      <input 
+        type="text" 
+        id="attendanceCode" 
+        placeholder="Enter Code (e.g. GOU-ATT-12ABC)" 
+        class="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent"
+      >
+      <button 
+        id="submitAttendance"
+        class="bg-gradient-to-r from-accent to-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition shadow-lg"
+      >
+        Submit
+      </button>
+    </div>
+
+    <div id="attendanceStatus" class="mt-2 text-sm"></div>
+
+    <!-- DEPLOYED CODES SECTION -->
+    <div class="border-t border-white/10 mt-6 pt-5">
+      <h3 class="text-white/80 font-semibold text-base mb-3 flex items-center gap-2">
+        <i class="fas fa-key text-accent"></i> Lecturer Deployed Codes
+      </h3>
+
+      <!-- Scrollable Container -->
+      <div id="deployedCodesList" class="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+        <!-- Codes will render dynamically -->
       </div>
-    </section>
+
+      <!-- Empty state -->
+      <div id="noDeployedCodes" class="text-center py-8 text-gray-500 text-sm">
+        <i class="fas fa-info-circle mr-1"></i> No attendance codes have been deployed yet.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div id="successModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
+    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl animate-fadeIn">
+      <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal('successModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+      <h3 class="text-xl font-bold text-white mb-2">Attendance Marked</h3>
+      <p class="text-gray-400 text-sm">Your attendance for this session has been successfully recorded.</p>
+    </div>
+  </div>
+
+  <!-- DUPLICATE MODAL -->
+  <div id="duplicateModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
+    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl animate-fadeIn">
+      <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal('duplicateModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <i class="fas fa-exclamation-circle text-red-500 text-5xl mb-4"></i>
+      <h3 class="text-xl font-bold text-white mb-2">Already Marked</h3>
+      <p class="text-gray-400 text-sm">You’ve already used this code to mark attendance.</p>
+    </div>
+  </div>
+
+  <!-- Scrollbar Style -->
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+    }
+  </style>
+</section>
+
 
     <!-- Activity -->
     <section id="activity" class="mb-10">
@@ -555,7 +621,105 @@
       });
     }
   </script>
+  <!--for the Attendance---->
+<script>
+// =========================
+// ELEMENTS
+// =========================
+const deployedList = document.getElementById('deployedCodesList');
+const noDeployedCodes = document.getElementById('noDeployedCodes');
+const submitBtn = document.getElementById('submitAttendance');
+const codeInput = document.getElementById('attendanceCode');
+let usedCodes = JSON.parse(localStorage.getItem('used_attendance_codes') || '[]');
+let deployedCodes = JSON.parse(localStorage.getItem('attendance_deployments') || '[]');
+
+// =========================
+// RENDER DEPLOYED CODES
+// =========================
+function renderDeployedCodes() {
+  deployedList.innerHTML = '';
+
+  if (deployedCodes.length === 0) {
+    noDeployedCodes.classList.remove('hidden');
+    return;
+  }
+
+  noDeployedCodes.classList.add('hidden');
+
+  deployedCodes.forEach(code => {
+    const card = document.createElement('div');
+    card.className = `
+      glass border border-gray-700 rounded-xl p-4 flex justify-between items-center 
+      transition ${code.active ? 'opacity-100' : 'opacity-50 grayscale'}
+    `;
+
+    card.innerHTML = `
+      <div>
+        <h4 class="text-white font-semibold">${code.code}</h4>
+        <p class="text-xs text-gray-400">${code.date}</p>
+      </div>
+      <button 
+        class="copyCode bg-accent/20 hover:bg-accent/40 text-accent px-3 py-1 rounded-lg text-xs font-medium"
+        ${code.active ? '' : 'disabled'}>
+        <i class="fas fa-copy"></i> Copy
+      </button>
+    `;
+
+    if (code.active) {
+      card.querySelector('.copyCode').addEventListener('click', () => {
+        navigator.clipboard.writeText(code.code);
+        codeInput.value = code.code;
+        codeInput.focus();
+      });
+    }
+
+    deployedList.appendChild(card);
+  });
+}
+
+// =========================
+// SUBMIT ATTENDANCE
+// =========================
+submitBtn.addEventListener('click', () => {
+  const entered = codeInput.value.trim().toUpperCase();
+  if (!entered) return alert('Please enter a code.');
+
+  if (usedCodes.includes(entered)) {
+    openModal('duplicateModal');
+    return;
+  }
+
+  const isValid = deployedCodes.some(c => c.code === entered && c.active);
+  if (!isValid) {
+    alert('Invalid or inactive code.');
+    return;
+  }
+
+  usedCodes.push(entered);
+  localStorage.setItem('used_attendance_codes', JSON.stringify(usedCodes));
+
+  openModal('successModal');
+  codeInput.value = '';
+});
+
+// =========================
+// MODALS
+// =========================
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+// =========================
+// INITIAL RENDER
+// =========================
+renderDeployedCodes();
+</script>
+
 </body>
 </html>
+
 
 
