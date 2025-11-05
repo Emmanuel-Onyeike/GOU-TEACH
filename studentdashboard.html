@@ -612,114 +612,223 @@
     }
   </style>
 
-  <script>
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageBtn = document.getElementById('sendMessage');
-    const chatMessages = document.getElementById('chatMessages');
-    const menu = document.getElementById('messageMenu');
-    const recordBtn = document.getElementById('recordBtn');
-    let mediaRecorder;
-    let audioChunks = [];
+<script>
+  const chatInput = document.getElementById('chatInput');
+  const sendMessageBtn = document.getElementById('sendMessage');
+  const chatMessages = document.getElementById('chatMessages');
+  const menu = document.getElementById('messageMenu');
+  const recordBtn = document.getElementById('recordBtn');
+  const callBtn = document.getElementById('callBtn'); // optional: your video/voice call button
 
-    // --- SEND MESSAGE ---
-    sendMessageBtn.addEventListener('click', sendChatMessage);
-    chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
+  let mediaRecorder;
+  let audioChunks = [];
+  let activeMessage = null;
 
-    function sendChatMessage() {
-      const text = chatInput.value.trim();
-      if (!text) return;
-      createMessageBubble(text, 'me');
-      chatInput.value = '';
-    }
+  // --- SEND MESSAGE ---
+  sendMessageBtn.addEventListener('click', sendChatMessage);
+  chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
 
-    // --- CREATE MESSAGE BUBBLE ---
-    function createMessageBubble(content, sender, isAudio = false) {
-      const bubble = document.createElement('div');
-      const now = new Date();
-      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      bubble.className = `relative chat-bubble ${sender}`;
+  function sendChatMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    createMessageBubble(text, 'me');
+    chatInput.value = '';
+  }
 
-      if (isAudio) {
-        bubble.innerHTML = `
-          <audio controls class="w-full rounded-lg mt-1">
-            <source src="${content}" type="audio/webm">
-          </audio>
-          <span class="chat-time">${time}</span>
-          <i class="fas fa-ellipsis-v message-menu-btn"></i>
-        `;
-      } else {
-        bubble.innerHTML = `
-          <p>${content}</p>
-          <span class="chat-time">${time}</span>
-          <i class="fas fa-ellipsis-v message-menu-btn"></i>
-        `;
-      }
+  // --- CREATE MESSAGE BUBBLE ---
+  function createMessageBubble(content, sender, isAudio = false) {
+    const bubble = document.createElement('div');
+    const now = new Date();
+    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    bubble.className = `relative chat-bubble ${sender}`;
+    bubble.dataset.pinned = "false";
+    bubble.dataset.sender = sender;
 
-      const dots = bubble.querySelector('.message-menu-btn');
-      dots.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openMenu(e, bubble, sender === 'me');
-      });
+    bubble.innerHTML = isAudio
+      ? `
+        <audio controls class="w-full rounded-lg mt-1">
+          <source src="${content}" type="audio/webm">
+        </audio>
+        <span class="chat-time">${time}</span>
+        <i class="fas fa-ellipsis-v message-menu-btn"></i>`
+      : `
+        <p class="message-text">${content}</p>
+        <span class="chat-time">${time}</span>
+        <i class="fas fa-ellipsis-v message-menu-btn"></i>`;
 
-      chatMessages.appendChild(bubble);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // --- MENU (NOW POPS INSIDE CHAT) ---
-    function openMenu(e, messageBubble, isOwner) {
-      const bubbleRect = messageBubble.getBoundingClientRect();
-      const containerRect = chatMessages.getBoundingClientRect();
-      const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
-
-      menu.classList.remove('hidden');
-      menu.style.top = offsetTop + 'px';
-      menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
-
-      const allItems = menu.querySelectorAll('.menu-item');
-      allItems[0].style.display = isOwner ? 'flex' : 'none';
-    }
-
-    chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
-
-    // --- AUDIO RECORDING ---
-    recordBtn.addEventListener('click', async () => {
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
-        recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-        recordBtn.classList.remove('bg-red-600');
-        return;
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          createMessageBubble(audioUrl, 'me', true);
-        };
-
-        mediaRecorder.start();
-        recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
-        recordBtn.classList.add('bg-red-600');
-      } catch (err) {
-        showInlineAlert('Microphone access denied.');
-      }
+    const dots = bubble.querySelector('.message-menu-btn');
+    dots.addEventListener('click', (e) => {
+      e.stopPropagation();
+      activeMessage = bubble;
+      openMenu(e, bubble, sender === 'me');
     });
 
-    // --- INLINE ALERT INSIDE CHAT ---
-    function showInlineAlert(msg) {
-      const alertDiv = document.createElement('div');
-      alertDiv.className = "bg-red-500/20 text-red-400 border border-red-500/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
-      alertDiv.textContent = msg;
-      chatMessages.appendChild(alertDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-      setTimeout(() => alertDiv.remove(), 4000);
+    chatMessages.appendChild(bubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // --- MENU (POP DOWN INSIDE CHAT) ---
+  function openMenu(e, messageBubble, isOwner) {
+    const bubbleRect = messageBubble.getBoundingClientRect();
+    const containerRect = chatMessages.getBoundingClientRect();
+    const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
+
+    menu.classList.remove('hidden');
+    menu.style.top = offsetTop + 'px';
+    menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
+
+    const [editBtn, pinBtn, replyBtn, deleteBtn] = menu.querySelectorAll('.menu-item');
+    editBtn.style.display = isOwner ? 'flex' : 'none';
+
+    // Assign dynamic handlers
+    editBtn.onclick = () => editMessage(activeMessage);
+    deleteBtn.onclick = () => deleteMessage(activeMessage);
+    replyBtn.onclick = () => replyToMessage(activeMessage);
+    pinBtn.onclick = () => pinMessage(activeMessage);
+  }
+
+  // Hide menu on blank area click
+  chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
+
+  // --- EDIT MESSAGE ---
+  function editMessage(msg) {
+    menu.classList.add('hidden');
+    const textEl = msg.querySelector('.message-text');
+    if (!textEl) return showInlineAlert("Cannot edit voice messages.");
+
+    const originalText = textEl.textContent;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = originalText;
+    input.className = "w-full bg-white/10 border border-white/20 text-white rounded-md px-2 py-1 text-sm mt-1";
+
+    msg.replaceChild(input, textEl);
+    input.focus();
+
+    input.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        const newText = input.value.trim();
+        if (newText) {
+          const newP = document.createElement('p');
+          newP.textContent = newText;
+          newP.className = "message-text";
+          msg.replaceChild(newP, input);
+          showInlineAlert("Message edited.");
+        }
+      }
+    });
+  }
+
+  // --- DELETE MESSAGE ---
+  function deleteMessage(msg) {
+    menu.classList.add('hidden');
+    msg.classList.add('opacity-50');
+    setTimeout(() => msg.remove(), 300);
+    showInlineAlert("Message deleted.");
+  }
+
+  // --- REPLY TO MESSAGE ---
+  function replyToMessage(msg) {
+    menu.classList.add('hidden');
+    const textEl = msg.querySelector('.message-text');
+    const replyText = textEl ? textEl.textContent : "Voice message";
+
+    const replyBox = document.createElement('div');
+    replyBox.className = "bg-white/10 text-white text-sm p-2 rounded-md border-l-4 border-accent mb-2";
+    replyBox.textContent = `Replying to: ${replyText}`;
+
+    const inputContainer = chatInput.parentElement;
+    inputContainer.insertBefore(replyBox, chatInput);
+    chatInput.focus();
+
+    chatInput.addEventListener('keydown', function handleReply(e) {
+      if (e.key === 'Enter') {
+        createMessageBubble(`Reply to "${replyText}": ${chatInput.value.trim()}`, 'me');
+        replyBox.remove();
+        chatInput.removeEventListener('keydown', handleReply);
+        chatInput.value = '';
+        showInlineAlert("Reply sent.");
+      }
+    });
+  }
+
+  // --- PIN MESSAGE ---
+  function pinMessage(msg) {
+    menu.classList.add('hidden');
+    const pinned = msg.dataset.pinned === "true";
+    msg.dataset.pinned = !pinned;
+
+    if (!pinned) {
+      msg.style.border = "1px solid gold";
+      msg.style.order = "-1";
+      showInlineAlert("Message pinned to top.");
+    } else {
+      msg.style.border = "";
+      msg.style.order = "initial";
+      showInlineAlert("Message unpinned.");
     }
-  </script>
+  }
+
+  // --- AUDIO RECORDING ---
+  recordBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+      recordBtn.classList.remove('bg-red-600');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        createMessageBubble(audioUrl, 'me', true);
+      };
+
+      mediaRecorder.start();
+      recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+      recordBtn.classList.add('bg-red-600');
+    } catch (err) {
+      showInlineAlert('Microphone access denied.');
+    }
+  });
+
+  // --- INLINE ALERT INSIDE CHAT ---
+  function showInlineAlert(msg) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className =
+      "bg-accent/10 text-accent border border-accent/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
+    alertDiv.textContent = msg;
+    chatMessages.appendChild(alertDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    setTimeout(() => alertDiv.remove(), 3000);
+  }
+
+  // --- VOICE/VIDEO CALL TEST HANDLER ---
+  if (callBtn) {
+    callBtn.addEventListener('click', async () => {
+      showInlineAlert("🔔 Call feature testing…");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.muted = true;
+        video.className = "rounded-lg border border-white/20 mt-3";
+        chatMessages.appendChild(video);
+        showInlineAlert("🎥 You’re live (testing mode only)");
+      } catch (err) {
+        showInlineAlert("❌ Camera or mic access denied.");
+      }
+    });
+  }
+</script>
+
 </section>
 
 
@@ -1052,6 +1161,7 @@ renderDeployedCodes();
 
 </body>
 </html>
+
 
 
 
