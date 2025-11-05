@@ -495,7 +495,7 @@
 
 
     <!-- Chat Room -->
-  <section id="chat" class="mb-10 relative font-inter">
+ <section id="chat" class="mb-10 relative font-inter">
   <div class="glass p-6 border border-white/10 rounded-xl shadow-md h-[600px] flex flex-col relative overflow-hidden">
 
     <!-- HEADER -->
@@ -544,10 +544,10 @@
     </div>
   </div>
 
-  <!-- CONTEXT MENU (for message options) -->
+  <!-- CONTEXT MENU -->
   <div id="messageMenu"
     class="hidden absolute bg-[#1f2937] border border-gray-700 rounded-lg shadow-xl 
-    text-white text-sm w-40 z-50">
+    text-white text-sm w-44 z-50">
     <ul class="flex flex-col">
       <li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
         <i class="fas fa-edit text-yellow-400"></i> Edit
@@ -599,21 +599,122 @@
     .message-menu-btn {
       position: absolute;
       right: 6px;
-      top: 6px;
-      color: #9ca3af;
+      top: 4px;
+      color: #d1d5db;
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: color 0.2s;
+      font-size: 1.1rem;
+      transition: color 0.2s, transform 0.2s;
+      padding: 4px;
     }
-    .message-menu-btn:hover { color: white; }
+    .message-menu-btn:hover { color: #fff; transform: scale(1.1); }
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 
- 
+  <script>
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageBtn = document.getElementById('sendMessage');
+    const chatMessages = document.getElementById('chatMessages');
+    const menu = document.getElementById('messageMenu');
+    const recordBtn = document.getElementById('recordBtn');
+
+    let currentUser = 'me'; 
+    let mediaRecorder;
+    let audioChunks = [];
+
+    // --- SEND TEXT MESSAGE ---
+    sendMessageBtn.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
+
+    function sendChatMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      createMessageBubble(text, 'me');
+      chatInput.value = '';
+    }
+
+    // --- CREATE MESSAGE BUBBLE ---
+    function createMessageBubble(content, sender, isAudio = false) {
+      const bubble = document.createElement('div');
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      bubble.className = `relative chat-bubble ${sender}`;
+
+      if (isAudio) {
+        bubble.innerHTML = `
+          <audio controls class="w-full rounded-lg mt-1">
+            <source src="${content}" type="audio/webm">
+          </audio>
+          <span class="chat-time">${time}</span>
+          <i class="fas fa-ellipsis-v message-menu-btn"></i>
+        `;
+      } else {
+        bubble.innerHTML = `
+          <p>${content}</p>
+          <span class="chat-time">${time}</span>
+          <i class="fas fa-ellipsis-v message-menu-btn"></i>
+        `;
+      }
+
+      const dots = bubble.querySelector('.message-menu-btn');
+      dots.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMenu(e, sender === 'me');
+      });
+
+      chatMessages.appendChild(bubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // --- OPEN MENU ---
+    function openMenu(e, isOwner) {
+      menu.classList.remove('hidden');
+      const rect = e.target.getBoundingClientRect();
+      const top = rect.bottom + window.scrollY + 5;
+      const left = Math.min(rect.left, window.innerWidth - 180);
+      menu.style.top = top + 'px';
+      menu.style.left = left + 'px';
+
+      const allItems = menu.querySelectorAll('.menu-item');
+      allItems[0].style.display = isOwner ? 'flex' : 'none';
+    }
+
+    // Hide menu when clicking outside
+    window.addEventListener('click', () => menu.classList.add('hidden'));
+
+    // --- AUDIO RECORDING TEST FUNCTIONALITY ---
+    recordBtn.addEventListener('click', async () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        recordBtn.classList.remove('bg-red-600');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          createMessageBubble(audioUrl, 'me', true);
+        };
+
+        mediaRecorder.start();
+        recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        recordBtn.classList.add('bg-red-600');
+      } catch (err) {
+        alert('Microphone access denied.');
+      }
+    });
+  </script>
 </section>
+
 
 
     <!-- Profile -->
@@ -941,61 +1042,10 @@ renderDeployedCodes();
     });
   </script>
 
-  <!--- for the chat room ------>
-   <script>
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageBtn = document.getElementById('sendMessage');
-    const chatMessages = document.getElementById('chatMessages');
-    const menu = document.getElementById('messageMenu');
-    let currentUser = 'me'; // temporary user identity
 
-    // send message
-    sendMessageBtn.addEventListener('click', sendChatMessage);
-
-    function sendChatMessage() {
-      const text = chatInput.value.trim();
-      if (!text) return;
-      createMessageBubble(text, 'me');
-      chatInput.value = '';
-    }
-
-    // create message bubble
-    function createMessageBubble(text, sender) {
-      const bubble = document.createElement('div');
-      const now = new Date();
-      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      bubble.className = `relative chat-bubble ${sender}`;
-      bubble.innerHTML = `
-        <p>${text}</p>
-        <span class="chat-time">${time}</span>
-        <i class="fas fa-ellipsis-v message-menu-btn"></i>
-      `;
-
-      const dots = bubble.querySelector('.message-menu-btn');
-      dots.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openMenu(e, sender === 'me');
-      });
-
-      chatMessages.appendChild(bubble);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // context menu logic
-    function openMenu(e, isOwner) {
-      menu.classList.remove('hidden');
-      menu.style.top = e.clientY + 'px';
-      menu.style.left = e.clientX + 'px';
-
-      const allItems = menu.querySelectorAll('.menu-item');
-      allItems[0].style.display = isOwner ? 'flex' : 'none';
-    }
-
-    window.addEventListener('click', () => menu.classList.add('hidden'));
-  </script>
 </body>
 </html>
+
 
 
 
