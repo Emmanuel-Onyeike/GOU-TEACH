@@ -159,10 +159,20 @@
           <p class="text-xs text-white/50">Student</p>
         </div>
       </div>
-      <button id="desktopLogout"
-              class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
+     <div class="flex flex-col sm:flex-row gap-3 mt-4">
+  <!-- Logout Button -->
+  <button id="desktopLogout"
+    class="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 px-6 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
+
+  <!-- Peek 2.0 Dashboard Button -->
+  <a href="2.0 verison dashabord.html" 
+    class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all shadow-md shadow-purple-900/30 flex items-center justify-center gap-2 text-sm">
+    <i class="fas fa-tachometer-alt"></i> Peek 2.0 Dashboard
+  </a>
+</div>
+
     </div>
   </aside>
 
@@ -1236,7 +1246,6 @@ renderDeployedCodes();
 
 </body>
 </html>
-
 
 
 

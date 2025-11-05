@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard 2.0</title>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+      20%, 22%, 24%, 55% { opacity: 0.6; }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      background: linear-gradient(270deg, #0a0a0a, #111111, #0a0a0a);
+      background-size: 600% 600%;
+      animation: gradientShift 15s ease infinite;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .outline-text {
+      color: transparent;
+      -webkit-text-stroke: 2px white;
+      font-weight: 900;
+      font-size: 4rem;
+      letter-spacing: 0.3rem;
+      text-align: center;
+      position: relative;
+      display: inline-block;
+      animation: flicker 2s infinite;
+    }
+
+    .outline-text::after {
+      content: attr(data-text);
+      display: block;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      color: rgba(255, 255, 255, 0.05);
+      -webkit-text-stroke: 0px;
+      transform: scaleY(-1);
+      opacity: 0.3;
+      filter: blur(2px);
+      pointer-events: none;
+      animation: flicker 2s infinite;
+    }
+
+    .subtext {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px #ffffff55, 0 0 20px #8b5cf6aa;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    .version {
+      color: #ff00ff;
+      font-size: 2rem;
+      margin-top: 1rem;
+      text-shadow: 0 0 10px #ff00ffaa, 0 0 20px #00ffff44;
+      animation: fadeIn 2s ease forwards 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: sparkleAnim 3s infinite;
+    }
+
+    @keyframes sparkleAnim {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+      50% { transform: translate(200px, -150px) scale(0.5); opacity: 0.2; }
+      100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="text-center relative">
+    <h1 class="outline-text" data-text="STAY TUNNED FOR THE BEST">STAY TUNNED FOR THE BEST</h1>
+    <p class="subtext">Welcome to the Dashboard 2.0 — exciting features coming soon!</p>
+    <p class="version">2.0</p>
+  </div>
+
+  <!-- Sparkles for extra effect -->
+  <div class="sparkle" style="top:20%; left:10%; animation-delay: 0s;"></div>
+  <div class="sparkle" style="top:50%; left:80%; animation-delay: 1s;"></div>
+  <div class="sparkle" style="top:70%; left:30%; animation-delay: 2s;"></div>
+  <div class="sparkle" style="top:40%; left:60%; animation-delay: 3s;"></div>
+
+</body>
+</html>
