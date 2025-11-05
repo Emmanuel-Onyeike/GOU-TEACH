@@ -494,8 +494,7 @@
 </section>
 
 
-    <!-- Chat Room -->
- <section id="chat" class="mb-10 relative font-inter">
+<section id="chat" class="mb-10 relative font-inter">
   <div class="glass p-6 border border-white/10 rounded-xl shadow-md h-[600px] flex flex-col relative overflow-hidden">
 
     <!-- HEADER -->
@@ -511,14 +510,14 @@
 
     <!-- CHAT MESSAGES -->
     <div id="chatMessages"
-      class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar scroll-smooth">
+      class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar scroll-smooth relative">
       <p class="text-center text-muted py-8 text-gray-400">
         <i class="fas fa-comment-slash text-3xl mb-2 block"></i>
         No messages yet. Start the conversation!
       </p>
     </div>
 
-    <!-- MESSAGE INPUT AREA -->
+    <!-- MESSAGE INPUT -->
     <div class="flex items-center gap-2 border-t border-white/10 pt-3">
       <button id="recordBtn"
         class="p-3 bg-gradient-to-r from-blue-600/80 to-blue-800/80 hover:from-blue-500 hover:to-blue-700 
@@ -544,10 +543,10 @@
     </div>
   </div>
 
-  <!-- CONTEXT MENU -->
+  <!-- LOCAL POPDOWN MENU (now inside the chat section itself) -->
   <div id="messageMenu"
-    class="hidden absolute bg-[#1f2937] border border-gray-700 rounded-lg shadow-xl 
-    text-white text-sm w-44 z-50">
+    class="hidden absolute bg-[#1f2937] border border-gray-700 rounded-lg shadow-lg 
+    text-white text-sm w-44 z-40 transition-all duration-200">
     <ul class="flex flex-col">
       <li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
         <i class="fas fa-edit text-yellow-400"></i> Edit
@@ -603,8 +602,8 @@
       color: #d1d5db;
       cursor: pointer;
       font-size: 1.1rem;
-      transition: color 0.2s, transform 0.2s;
       padding: 4px;
+      transition: color 0.2s, transform 0.2s;
     }
     .message-menu-btn:hover { color: #fff; transform: scale(1.1); }
     @keyframes fadeInUp {
@@ -619,12 +618,10 @@
     const chatMessages = document.getElementById('chatMessages');
     const menu = document.getElementById('messageMenu');
     const recordBtn = document.getElementById('recordBtn');
-
-    let currentUser = 'me'; 
     let mediaRecorder;
     let audioChunks = [];
 
-    // --- SEND TEXT MESSAGE ---
+    // --- SEND MESSAGE ---
     sendMessageBtn.addEventListener('click', sendChatMessage);
     chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
 
@@ -661,30 +658,30 @@
       const dots = bubble.querySelector('.message-menu-btn');
       dots.addEventListener('click', (e) => {
         e.stopPropagation();
-        openMenu(e, sender === 'me');
+        openMenu(e, bubble, sender === 'me');
       });
 
       chatMessages.appendChild(bubble);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // --- OPEN MENU ---
-    function openMenu(e, isOwner) {
+    // --- MENU (NOW POPS INSIDE CHAT) ---
+    function openMenu(e, messageBubble, isOwner) {
+      const bubbleRect = messageBubble.getBoundingClientRect();
+      const containerRect = chatMessages.getBoundingClientRect();
+      const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
+
       menu.classList.remove('hidden');
-      const rect = e.target.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY + 5;
-      const left = Math.min(rect.left, window.innerWidth - 180);
-      menu.style.top = top + 'px';
-      menu.style.left = left + 'px';
+      menu.style.top = offsetTop + 'px';
+      menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
 
       const allItems = menu.querySelectorAll('.menu-item');
       allItems[0].style.display = isOwner ? 'flex' : 'none';
     }
 
-    // Hide menu when clicking outside
-    window.addEventListener('click', () => menu.classList.add('hidden'));
+    chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
 
-    // --- AUDIO RECORDING TEST FUNCTIONALITY ---
+    // --- AUDIO RECORDING ---
     recordBtn.addEventListener('click', async () => {
       if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
@@ -709,9 +706,19 @@
         recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
         recordBtn.classList.add('bg-red-600');
       } catch (err) {
-        alert('Microphone access denied.');
+        showInlineAlert('Microphone access denied.');
       }
     });
+
+    // --- INLINE ALERT INSIDE CHAT ---
+    function showInlineAlert(msg) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = "bg-red-500/20 text-red-400 border border-red-500/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
+      alertDiv.textContent = msg;
+      chatMessages.appendChild(alertDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      setTimeout(() => alertDiv.remove(), 4000);
+    }
   </script>
 </section>
 
@@ -1045,6 +1052,7 @@ renderDeployedCodes();
 
 </body>
 </html>
+
 
 
 
