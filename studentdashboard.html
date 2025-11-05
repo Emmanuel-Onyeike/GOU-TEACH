@@ -432,28 +432,67 @@
 </section>
 
     <!-- Analytics -->
-    <section id="analytics" class="mb-10">
-      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <i class="fas fa-chart-line"></i> Attendance Trend
-        </h2>
-        <div class="chart-container">
-          <canvas id="attendanceChart"></canvas>
+<section id="analytics" class="mb-10">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+    <!-- Header -->
+    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 justify-center">
+      <i class="fas fa-chart-line text-accent"></i> Analytics Overview
+    </h2>
+
+    <!-- Two containers: Attendance + Student Activity -->
+    <div class="flex flex-col lg:flex-row gap-6">
+      
+      <!-- Attendance Analytics -->
+      <div class="flex-1 glass bg-white/5 p-6 rounded-xl border border-white/10 text-center">
+        <h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
+          <i class="fas fa-chart-bar text-green-400"></i> Attendance Analytics
+        </h3>
+        <div class="flex flex-col items-center justify-center py-10 text-gray-400">
+          <i class="fas fa-user-clock text-5xl text-accent mb-3"></i>
+          <p class="text-lg font-semibold">No Attendance Records</p>
+          <p class="text-sm text-gray-500">No attendance data has been recorded yet.</p>
         </div>
       </div>
-    </section>
+
+      <!-- Student Activity -->
+      <div class="flex-1 glass bg-white/5 p-6 rounded-xl border border-white/10 text-center">
+        <h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
+          <i class="fas fa-user-friends text-blue-400"></i> Student Activity
+        </h3>
+        <div class="flex flex-col items-center justify-center py-10 text-gray-400">
+          <i class="fas fa-users-slash text-5xl text-accent mb-3"></i>
+          <p class="text-lg font-semibold">No Student Activity Yet</p>
+          <p class="text-sm text-gray-500">No student activity has been recorded yet.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
     <!-- Premium -->
-    <section id="premium" class="mb-10">
-      <div class="glass p-6 border border-white/10 rounded-xl shadow-md text-center">
-        <i class="fas fa-crown text-6xl text-yellow-400 mb-4"></i>
-        <h2 class="text-2xl font-bold text-white mb-2">Go Premium</h2>
-        <p class="text-muted mb-6">Unlock AI summaries, offline access, and priority support.</p>
-        <button class="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition shadow-lg">
-          Upgrade Now
-        </button>
-      </div>
-    </section>
+<section id="premium" class="mb-10">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md text-center">
+    <!-- Icon -->
+    <i class="fas fa-tags text-6xl text-gray-500 mb-4"></i>
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-white mb-2">No Pricing Yet</h2>
+
+    <!-- Message -->
+    <p class="text-muted mb-6 text-gray-400">
+      Enjoy your <span class="text-accent font-semibold">free access</span> — premium features are coming soon.
+    </p>
+
+    <!-- Disabled Button -->
+    <button 
+      disabled
+      class="bg-gray-700/40 text-gray-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed opacity-60 shadow-inner">
+      <i class="fas fa-hourglass-half mr-2"></i> Coming Soon
+    </button>
+  </div>
+</section>
+
 
     <!-- Chat Room -->
     <section id="chat" class="mb-10">
@@ -799,6 +838,7 @@ renderDeployedCodes();
   </script>
 </body>
 </html>
+
 
 
 
