@@ -372,16 +372,64 @@
   </style>
 </section>
     <!-- Activity -->
-    <section id="activity" class="mb-10">
-      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <i class="fas fa-tasks"></i> Recent Activity
-        </h2>
-        <div id="activityList" class="space-y-3 max-h-80 overflow-y-auto">
-          <p class="text-center text-muted py-8">No recent activity.</p>
-        </div>
+<!-- Activity Section -->
+<section id="activity" class="mb-10">
+  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+    <!-- Header -->
+    <h2 class="text-xl font-bold text-white mb-6 flex items-center justify-center gap-2">
+      <i class="fas fa-tasks text-accent"></i> Recent Activity
+    </h2>
+
+    <!-- Nav Tabs -->
+    <div class="flex justify-center gap-4 mb-6 border-b border-white/10 pb-2">
+      <button class="activity-tab active-tab text-white font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="classWork">
+        <i class="fas fa-book mr-1 text-accent"></i> Class Work
+      </button>
+      <button class="activity-tab text-white/70 font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="homeWork">
+        <i class="fas fa-clipboard-list mr-1 text-accent"></i> Home Work
+      </button>
+      <button class="activity-tab text-white/70 font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="quickTest">
+        <i class="fas fa-bolt mr-1 text-accent"></i> Quick Test
+      </button>
+    </div>
+
+    <!-- Class Work Content -->
+    <div id="classWork" class="activity-content">
+      <div class="text-center py-10 text-gray-400">
+        <i class="fas fa-book-open text-4xl text-accent mb-3"></i>
+        <p class="text-lg font-semibold">No Class Work Yet</p>
+        <p class="text-sm text-muted">Your lecturer hasn’t posted any class work yet.</p>
       </div>
-    </section>
+    </div>
+
+    <!-- Home Work Content -->
+    <div id="homeWork" class="activity-content hidden">
+      <div class="text-center py-10 text-gray-400">
+        <i class="fas fa-file-alt text-4xl text-accent mb-3"></i>
+        <p class="text-lg font-semibold">No Home Work Yet</p>
+        <p class="text-sm text-muted">Your lecturer hasn’t posted any home work yet.</p>
+      </div>
+    </div>
+
+    <!-- Quick Test Content -->
+    <div id="quickTest" class="activity-content hidden">
+      <div class="text-center py-10 text-gray-400">
+        <i class="fas fa-stopwatch text-4xl text-accent mb-3"></i>
+        <p class="text-lg font-semibold">No Quick Test Set Yet</p>
+        <p class="text-sm text-muted">Your lecturer hasn’t posted any quick test yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .activity-tab.active-tab {
+      background: linear-gradient(to right, #6366f1, #8b5cf6);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+    }
+  </style>
+
+ 
+</section>
 
     <!-- Analytics -->
     <section id="analytics" class="mb-10">
@@ -730,9 +778,28 @@ submitBtn.addEventListener('click', () => {
 renderDeployedCodes();
 </script>
 
+<!------for the activity ------>
+   <script>
+    // Handle tab switching
+    const tabs = document.querySelectorAll('.activity-tab');
+    const contents = document.querySelectorAll('.activity-content');
 
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active-tab', 'text-white'));
+        tabs.forEach(t => t.classList.add('text-white/70'));
+        tab.classList.add('active-tab', 'text-white');
+
+        const target = tab.dataset.tab;
+        contents.forEach(content => {
+          content.classList.toggle('hidden', content.id !== target);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
+
 
 
 
