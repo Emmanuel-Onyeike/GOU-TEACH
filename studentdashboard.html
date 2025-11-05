@@ -295,6 +295,7 @@
 
 
    <!-- Attendance -->
+<!-- Attendance -->
 <section id="attendance" class="mb-10">
   <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative overflow-hidden">
     
@@ -344,27 +345,15 @@
     </div>
   </div>
 
-  <!-- SUCCESS MODAL -->
-  <div id="successModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
+  <!-- GENERIC MODAL TEMPLATE -->
+  <div id="modalWrapper" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
     <div class="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl animate-fadeIn">
-      <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal('successModal')">
+      <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal()">
         <i class="fas fa-times"></i>
       </button>
-      <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
-      <h3 class="text-xl font-bold text-white mb-2">Attendance Marked</h3>
-      <p class="text-gray-400 text-sm">Your attendance for this session has been successfully recorded.</p>
-    </div>
-  </div>
-
-  <!-- DUPLICATE MODAL -->
-  <div id="duplicateModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl animate-fadeIn">
-      <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal('duplicateModal')">
-        <i class="fas fa-times"></i>
-      </button>
-      <i class="fas fa-exclamation-circle text-red-500 text-5xl mb-4"></i>
-      <h3 class="text-xl font-bold text-white mb-2">Already Marked</h3>
-      <p class="text-gray-400 text-sm">You’ve already used this code to mark attendance.</p>
+      <div id="modalIcon" class="text-5xl mb-4"></div>
+      <h3 id="modalTitle" class="text-xl font-bold text-white mb-2"></h3>
+      <p id="modalMessage" class="text-gray-400 text-sm"></p>
     </div>
   </div>
 
@@ -375,10 +364,13 @@
       background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
       border-radius: 8px;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
   </style>
 </section>
-
-
     <!-- Activity -->
     <section id="activity" class="mb-10">
       <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
@@ -622,6 +614,7 @@
     }
   </script>
   <!--for the Attendance---->
+
 <script>
 // =========================
 // ELEMENTS
@@ -630,8 +623,32 @@ const deployedList = document.getElementById('deployedCodesList');
 const noDeployedCodes = document.getElementById('noDeployedCodes');
 const submitBtn = document.getElementById('submitAttendance');
 const codeInput = document.getElementById('attendanceCode');
+
 let usedCodes = JSON.parse(localStorage.getItem('used_attendance_codes') || '[]');
 let deployedCodes = JSON.parse(localStorage.getItem('attendance_deployments') || '[]');
+
+// =========================
+// MODAL HANDLER
+// =========================
+const modalWrapper = document.getElementById('modalWrapper');
+const modalIcon = document.getElementById('modalIcon');
+const modalTitle = document.getElementById('modalTitle');
+const modalMessage = document.getElementById('modalMessage');
+
+function showModal(type, title, message) {
+  const icons = {
+    success: '<i class="fas fa-check-circle text-green-500"></i>',
+    warning: '<i class="fas fa-exclamation-circle text-yellow-500"></i>',
+    error: '<i class="fas fa-times-circle text-red-500"></i>'
+  };
+  modalIcon.innerHTML = icons[type] || icons.warning;
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalWrapper.classList.remove('hidden');
+}
+function closeModal() {
+  modalWrapper.classList.add('hidden');
+}
 
 // =========================
 // RENDER DEPLOYED CODES
@@ -670,6 +687,7 @@ function renderDeployedCodes() {
         navigator.clipboard.writeText(code.code);
         codeInput.value = code.code;
         codeInput.focus();
+        showModal('success', 'Code Copied', `Code ${code.code} copied to clipboard.`);
       });
     }
 
@@ -682,35 +700,29 @@ function renderDeployedCodes() {
 // =========================
 submitBtn.addEventListener('click', () => {
   const entered = codeInput.value.trim().toUpperCase();
-  if (!entered) return alert('Please enter a code.');
+
+  if (!entered) {
+    showModal('warning', 'Empty Field', 'Please enter or select a valid attendance code.');
+    return;
+  }
 
   if (usedCodes.includes(entered)) {
-    openModal('duplicateModal');
+    showModal('warning', 'Already Marked', 'You have already marked attendance with this code.');
     return;
   }
 
   const isValid = deployedCodes.some(c => c.code === entered && c.active);
   if (!isValid) {
-    alert('Invalid or inactive code.');
+    showModal('error', 'Invalid Code', 'This code is invalid or inactive. Please check with your lecturer.');
     return;
   }
 
   usedCodes.push(entered);
   localStorage.setItem('used_attendance_codes', JSON.stringify(usedCodes));
 
-  openModal('successModal');
+  showModal('success', 'Attendance Marked', 'Your attendance has been successfully recorded.');
   codeInput.value = '';
 });
-
-// =========================
-// MODALS
-// =========================
-function openModal(id) {
-  document.getElementById(id).classList.remove('hidden');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.add('hidden');
-}
 
 // =========================
 // INITIAL RENDER
@@ -718,8 +730,10 @@ function closeModal(id) {
 renderDeployedCodes();
 </script>
 
+
 </body>
 </html>
+
 
 
 
