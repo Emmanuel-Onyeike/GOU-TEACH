@@ -1,979 +1,879 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GoTeach | Student Dashboard</title>
-  <link rel="icon" type="image/png" href="image.png" />
-  <!-- Tailwind + Google Fonts -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            navy: '#0a1a2e',
-            deep: '#0f1b2d',
-            primary: '#1e40af',
-            accent: '#3b82f6',
-            glass: 'rgba(255, 255, 255, 0.08)',
-            border: 'rgba(255, 255, 255, 0.12)',
-            text: '#e2e8f0',
-            muted: '#94a3b8',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    :root {
-      --glass: rgba(255, 255, 255, 0.08);
-      --border: rgba(255, 255, 255, 0.12);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-    body {
-      background: #0a1a2e;
-      color: #e2e8f0;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-    }
-    .glass {
-      background: var(--glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      border-radius: 1rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .glass:hover {
-      background: rgba(255, 255, 255, 0.12);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(30, 64, 175, 0.25);
-      border-color: rgba(59, 130, 246, 0.3);
-    }
-    .sidebar-link {
-      @apply flex items-center gap-3 px-5 py-3.5 rounded-xl transition-all duration-300 text-muted;
-    }
-    .sidebar-link:hover,
-    .sidebar-link.active {
-      @apply bg-accent/10 text-white border-l-4 border-accent;
-    }
-    .sidebar-link i { @apply w-5 text-center; }
-    .mobile-menu {
-      transform: translateX(100%);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .mobile-menu.open { transform: translateX(0); }
-    .chart-container { position: relative; height: 320px; }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-    .notice-pulse {
-      animation: noticePulse 1.8s infinite;
-    }
-    @keyframes noticePulse {
-      0%, 100% { opacity: 0.8; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.03); }
-    }
-  </style>
+&nbsp;&nbsp;<meta charset="UTF-8" />
+&nbsp;&nbsp;<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+&nbsp;&nbsp;<title>GoTeach | Student Dashboard</title>
+&nbsp;&nbsp;<link rel="icon" type="image/png" href="image.png" />
+&nbsp;&nbsp;<!-- Tailwind + Google Fonts -->
+&nbsp;&nbsp;<script src="https://cdn.tailwindcss.com"></script>
+&nbsp;&nbsp;<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+&nbsp;&nbsp;<script>
+&nbsp;&nbsp;&nbsp;&nbsp;tailwind.config = {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theme: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;extend: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fontFamily: { sans: ['Inter', 'sans-serif'] },
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;colors: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navy: '#0a1a2e',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;deep: '#0f1b2d',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary: '#1e40af',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accent: '#3b82f6',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;glass: 'rgba(255, 255, 255, 0.08)',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border: 'rgba(255, 255, 255, 0.12)',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text: '#e2e8f0',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;muted: '#94a3b8',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;</script>
+&nbsp;&nbsp;<!-- Chart.js -->
+&nbsp;&nbsp;<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+&nbsp;&nbsp;<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+&nbsp;&nbsp;<style>
+&nbsp;&nbsp;&nbsp;&nbsp;:root {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--glass: rgba(255, 255, 255, 0.08);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--border: rgba(255, 255, 255, 0.12);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;body {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: #0a1a2e;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: #e2e8f0;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;font-family: 'Inter', sans-serif;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min-height: 100vh;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.glass {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: var(--glass);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backdrop-filter: blur(16px);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-webkit-backdrop-filter: blur(16px);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border: 1px solid var(--border);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;box-shadow: var(--shadow);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-radius: 1rem;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.glass:hover {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: rgba(255, 255, 255, 0.12);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transform: translateY(-4px);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;box-shadow: 0 20px 40px rgba(30, 64, 175, 0.25);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-color: rgba(59, 130, 246, 0.3);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.sidebar-link {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@apply flex items-center gap-3 px-5 py-3.5 rounded-xl transition-all duration-300 text-muted;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.sidebar-link:hover,
+&nbsp;&nbsp;&nbsp;&nbsp;.sidebar-link.active {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@apply bg-accent/10 text-white border-l-4 border-accent;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.sidebar-link i { @apply w-5 text-center; }
+&nbsp;&nbsp;&nbsp;&nbsp;.mobile-menu {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transform: translateX(100%);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.mobile-menu.open { transform: translateX(0); }
+&nbsp;&nbsp;&nbsp;&nbsp;.chart-container { position: relative; height: 320px; }
+&nbsp;&nbsp;&nbsp;&nbsp;::-webkit-scrollbar { width: 8px; }
+&nbsp;&nbsp;&nbsp;&nbsp;::-webkit-scrollbar-track { background: transparent; }
+&nbsp;&nbsp;&nbsp;&nbsp;::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+&nbsp;&nbsp;&nbsp;&nbsp;.notice-pulse {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;animation: noticePulse 1.8s infinite;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;@keyframes noticePulse {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0%, 100% { opacity: 0.8; transform: scale(1); }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50% { opacity: 1; transform: scale(1.03); }
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;</style>
 </head>
 <body class="text-text">
-  <!-- Mobile Overlay -->
-  <div id="mobileOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
-
-  <!-- Mobile Right-Slide Menu -->
-  <aside id="mobileMenu"
-         class="mobile-menu fixed top-0 right-0 h-full w-72 z-50 bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-xl border-l border-white/10 shadow-2xl p-6 rounded-l-3xl">
-    <div class="flex justify-between items-center mb-8">
-      <h2 class="text-2xl font-extrabold text-white tracking-wide">Student Menu</h2>
-      <button id="closeMobileMenu" class="text-white/60 hover:text-white transition text-xl">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <nav class="space-y-3">
-      <a href="#dashboard" class="sidebar-link active"><i class="fas fa-home"></i> Dashboard</a>
-      <a href="#courses" class="sidebar-link"><i class="fas fa-book-open"></i> Courses</a>
-      <a href="#attendance" class="sidebar-link"><i class="fas fa-clipboard-check"></i> Attendance</a>
-      <a href="#activity" class="sidebar-link"><i class="fas fa-tasks"></i> Activity</a>
-      <a href="#analytics" class="sidebar-link"><i class="fas fa-chart-line"></i> Analytics</a>
-      <a href="#premium" class="sidebar-link"><i class="fas fa-crown"></i> Premium</a>
-      <a href="#chat" class="sidebar-link"><i class="fas fa-comments"></i> Chat Room</a>
-      <a href="#profile" class="sidebar-link"><i class="fas fa-user"></i> Profile</a>
-    </nav>
-    <button id="mobileLogout"
-            class="mt-10 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-900/30">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </button>
-  </aside>
-
-  <!-- Desktop Sidebar (Left) -->
-  <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
-    <div class="flex items-center gap-3 mb-10">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
-        <i class="fas fa-graduation-cap text-white text-xl"></i>
-      </div>
-      <div>
-        <h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach</h1>
-        <p class="text-xs text-white/50">Godfrey Okoye University</p>
-      </div>
-    </div>
-    <nav class="flex-1 space-y-2">
-      <a href="#dashboard" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 bg-white/10 hover:bg-white/15 transition-all duration-200">
-        <i class="fas fa-home text-white/70"></i> <span class="font-medium">Dashboard</span>
-      </a>
-      <a href="#courses" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-book-open text-white/70"></i> <span class="font-medium">Courses</span>
-      </a>
-      <a href="#attendance" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-clipboard-check text-white/70"></i> <span class="font-medium">Attendance</span>
-      </a>
-      <a href="#activity" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-tasks text-white/70"></i> <span class="font-medium">Activity</span>
-      </a>
-      <a href="#analytics" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-chart-line text-white/70"></i> <span class="font-medium">Analytics</span>
-      </a>
-      <a href="#premium" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-crown text-yellow-400"></i> <span class="font-medium">Premium</span>
-      </a>
-      <a href="#chat" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-comments text-white/70"></i> <span class="font-medium">Chat Room</span>
-      </a>
-      <a href="#profile" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
-        <i class="fas fa-user text-white/70"></i> <span class="font-medium">Profile</span>
-      </a>
-    </nav>
-    <div class="border-t border-white/10 pt-5 mt-5">
-      <div class="flex items-center gap-3 mb-3">
-        <div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-accent/20">
-          S
-        </div>
-        <div>
-          <p id="sidebarName" class="font-semibold text-white leading-tight">Loading...</p>
-          <p class="text-xs text-white/50">Student</p>
-        </div>
-      </div>
-     <div class="flex flex-col sm:flex-row gap-3 mt-4">
-  <!-- Logout Button -->
-  <button id="desktopLogout"
-    class="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 px-6 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm">
-    <i class="fas fa-sign-out-alt"></i> Logout
-  </button>
-
-  <!-- Peek 2.0 Dashboard Button -->
-  <a href="2.0 verison dashabord.html" 
-    class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all shadow-md shadow-purple-900/30 flex items-center justify-center gap-2 text-sm">
-    <i class="fas fa-tachometer-alt"></i> Peek 2.0 Dashboard
-  </a>
+&nbsp;&nbsp;<!-- Mobile Overlay -->
+&nbsp;&nbsp;<div id="mobileOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
+&nbsp;&nbsp;<!-- Mobile Right-Slide Menu -->
+&nbsp;&nbsp;<aside id="mobileMenu"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="mobile-menu fixed top-0 right-0 h-full w-72 z-50 bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-xl border-l border-white/10 shadow-2xl p-6 rounded-l-3xl">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex justify-between items-center mb-8">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-2xl font-extrabold text-white tracking-wide">Student Menu</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="closeMobileMenu" class="text-white/60 hover:text-white transition text-xl">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-times"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<nav class="space-y-3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#dashboard" class="sidebar-link active"><i class="fas fa-home"></i> Dashboard</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#courses" class="sidebar-link"><i class="fas fa-book-open"></i> Courses</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#attendance" class="sidebar-link"><i class="fas fa-clipboard-check"></i> Attendance</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#activity" class="sidebar-link"><i class="fas fa-tasks"></i> Activity</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#analytics" class="sidebar-link"><i class="fas fa-chart-line"></i> Analytics</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#premium" class="sidebar-link"><i class="fas fa-crown"></i> Premium</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#chat" class="sidebar-link"><i class="fas fa-comments"></i> Chat Room</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#profile" class="sidebar-link"><i class="fas fa-user"></i> Profile</a>
+&nbsp;&nbsp;&nbsp;&nbsp;</nav>
+&nbsp;&nbsp;&nbsp;&nbsp;<button id="mobileLogout"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="mt-10 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-900/30">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-sign-out-alt"></i> Logout
+&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;</aside>
+&nbsp;&nbsp;<!-- Desktop Sidebar (Left) -->
+&nbsp;&nbsp;<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center gap-3 mb-10">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-graduation-cap text-white text-xl"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach</h1>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-white/50">Godfrey Okoye University</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<nav class="flex-1 space-y-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#dashboard" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 bg-white/10 hover:bg-white/15 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-home text-white/70"></i> <span class="font-medium">Dashboard</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#courses" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-book-open text-white/70"></i> <span class="font-medium">Courses</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#attendance" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-clipboard-check text-white/70"></i> <span class="font-medium">Attendance</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#activity" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-tasks text-white/70"></i> <span class="font-medium">Activity</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#analytics" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-chart-line text-white/70"></i> <span class="font-medium">Analytics</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#premium" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-crown text-yellow-400"></i> <span class="font-medium">Premium</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#chat" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-comments text-white/70"></i> <span class="font-medium">Chat Room</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#profile" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-user text-white/70"></i> <span class="font-medium">Profile</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+&nbsp;&nbsp;&nbsp;&nbsp;</nav>
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="border-t border-white/10 pt-5 mt-5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center gap-3 mb-3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-accent/20">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p id="sidebarName" class="font-semibold text-white leading-tight">Loading...</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-white/50">Student</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex flex-col sm:flex-row gap-3 mt-4">
+&nbsp;&nbsp;<!-- Logout Button -->
+&nbsp;&nbsp;<button id="desktopLogout"
+&nbsp;&nbsp;&nbsp;&nbsp;class="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 px-6 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-sign-out-alt"></i> Logout
+&nbsp;&nbsp;</button>
+&nbsp;&nbsp;<!-- Peek 2.0 Dashboard Button -->
+&nbsp;&nbsp;<a href="2.0 verison dashabord.html"
+&nbsp;&nbsp;&nbsp;&nbsp;class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all shadow-md shadow-purple-900/30 flex items-center justify-center gap-2 text-sm">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-tachometer-alt"></i> Peek 2.0 Dashboard
+&nbsp;&nbsp;</a>
 </div>
-
-    </div>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="lg:ml-72 p-4 lg:p-8 min-h-screen">
-    <!-- Mobile Header -->
-    <header class="lg:hidden flex justify-between items-center mb-6 glass p-4 rounded-xl border border-white/10">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-          <i class="fas fa-graduation-cap text-white"></i>
-        </div>
-        <h1 class="text-lg font-bold text-white">GoTeach</h1>
-      </div>
-      <button id="openMobileMenu" class="text-2xl text-white/70 hover:text-white">Menu</button>
-    </header>
-
-    <!-- Dashboard -->
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</aside>
+&nbsp;&nbsp;<!-- Main Content -->
+&nbsp;&nbsp;<main class="lg:ml-72 p-4 lg:p-8 min-h-screen">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Mobile Header -->
+&nbsp;&nbsp;&nbsp;&nbsp;<header class="lg:hidden flex justify-between items-center mb-6 glass p-4 rounded-xl border border-white/10">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center gap-3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-graduation-cap text-white"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h1 class="text-lg font-bold text-white">GoTeach</h1>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="openMobileMenu" class="text-2xl text-white/70 hover:text-white">Menu</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</header>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Dashboard -->
 <section id="dashboard" class="mb-10 relative z-20">
-  <div class="glass p-6 lg:p-8 border border-white/10 relative overflow-visible rounded-2xl bg-white/5 shadow-xl">
-
-    <!-- Bell Icon -->
-    <div class="absolute top-6 right-6 z-50">
-      <button id="notifyBtn"
-              class="relative bg-white/10 hover:bg-white/20 text-white p-3 rounded-full shadow-md transition duration-300">
-        <i class="fas fa-bell text-xl"></i>
-        <span id="bellDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse hidden"></span>
-      </button>
-
-      <!-- Notification Dropdown -->
-      <div id="notificationDropdown"
-           class="hidden absolute right-0 mt-3 w-72 bg-[#111]/95 backdrop-blur-lg border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[9999]">
-        <div class="p-3 border-b border-white/10 flex items-center justify-between">
-          <h3 class="text-white font-semibold text-sm">Notifications</h3>
-          <i class="fas fa-bell text-white/40"></i>
-        </div>
-        <ul id="notifList" class="max-h-56 overflow-y-auto text-sm text-white/80">
-          <!-- Notifications will appear here -->
-          <li class="px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition" id="godfreyNotif">
-            <i class="fas fa-rocket text-purple-400 text-lg"></i>
-            <span>Godfrey set to Launch GoTeach 🚀</span>
-          </li>
-        </ul>
-        <div class="p-3 border-t border-white/10 text-center">
-          <button id="viewAllBtn" class="text-indigo-400 hover:text-indigo-300 text-xs font-semibold">View all</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Dashboard Welcome -->
-    <h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">
-      Welcome back, <span id="studentName" class="text-indigo-400">Student</span>!
-    </h1>
-    <p class="text-white/70">Let’s make today productive.</p>
-  </div>
-
-
-
-  <!-- Right Slide Notification Panel -->
-  <div id="notifPanel" class="hidden fixed top-0 right-0 w-80 h-full bg-[#111]/95 border-l border-white/10 backdrop-blur-xl shadow-2xl transform translate-x-full transition-transform duration-300 z-[99999]">
-    <div class="flex items-center justify-between p-4 border-b border-white/10">
-      <h2 class="text-white text-lg font-semibold">All Notifications</h2>
-      <button id="closePanel" class="text-white/70 hover:text-white"><i class="fas fa-times"></i></button>
-    </div>
-    <div id="notifPanelList" class="p-4 space-y-4">
-      <!-- Added notifications will appear here -->
-      <div class="notification-item flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition" id="openNotifDetail">
-        <i class="fas fa-rocket text-purple-400 text-xl"></i>
-        <div>
-          <h4 class="font-semibold text-white text-sm">Godfrey set to Launch GoTeach</h4>
-          <p class="text-xs text-white/50">Tap to read more</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Center Modal -->
-  <div id="notifModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[999999]">
-    <div class="bg-[#121212] border border-white/10 p-6 rounded-2xl max-w-md text-center shadow-2xl">
-      <i class="fas fa-rocket text-4xl text-purple-400 mb-3"></i>
-      <h3 class="text-xl font-bold text-white mb-2">Godfrey set to Launch GoTeach</h3>
-      <p class="text-white/70 text-sm mb-4">Exciting news! Godfrey University is preparing to officially launch the GoTeach platform — bringing innovation and learning together like never before.</p>
-      <button id="closeModal" class="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl transition">Close</button>
-    </div>
-  </div>
-
-  <!-- Script -->
-  <script>
-    const notifyBtn = document.getElementById('notifyBtn');
-    const dropdown = document.getElementById('notificationDropdown');
-    const notifList = document.getElementById('notifList');
-    const notifPanelList = document.getElementById('notifPanelList');
-    const notifCount = document.getElementById('notifications');
-    const notifDot = document.getElementById('notifDot');
-    const bellDot = document.getElementById('bellDot');
-    const viewAllBtn = document.getElementById('viewAllBtn');
-    const notifPanel = document.getElementById('notifPanel');
-    const closePanel = document.getElementById('closePanel');
-    const notifModal = document.getElementById('notifModal');
-    const closeModal = document.getElementById('closeModal');
-    const openNotifDetail = document.getElementById('openNotifDetail');
-
-    let count = 1; // Initial notification count
-
-    // Toggle dropdown
-    notifyBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!notifyBtn.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.add('hidden');
-    });
-
-    // Open panel
-    viewAllBtn.addEventListener('click', () => {
-      dropdown.classList.add('hidden');
-      notifPanel.classList.remove('hidden');
-      setTimeout(() => notifPanel.classList.remove('translate-x-full'), 10);
-    });
-
-    // Close panel
-    closePanel.addEventListener('click', () => {
-      notifPanel.classList.add('translate-x-full');
-      setTimeout(() => notifPanel.classList.add('hidden'), 300);
-    });
-
-    // Open modal
-    openNotifDetail.addEventListener('click', () => notifModal.classList.remove('hidden'));
-    closeModal.addEventListener('click', () => notifModal.classList.add('hidden'));
-
-    // Function: Add notification manually
-    function addNotification(title, icon = "fa-bell", color = "text-blue-400") {
-      count++;
-      notifCount.textContent = count;
-      notifDot.classList.remove('hidden');
-      bellDot.classList.remove('hidden');
-
-      // Dropdown item
-      const li = document.createElement('li');
-      li.className = "px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition";
-      li.innerHTML = `<i class="fas ${icon} ${color} text-lg"></i><span>${title}</span>`;
-      notifList.prepend(li);
-
-      // Panel item
-      const div = document.createElement('div');
-      div.className = "notification-item flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition";
-      div.innerHTML = `<i class="fas ${icon} ${color} text-xl"></i><div><h4 class="font-semibold text-white text-sm">${title}</h4><p class="text-xs text-white/50">Tap to read more</p></div>`;
-      notifPanelList.prepend(div);
-    }
-
-    // 🧠 Example: simulate a new notification after 5 seconds
-    setTimeout(() => {
-      addNotification("New course materials available 🎓", "fa-book-open", "text-green-400");
-    }, 5000);
-  </script>
+&nbsp;&nbsp;<div class="glass p-6 lg:p-8 border border-white/10 relative overflow-visible rounded-2xl bg-white/5 shadow-xl">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Bell Icon -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="absolute top-6 right-6 z-50">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="notifyBtn"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="relative bg-white/10 hover:bg-white/20 text-white p-3 rounded-full shadow-md transition duration-300">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-bell text-xl"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="bellDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse hidden"></span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Notification Dropdown -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="notificationDropdown"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="hidden absolute right-0 mt-3 w-72 bg-[#111]/95 backdrop-blur-lg border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[9999]">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="p-3 border-b border-white/10 flex items-center justify-between">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-white font-semibold text-sm">Notifications</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-bell text-white/40"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ul id="notifList" class="max-h-56 overflow-y-auto text-sm text-white/80">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Notifications will appear here -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li class="px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition" id="godfreyNotif">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-rocket text-purple-400 text-lg"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>Godfrey set to Launch GoTeach 🚀</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</ul>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="p-3 border-t border-white/10 text-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="viewAllBtn" class="text-indigo-400 hover:text-indigo-300 text-xs font-semibold">View all</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Dashboard Welcome -->
+&nbsp;&nbsp;&nbsp;&nbsp;<h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome back, <span id="studentName" class="text-indigo-400">Student</span>!
+&nbsp;&nbsp;&nbsp;&nbsp;</h1>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-white/70">Let’s make today productive.</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Right Slide Notification Panel -->
+&nbsp;&nbsp;<div id="notifPanel" class="hidden fixed top-0 right-0 w-80 h-full bg-[#111]/95 border-l border-white/10 backdrop-blur-xl shadow-2xl transform translate-x-full transition-transform duration-300 z-[99999]">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center justify-between p-4 border-b border-white/10">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-white text-lg font-semibold">All Notifications</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="closePanel" class="text-white/70 hover:text-white"><i class="fas fa-times"></i></button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="notifPanelList" class="p-4 space-y-4">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Added notifications will appear here -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="notification-item flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition" id="openNotifDetail">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-rocket text-purple-400 text-xl"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h4 class="font-semibold text-white text-sm">Godfrey set to Launch GoTeach</h4>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-white/50">Tap to read more</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Center Modal -->
+&nbsp;&nbsp;<div id="notifModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[999999]">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="bg-[#121212] border border-white/10 p-6 rounded-2xl max-w-md text-center shadow-2xl">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-rocket text-4xl text-purple-400 mb-3"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-xl font-bold text-white mb-2">Godfrey set to Launch GoTeach</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-white/70 text-sm mb-4">Exciting news! Godfrey University is preparing to officially launch the GoTeach platform — bringing innovation and learning together like never before.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="closeModal" class="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl transition">Close</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Script -->
+&nbsp;&nbsp;<script>
+&nbsp;&nbsp;&nbsp;&nbsp;const notifyBtn = document.getElementById('notifyBtn');
+&nbsp;&nbsp;&nbsp;&nbsp;const dropdown = document.getElementById('notificationDropdown');
+&nbsp;&nbsp;&nbsp;&nbsp;const notifList = document.getElementById('notifList');
+&nbsp;&nbsp;&nbsp;&nbsp;const notifPanelList = document.getElementById('notifPanelList');
+&nbsp;&nbsp;&nbsp;&nbsp;const notifCount = document.getElementById('notifications');
+&nbsp;&nbsp;&nbsp;&nbsp;const notifDot = document.getElementById('notifDot');
+&nbsp;&nbsp;&nbsp;&nbsp;const bellDot = document.getElementById('bellDot');
+&nbsp;&nbsp;&nbsp;&nbsp;const viewAllBtn = document.getElementById('viewAllBtn');
+&nbsp;&nbsp;&nbsp;&nbsp;const notifPanel = document.getElementById('notifPanel');
+&nbsp;&nbsp;&nbsp;&nbsp;const closePanel = document.getElementById('closePanel');
+&nbsp;&nbsp;&nbsp;&nbsp;const notifModal = document.getElementById('notifModal');
+&nbsp;&nbsp;&nbsp;&nbsp;const closeModal = document.getElementById('closeModal');
+&nbsp;&nbsp;&nbsp;&nbsp;const openNotifDetail = document.getElementById('openNotifDetail');
+&nbsp;&nbsp;&nbsp;&nbsp;let count = 1; // Initial notification count
+&nbsp;&nbsp;&nbsp;&nbsp;// Toggle dropdown
+&nbsp;&nbsp;&nbsp;&nbsp;notifyBtn.addEventListener('click', (e) => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.stopPropagation();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dropdown.classList.toggle('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;document.addEventListener('click', (e) => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!notifyBtn.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;// Open panel
+&nbsp;&nbsp;&nbsp;&nbsp;viewAllBtn.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dropdown.classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifPanel.classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setTimeout(() => notifPanel.classList.remove('translate-x-full'), 10);
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;// Close panel
+&nbsp;&nbsp;&nbsp;&nbsp;closePanel.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifPanel.classList.add('translate-x-full');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setTimeout(() => notifPanel.classList.add('hidden'), 300);
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;// Open modal
+&nbsp;&nbsp;&nbsp;&nbsp;openNotifDetail.addEventListener('click', () => notifModal.classList.remove('hidden'));
+&nbsp;&nbsp;&nbsp;&nbsp;closeModal.addEventListener('click', () => notifModal.classList.add('hidden'));
+&nbsp;&nbsp;&nbsp;&nbsp;// Function: Add notification manually
+&nbsp;&nbsp;&nbsp;&nbsp;function addNotification(title, icon = "fa-bell", color = "text-blue-400") {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count++;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifCount.textContent = count;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifDot.classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bellDot.classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Dropdown item
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const li = document.createElement('li');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;li.className = "px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;li.innerHTML = `<i class="fas ${icon} ${color} text-lg"></i><span>${title}</span>`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifList.prepend(li);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Panel item
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const div = document.createElement('div');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;div.className = "notification-item flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;div.innerHTML = `<i class="fas ${icon} ${color} text-xl"></i><div><h4 class="font-semibold text-white text-sm">${title}</h4><p class="text-xs text-white/50">Tap to read more</p></div>`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifPanelList.prepend(div);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;// 🧠 Example: simulate a new notification after 5 seconds
+&nbsp;&nbsp;&nbsp;&nbsp;setTimeout(() => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;addNotification("New course materials available 🎓", "fa-book-open", "text-green-400");
+&nbsp;&nbsp;&nbsp;&nbsp;}, 5000);
+&nbsp;&nbsp;</script>
 </section>
-
-    <!-- Stats -->
-  <section class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
-  <!-- Enrolled Courses -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-       <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
-    <i class="fas fa-book-open text-3xl text-accent mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="totalCourses">0</h3>
-    <p class="text-xs text-muted">Enrolled Courses</p>
-  </div>
-
-  <!-- Attendance Rate -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-    <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="attendanceRate">0%</h3>
-    <p class="text-xs text-muted">Attendance Rate</p>
-  </div>
-
-  <!-- Pending Tasks -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-    <i class="fas fa-tasks text-3xl text-yellow-400 mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="pendingTasks">0</h3>
-    <p class="text-xs text-muted">Pending Tasks</p>
-  </div>
-
-  <!-- Next Class -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-    <i class="fas fa-clock text-3xl text-primary mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="nextClassTime">08:30 AM</h3>
-    <p class="text-xs text-muted">Next Class</p>
-  </div>
-
-  <!-- Total Students -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
-    <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
-    <i class="fas fa-user-graduate text-3xl text-blue-400 mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
-    <p class="text-xs text-muted">Total Students</p>
-  </div>
-
-  <!-- Students Online -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-    <i class="fas fa-signal text-3xl text-green-400 mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="studentsOnline">0</h3>
-    <p class="text-xs text-muted">Students Online</p>
-  </div>
-
-  <!-- Active Attendance -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
-    <i class="fas fa-user-check text-3xl text-accent mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="activeAttendance">0</h3>
-    <p class="text-xs text-muted">Active Attendance</p>
-  </div>
-
-  <!-- Rank -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
-    <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
-    <i class="fas fa-medal text-3xl text-purple-400 mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="rank">—</h3>
-    <p class="text-xs text-muted">Rank</p>
-  </div>
-
-  <!-- Notifications -->
-<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
-        <span id="notifDot" class="absolute top-2 right-3 w-3 h-3 bg-red-500 rounded-full shadow-md hidden"></span>
-        <i class="fas fa-bell text-3xl text-pink-400 mb-2"></i>
-        <h3 class="text-2xl font-bold text-white" id="notifications">1</h3>
-        <p class="text-xs text-white/60">Notifications</p>
-      </div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Stats -->
+&nbsp;&nbsp;<section class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+&nbsp;&nbsp;<!-- Enrolled Courses -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-book-open text-3xl text-accent mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="totalCourses">0</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Enrolled Courses</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Attendance Rate -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="attendanceRate">0%</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Attendance Rate</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Pending Tasks -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-tasks text-3xl text-yellow-400 mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="pendingTasks">0</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Pending Tasks</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Next Class -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-clock text-3xl text-primary mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="nextClassTime">08:30 AM</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Next Class</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Total Students -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-user-graduate text-3xl text-blue-400 mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="totalStudents">0</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Total Students</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Students Online -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-signal text-3xl text-green-400 mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="studentsOnline">0</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Students Online</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Active Attendance -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-user-check text-3xl text-accent mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="activeAttendance">0</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Active Attendance</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Rank -->
+&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full">Coming Soon</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-medal text-3xl text-purple-400 mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="rank">—</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">Rank</p>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Notifications -->
+&nbsp;&nbsp;<div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="notifDot" class="absolute top-2 right-3 w-3 h-3 bg-red-500 rounded-full shadow-md hidden"></span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-bell text-3xl text-pink-400 mb-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-2xl font-bold text-white" id="notifications">1</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-white/60">Notifications</p>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
 </section>
-
-
-    <!-- Courses -->
-  <section id="courses" class="mb-10">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative">
-    <!-- Header -->
-    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-      <i class="fas fa-book-open text-accent"></i> My Courses
-    </h2>
-
-    <!-- Empty / Placeholder State -->
-    <div id="emptyCourses" class="flex flex-col items-center justify-center py-12 text-center">
-      <div class="relative mb-4">
-        <i class="fas fa-book text-7xl text-gray-700 drop-shadow-lg"></i>
-        <div class="absolute inset-0 blur-3xl bg-blue-500/10 rounded-full animate-pulse"></div>
-      </div>
-      <p class="text-gray-300 font-semibold text-lg">No Courses Available</p>
-      <p class="text-sm text-gray-500 mt-1">
-        Your course list will appear here once it's synced with the university portal.
-      </p>
-
-      <!-- Red Info Notice -->
-      <p class="text-red-400 text-xs font-medium mt-6 italic border border-red-500/20 bg-red-500/10 px-4 py-2 rounded-lg">
-        <i class="fas fa-exclamation-circle mr-2"></i>
-        Course Auth from Portal hasn’t been deployed yet. Check back in the next update.
-      </p>
-    </div>
-
-    <!-- Dynamic Courses Grid -->
-    <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
-      <!-- Dynamic course cards will render here -->
-    </div>
-  </div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Courses -->
+&nbsp;&nbsp;<section id="courses" class="mb-10">
+&nbsp;&nbsp;<div class="glass p-6 border border-white/10 rounded-xl shadow-md relative">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Header -->
+&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-book-open text-accent"></i> My Courses
+&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Empty / Placeholder State -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="emptyCourses" class="flex flex-col items-center justify-center py-12 text-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="relative mb-4">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-book text-7xl text-gray-700 drop-shadow-lg"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="absolute inset-0 blur-3xl bg-blue-500/10 rounded-full animate-pulse"></div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-gray-300 font-semibold text-lg">No Courses Available</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-gray-500 mt-1">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your course list will appear here once it's synced with the university portal.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Red Info Notice -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-red-400 text-xs font-medium mt-6 italic border border-red-500/20 bg-red-500/10 px-4 py-2 rounded-lg">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-exclamation-circle mr-2"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Course Auth from Portal hasn’t been deployed yet. Check back in the next update.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Dynamic Courses Grid -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Dynamic course cards will render here -->
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
 </section>
-
-
-   <!-- Attendance -->
+&nbsp;&nbsp;&nbsp;<!-- Attendance -->
 <!-- Attendance -->
 <section id="attendance" class="mb-10">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md relative overflow-hidden">
-    
-    <!-- HEADER -->
-    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-      <i class="fas fa-clipboard-check text-green-400"></i> Submit Attendance
-    </h2>
-
-    <!-- Info Banner -->
-    <div class="bg-yellow-600/20 border border-yellow-600/40 text-yellow-400 p-4 rounded-lg mb-6">
-      <p><i class="fas fa-info-circle mr-2"></i> Enter or select the code provided by your lecturer.</p>
-    </div>
-
-    <!-- INPUT AREA -->
-    <div class="flex gap-3 mb-6">
-      <input 
-        type="text" 
-        id="attendanceCode" 
-        placeholder="Enter Code (e.g. GOU-ATT-12ABC)" 
-        class="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent"
-      >
-      <button 
-        id="submitAttendance"
-        class="bg-gradient-to-r from-accent to-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition shadow-lg"
-      >
-        Submit
-      </button>
-    </div>
-
-    <div id="attendanceStatus" class="mt-2 text-sm"></div>
-
-    <!-- DEPLOYED CODES SECTION -->
-    <div class="border-t border-white/10 mt-6 pt-5">
-      <h3 class="text-white/80 font-semibold text-base mb-3 flex items-center gap-2">
-        <i class="fas fa-key text-accent"></i> Lecturer Deployed Codes
-      </h3>
-
-      <!-- Scrollable Container -->
-      <div id="deployedCodesList" class="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-        <!-- Codes will render dynamically -->
-      </div>
-
-      <!-- Empty state -->
-      <div id="noDeployedCodes" class="text-center py-8 text-gray-500 text-sm">
-        <i class="fas fa-info-circle mr-1"></i> No attendance codes have been deployed yet.
-      </div>
-    </div>
-  </div>
-
-  <!-- GENERIC MODAL TEMPLATE -->
-  <div id="modalWrapper" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl animate-fadeIn">
-      <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal()">
-        <i class="fas fa-times"></i>
-      </button>
-      <div id="modalIcon" class="text-5xl mb-4"></div>
-      <h3 id="modalTitle" class="text-xl font-bold text-white mb-2"></h3>
-      <p id="modalMessage" class="text-gray-400 text-sm"></p>
-    </div>
-  </div>
-
-  <!-- Scrollbar Style -->
-  <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-      border-radius: 8px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
-  </style>
+&nbsp;&nbsp;<div class="glass p-6 border border-white/10 rounded-xl shadow-md relative overflow-hidden">
+&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- HEADER -->
+&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-clipboard-check text-green-400"></i> Submit Attendance
+&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Info Banner -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="bg-yellow-600/20 border border-yellow-600/40 text-yellow-400 p-4 rounded-lg mb-6">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p><i class="fas fa-info-circle mr-2"></i> Enter or select the code provided by your lecturer.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- INPUT AREA -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex gap-3 mb-6">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type="text"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id="attendanceCode"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;placeholder="Enter Code (e.g. GOU-ATT-12ABC)"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id="submitAttendance"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="bg-gradient-to-r from-accent to-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition shadow-lg"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Submit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="attendanceStatus" class="mt-2 text-sm"></div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- DEPLOYED CODES SECTION -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="border-t border-white/10 mt-6 pt-5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-white/80 font-semibold text-base mb-3 flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-key text-accent"></i> Lecturer Deployed Codes
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Scrollable Container -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="deployedCodesList" class="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Codes will render dynamically -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Empty state -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="noDeployedCodes" class="text-center py-8 text-gray-500 text-sm">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-info-circle mr-1"></i> No attendance codes have been deployed yet.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- GENERIC MODAL TEMPLATE -->
+&nbsp;&nbsp;<div id="modalWrapper" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-[90%] max-w-md text-center relative shadow-2xl animate-fadeIn">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl" onclick="closeModal()">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-times"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="modalIcon" class="text-5xl mb-4"></div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 id="modalTitle" class="text-xl font-bold text-white mb-2"></h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p id="modalMessage" class="text-gray-400 text-sm"></p>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- Scrollbar Style -->
+&nbsp;&nbsp;<style>
+&nbsp;&nbsp;&nbsp;&nbsp;.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+&nbsp;&nbsp;&nbsp;&nbsp;.custom-scrollbar::-webkit-scrollbar-thumb {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-radius: 8px;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;@keyframes fadeIn {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from { opacity: 0; transform: scale(0.9); }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to { opacity: 1; transform: scale(1); }
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.animate-fadeIn { animation: fadeIn 0.25s ease-out; }
+&nbsp;&nbsp;</style>
 </section>
-    <!-- Activity -->
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Activity -->
 <!-- Activity Section -->
 <section id="activity" class="mb-10">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-    <!-- Header -->
-    <h2 class="text-xl font-bold text-white mb-6 flex items-center justify-center gap-2">
-      <i class="fas fa-tasks text-accent"></i> Recent Activity
-    </h2>
-
-    <!-- Nav Tabs -->
-    <div class="flex justify-center gap-4 mb-6 border-b border-white/10 pb-2">
-      <button class="activity-tab active-tab text-white font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="classWork">
-        <i class="fas fa-book mr-1 text-accent"></i> Class Work
-      </button>
-      <button class="activity-tab text-white/70 font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="homeWork">
-        <i class="fas fa-clipboard-list mr-1 text-accent"></i> Home Work
-      </button>
-      <button class="activity-tab text-white/70 font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="quickTest">
-        <i class="fas fa-bolt mr-1 text-accent"></i> Quick Test
-      </button>
-    </div>
-
-    <!-- Class Work Content -->
-    <div id="classWork" class="activity-content">
-      <div class="text-center py-10 text-gray-400">
-        <i class="fas fa-book-open text-4xl text-accent mb-3"></i>
-        <p class="text-lg font-semibold">No Class Work Yet</p>
-        <p class="text-sm text-muted">Your lecturer hasn’t posted any class work yet.</p>
-      </div>
-    </div>
-
-    <!-- Home Work Content -->
-    <div id="homeWork" class="activity-content hidden">
-      <div class="text-center py-10 text-gray-400">
-        <i class="fas fa-file-alt text-4xl text-accent mb-3"></i>
-        <p class="text-lg font-semibold">No Home Work Yet</p>
-        <p class="text-sm text-muted">Your lecturer hasn’t posted any home work yet.</p>
-      </div>
-    </div>
-
-    <!-- Quick Test Content -->
-    <div id="quickTest" class="activity-content hidden">
-      <div class="text-center py-10 text-gray-400">
-        <i class="fas fa-stopwatch text-4xl text-accent mb-3"></i>
-        <p class="text-lg font-semibold">No Quick Test Set Yet</p>
-        <p class="text-sm text-muted">Your lecturer hasn’t posted any quick test yet.</p>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    .activity-tab.active-tab {
-      background: linear-gradient(to right, #6366f1, #8b5cf6);
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-    }
-  </style>
-
- 
+&nbsp;&nbsp;<div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Header -->
+&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-xl font-bold text-white mb-6 flex items-center justify-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-tasks text-accent"></i> Recent Activity
+&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Nav Tabs -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex justify-center gap-4 mb-6 border-b border-white/10 pb-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="activity-tab active-tab text-white font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="classWork">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-book mr-1 text-accent"></i> Class Work
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="activity-tab text-white/70 font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="homeWork">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-clipboard-list mr-1 text-accent"></i> Home Work
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="activity-tab text-white/70 font-medium px-4 py-2 rounded-lg hover:bg-accent/20 transition" data-tab="quickTest">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-bolt mr-1 text-accent"></i> Quick Test
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Class Work Content -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="classWork" class="activity-content">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="text-center py-10 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-book-open text-4xl text-accent mb-3"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-lg font-semibold">No Class Work Yet</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-muted">Your lecturer hasn’t posted any class work yet.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Home Work Content -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="homeWork" class="activity-content hidden">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="text-center py-10 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-alt text-4xl text-accent mb-3"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-lg font-semibold">No Home Work Yet</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-muted">Your lecturer hasn’t posted any home work yet.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Quick Test Content -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="quickTest" class="activity-content hidden">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="text-center py-10 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-stopwatch text-4xl text-accent mb-3"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-lg font-semibold">No Quick Test Set Yet</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-muted">Your lecturer hasn’t posted any quick test yet.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<style>
+&nbsp;&nbsp;&nbsp;&nbsp;.activity-tab.active-tab {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: linear-gradient(to right, #6366f1, #8b5cf6);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;</style>
 </section>
-
-    <!-- Analytics -->
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Analytics -->
 <section id="analytics" class="mb-10">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
-    <!-- Header -->
-    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 justify-center">
-      <i class="fas fa-chart-line text-accent"></i> Analytics Overview
-    </h2>
-
-    <!-- Two containers: Attendance + Student Activity -->
-    <div class="flex flex-col lg:flex-row gap-6">
-      
-      <!-- Attendance Analytics -->
-      <div class="flex-1 glass bg-white/5 p-6 rounded-xl border border-white/10 text-center">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
-          <i class="fas fa-chart-bar text-green-400"></i> Attendance Analytics
-        </h3>
-        <div class="flex flex-col items-center justify-center py-10 text-gray-400">
-          <i class="fas fa-user-clock text-5xl text-accent mb-3"></i>
-          <p class="text-lg font-semibold">No Attendance Records</p>
-          <p class="text-sm text-gray-500">No attendance data has been recorded yet.</p>
-        </div>
-      </div>
-
-      <!-- Student Activity -->
-      <div class="flex-1 glass bg-white/5 p-6 rounded-xl border border-white/10 text-center">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
-          <i class="fas fa-user-friends text-blue-400"></i> Student Activity
-        </h3>
-        <div class="flex flex-col items-center justify-center py-10 text-gray-400">
-          <i class="fas fa-users-slash text-5xl text-accent mb-3"></i>
-          <p class="text-lg font-semibold">No Student Activity Yet</p>
-          <p class="text-sm text-gray-500">No student activity has been recorded yet.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
+&nbsp;&nbsp;<div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Header -->
+&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2 justify-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-chart-line text-accent"></i> Analytics Overview
+&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Two containers: Attendance + Student Activity -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex flex-col lg:flex-row gap-6">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Attendance Analytics -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex-1 glass bg-white/5 p-6 rounded-xl border border-white/10 text-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-chart-bar text-green-400"></i> Attendance Analytics
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex flex-col items-center justify-center py-10 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-user-clock text-5xl text-accent mb-3"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-lg font-semibold">No Attendance Records</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-gray-500">No attendance data has been recorded yet.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- Student Activity -->
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex-1 glass bg-white/5 p-6 rounded-xl border border-white/10 text-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-user-friends text-blue-400"></i> Student Activity
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex flex-col items-center justify-center py-10 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-users-slash text-5xl text-accent mb-3"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-lg font-semibold">No Student Activity Yet</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-gray-500">No student activity has been recorded yet.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
 </section>
-
-    <!-- Premium -->
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Premium -->
 <section id="premium" class="mb-10">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md text-center">
-    <!-- Icon -->
-    <i class="fas fa-tags text-6xl text-gray-500 mb-4"></i>
-
-    <!-- Title -->
-    <h2 class="text-2xl font-bold text-white mb-2">No Pricing Yet</h2>
-
-    <!-- Message -->
-    <p class="text-muted mb-6 text-gray-400">
-      Enjoy your <span class="text-accent font-semibold">free access</span> — premium features are coming soon.
-    </p>
-
-    <!-- Disabled Button -->
-    <button 
-      disabled
-      class="bg-gray-700/40 text-gray-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed opacity-60 shadow-inner">
-      <i class="fas fa-hourglass-half mr-2"></i> Coming Soon
-    </button>
-  </div>
+&nbsp;&nbsp;<div class="glass p-6 border border-white/10 rounded-xl shadow-md text-center">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Icon -->
+&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-tags text-6xl text-gray-500 mb-4"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Title -->
+&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-2xl font-bold text-white mb-2">No Pricing Yet</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Message -->
+&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-muted mb-6 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enjoy your <span class="text-accent font-semibold">free access</span> — premium features are coming soon.
+&nbsp;&nbsp;&nbsp;&nbsp;</p>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Disabled Button -->
+&nbsp;&nbsp;&nbsp;&nbsp;<button
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;disabled
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="bg-gray-700/40 text-gray-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed opacity-60 shadow-inner">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-hourglass-half mr-2"></i> Coming Soon
+&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;</div>
 </section>
-
-
 <section id="chat" class="mb-10 relative font-inter">
-  <div class="glass p-6 border border-white/10 rounded-xl shadow-md h-[600px] flex flex-col relative overflow-hidden">
-
-    <!-- HEADER -->
-    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
-      <h2 class="text-xl font-bold text-white flex items-center gap-2">
-        <i class="fas fa-comments text-accent"></i> Class Chat Room
-      </h2>
-      <div class="flex items-center gap-4 text-white text-lg">
-        <button class="hover:text-accent transition"><i class="fas fa-phone"></i></button>
-        <button class="hover:text-accent transition"><i class="fas fa-video"></i></button>
-      </div>
-    </div>
-
-    <!-- CHAT MESSAGES -->
-    <div id="chatMessages"
-      class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar scroll-smooth relative">
-      <p class="text-center text-muted py-8 text-gray-400">
-        <i class="fas fa-comment-slash text-3xl mb-2 block"></i>
-        No messages yet. Start the conversation!
-      </p>
-    </div>
-
-    <!-- MESSAGE INPUT -->
-    <div class="flex items-center gap-2 border-t border-white/10 pt-3">
-      <button id="recordBtn"
-        class="p-3 bg-gradient-to-r from-blue-600/80 to-blue-800/80 hover:from-blue-500 hover:to-blue-700 
-        rounded-lg text-white text-lg transition">
-        <i class="fas fa-microphone"></i>
-      </button>
-
-      <button id="attachBtn"
-        class="p-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 
-        rounded-lg text-white text-lg transition">
-        <i class="fas fa-plus"></i>
-      </button>
-
-      <input type="text" id="chatInput" placeholder="Type a message..."
-        class="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 
-        focus:outline-none focus:ring-2 focus:ring-accent text-sm">
-
-      <button id="sendMessage"
-        class="bg-gradient-to-r from-accent to-primary text-white px-4 py-3 rounded-lg font-semibold 
-        hover:scale-105 transition shadow-lg flex items-center justify-center text-lg">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- LOCAL POPDOWN MENU (now inside the chat section itself) -->
-  <div id="messageMenu"
-    class="hidden absolute bg-[#1f2937] border border-gray-700 rounded-lg shadow-lg 
-    text-white text-sm w-44 z-40 transition-all duration-200">
-    <ul class="flex flex-col">
-      <li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
-        <i class="fas fa-edit text-yellow-400"></i> Edit
-      </li>
-      <li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
-        <i class="fas fa-thumbtack text-blue-400"></i> Pin
-      </li>
-      <li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
-        <i class="fas fa-reply text-green-400"></i> Reply
-      </li>
-      <li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2 text-red-400">
-        <i class="fas fa-trash"></i> Delete
-      </li>
-    </ul>
-  </div>
-
-  <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, #6366f1, #8b5cf6);
-      border-radius: 10px;
-    }
-    .chat-bubble {
-      max-width: 80%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      position: relative;
-      word-wrap: break-word;
-      animation: fadeInUp 0.3s ease-out;
-    }
-    .chat-bubble.me {
-      background: linear-gradient(to right, #2563eb, #4f46e5);
-      color: white;
-      margin-left: auto;
-      border-bottom-right-radius: 4px;
-    }
-    .chat-bubble.other {
-      background: rgba(255,255,255,0.08);
-      color: #e5e7eb;
-      margin-right: auto;
-      border-bottom-left-radius: 4px;
-    }
-    .chat-time {
-      font-size: 0.7rem;
-      color: #9ca3af;
-      text-align: right;
-      margin-top: 4px;
-    }
-    .message-menu-btn {
-      position: absolute;
-      right: 6px;
-      top: 4px;
-      color: #d1d5db;
-      cursor: pointer;
-      font-size: 1.1rem;
-      padding: 4px;
-      transition: color 0.2s, transform 0.2s;
-    }
-    .message-menu-btn:hover { color: #fff; transform: scale(1.1); }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-
-
+&nbsp;&nbsp;<div class="glass p-6 border border-white/10 rounded-xl shadow-md h-[600px] flex flex-col relative overflow-hidden">
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- HEADER -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-xl font-bold text-white flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-comments text-accent"></i> Class Chat Room
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center gap-4 text-white text-lg">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="hover:text-accent transition"><i class="fas fa-phone"></i></button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="hover:text-accent transition"><i class="fas fa-video"></i></button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- CHAT MESSAGES -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div id="chatMessages"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar scroll-smooth relative">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-center text-muted py-8 text-gray-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-comment-slash text-3xl mb-2 block"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No messages yet. Start the conversation!
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- MESSAGE INPUT -->
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center gap-2 border-t border-white/10 pt-3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="recordBtn"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="p-3 bg-gradient-to-r from-blue-600/80 to-blue-800/80 hover:from-blue-500 hover:to-blue-700
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rounded-lg text-white text-lg transition">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-microphone"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="attachBtn"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="p-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rounded-lg text-white text-lg transition">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-plus"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="chatInput" placeholder="Type a message..."
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;focus:outline-none focus:ring-2 focus:ring-accent text-sm">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="sendMessage"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="bg-gradient-to-r from-accent to-primary text-white px-4 py-3 rounded-lg font-semibold
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hover:scale-105 transition shadow-lg flex items-center justify-center text-lg">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-paper-plane"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<!-- LOCAL POPDOWN MENU (now inside the chat section itself) -->
+&nbsp;&nbsp;<div id="messageMenu"
+&nbsp;&nbsp;&nbsp;&nbsp;class="hidden absolute bg-[#1f2937] border border-gray-700 rounded-lg shadow-lg
+&nbsp;&nbsp;&nbsp;&nbsp;text-white text-sm w-44 z-40 transition-all duration-200">
+&nbsp;&nbsp;&nbsp;&nbsp;<ul class="flex flex-col">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-edit text-yellow-400"></i> Edit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-thumbtack text-blue-400"></i> Pin
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-reply text-green-400"></i> Reply
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li class="menu-item hover:bg-gray-700 px-4 py-2 cursor-pointer flex items-center gap-2 text-red-400">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-trash"></i> Delete
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+&nbsp;&nbsp;&nbsp;&nbsp;</ul>
+&nbsp;&nbsp;</div>
+&nbsp;&nbsp;<style>
+&nbsp;&nbsp;&nbsp;&nbsp;.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+&nbsp;&nbsp;&nbsp;&nbsp;.custom-scrollbar::-webkit-scrollbar-thumb {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-radius: 10px;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.chat-bubble {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max-width: 80%;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: 10px 14px;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-radius: 12px;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position: relative;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;word-wrap: break-word;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;animation: fadeInUp 0.3s ease-out;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.chat-bubble.me {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: linear-gradient(to right, #2563eb, #4f46e5);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: white;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin-left: auto;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-bottom-right-radius: 4px;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.chat-bubble.other {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background: rgba(255,255,255,0.08);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: #e5e7eb;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin-right: auto;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;border-bottom-left-radius: 4px;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.chat-time {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;font-size: 0.7rem;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: #9ca3af;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text-align: right;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin-top: 4px;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.message-menu-btn {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position: absolute;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right: 6px;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;top: 4px;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: #d1d5db;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cursor: pointer;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;font-size: 1.1rem;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: 4px;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transition: color 0.2s, transform 0.2s;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;.message-menu-btn:hover { color: #fff; transform: scale(1.1); }
+&nbsp;&nbsp;&nbsp;&nbsp;@keyframes fadeInUp {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from { opacity: 0; transform: translateY(10px); }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to { opacity: 1; transform: translateY(0); }
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;</style>
 </section>
-
-
-
-    <!-- Profile -->
-  <!-- PROFILE SECTION -->
+&nbsp;&nbsp;&nbsp;&nbsp;<!-- Profile -->
+&nbsp;&nbsp;<!-- PROFILE SECTION -->
 <section id="profile" class="mb-10">
-  <div class="glass p-8 border border-white/10 rounded-xl shadow-md">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-        <i class="fas fa-user text-accent"></i> Profile
-      </h2>
-      <button id="editProfileBtn" class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition">
-        <i class="fas fa-edit mr-1"></i> Edit
-      </button>
-    </div>
-    <div class="flex flex-col sm:flex-row items-center gap-8">
-      <div class="relative group">
-        <div id="profilePic" class="w-28 h-28 rounded-full overflow-hidden border-4 border-accent/50 shadow-xl bg-gray-800 flex items-center justify-center">
-          <span id="profileInitial" class="text-4xl font-bold text-white">S</span>
-        </div>
-      </div>
-      <div class="text-center sm:text-left flex-1">
-        <h3 id="profileName" class="text-xl font-bold text-white mb-1">Loading...</h3>
-        <p id="profileEmail" class="text-muted text-sm mb-3">student@gouni.edu.ng</p>
-        <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
-          <span class="px-3 py-1 bg-accent/20 text-accent text-xs font-semibold rounded-full">Student</span>
-          <span id="profileReg" class="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">GOU-2025-XXXX</span>
-        </div>
-      </div>
-    </div>
-  </div>
+&nbsp;&nbsp;<div class="glass p-8 border border-white/10 rounded-xl shadow-md">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center justify-between mb-6">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h2 class="text-2xl font-bold text-white flex items-center gap-3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-user text-accent"></i> Profile
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="editProfileBtn" class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-edit mr-1"></i> Edit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex flex-col sm:flex-row items-center gap-8">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="relative group">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="profilePic" class="w-28 h-28 rounded-full overflow-hidden border-4 border-accent/50 shadow-xl bg-gray-800 flex items-center justify-center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="profileInitial" class="text-4xl font-bold text-white">S</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="text-center sm:text-left flex-1">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 id="profileName" class="text-xl font-bold text-white mb-1">Loading...</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p id="profileEmail" class="text-muted text-sm mb-3">student@gouni.edu.ng</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="px-3 py-1 bg-accent/20 text-accent text-xs font-semibold rounded-full">Student</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="profileReg" class="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">GOU-2025-XXXX</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
 </section>
-
 <!-- MODAL -->
 <div id="profileModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-  <div class="bg-gray-900 p-6 rounded-xl w-96 relative">
-    <h3 class="text-xl font-bold text-white mb-4">Edit Profile</h3>
-    <label class="block mb-2 text-white font-semibold">Name</label>
-    <input type="text" id="modalName" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-3">
-
-    <label class="block mb-2 text-white font-semibold">Email</label>
-    <input type="email" id="modalEmail" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-3">
-
-    <label class="block mb-2 text-white font-semibold">Profile Picture</label>
-    <input type="file" id="modalPic" accept="image/*" class="w-full mb-3">
-
-    <label class="block mb-2 text-white font-semibold">Registration ID</label>
-    <input type="text" id="modalReg" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-4">
-
-    <div class="flex justify-end gap-2">
-      <button id="closeProfileModal" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Cancel</button>
-      <button id="saveProfileBtn" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition">Save</button>
-    </div>
-  </div>
+&nbsp;&nbsp;<div class="bg-gray-900 p-6 rounded-xl w-96 relative">
+&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="text-xl font-bold text-white mb-4">Edit Profile</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;<label class="block mb-2 text-white font-semibold">Name</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="modalName" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-3">
+&nbsp;&nbsp;&nbsp;&nbsp;<label class="block mb-2 text-white font-semibold">Email</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="email" id="modalEmail" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-3">
+&nbsp;&nbsp;&nbsp;&nbsp;<label class="block mb-2 text-white font-semibold">Profile Picture</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="file" id="modalPic" accept="image/*" class="w-full mb-3">
+&nbsp;&nbsp;&nbsp;&nbsp;<label class="block mb-2 text-white font-semibold">Registration ID</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="modalReg" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-4">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex justify-end gap-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="closeProfileModal" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Cancel</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="saveProfileBtn" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition">Save</button>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
 </div>
-
-
-  </main>
-
-  <!-- Firebase + Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
-      authDomain: "goteach-1eaa3.firebaseapp.com",
-      projectId: "goteach-1eaa3",
-      storageBucket: "goteach-1eaa3.appspot.com",
-      messagingSenderId: "486448948939",
-      appId: "1:486448948939:web:3058788ea1a134804d1d4e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const studentName = document.getElementById('studentName');
-    const totalCourses = document.getElementById('totalCourses');
-    const attendanceRate = document.getElementById('attendanceRate');
-    const pendingTasks = document.getElementById('pendingTasks');
-    const coursesList = document.getElementById('coursesList');
-    const attendanceStatus = document.getElementById('attendanceStatus');
-    const activityList = document.getElementById('activityList');
-    const profileName = document.getElementById('profileName');
-    const profileEmail = document.getElementById('profileEmail');
-    const profileReg = document.getElementById('profileReg');
-    const profileInitial = document.getElementById('profileInitial');
-    const sidebarName = document.getElementById('sidebarName');
-    const sidebarAvatar = document.getElementById('sidebarAvatar');
-
-    let currentUser = null;
-    let chart = null;
-
-    // Mobile Menu
-    document.getElementById('openMobileMenu')?.addEventListener('click', () => {
-      document.getElementById('mobileMenu').classList.add('open');
-      document.getElementById('mobileOverlay').classList.remove('hidden');
-    });
-    document.getElementById('closeMobileMenu')?.addEventListener('click', closeMenu);
-    document.getElementById('mobileOverlay')?.addEventListener('click', closeMenu);
-    function closeMenu() {
-      document.getElementById('mobileMenu').classList.remove('open');
-      document.getElementById('mobileOverlay').classList.add('hidden');
-    }
-
-    // Sidebar Active
-    document.querySelectorAll('.sidebar-link').forEach(link => {
-      link.addEventListener('click', () => {
-        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        closeMenu();
-      });
-    });
-
-    // Logout
-    document.getElementById('desktopLogout')?.addEventListener('click', logout);
-    document.getElementById('mobileLogout')?.addEventListener('click', logout);
-    async function logout() {
-      await signOut(auth);
-      window.location.href = 'login.html';
-    }
-
-    // Auth State
-    onAuthStateChanged(auth, async user => {
-      if (!user || !user.emailVerified) { window.location.href = 'login.html'; return; }
-      currentUser = user;
-      const userSnap = await getDoc(doc(db, 'users', user.uid));
-      if (!userSnap.exists() || userSnap.data().role !== 'Student') {
-        alert('Access denied.');
-        logout();
-        return;
-      }
-      const d = userSnap.data();
-      const full = `${d.firstName} ${d.lastName}`;
-      const ini = d.firstName[0].toUpperCase();
-
-      studentName.textContent = d.firstName;
-      profileName.textContent = full;
-      profileEmail.textContent = d.email;
-      profileReg.textContent = d.regNumber || 'N/A';
-      profileInitial.textContent = ini;
-      sidebarName.textContent = d.firstName;
-      sidebarAvatar.textContent = ini;
-
-      loadStudentData();
-    });
-
-    async function loadStudentData() {
-      // Mock data (replace with real Firestore queries)
-      totalCourses.textContent = 5;
-      attendanceRate.textContent = '92%';
-      pendingTasks.textContent = 3;
-
-      // Sample Courses
-      const sampleCourses = [
-        { name: "Data Structures", lecturer: "Dr. Okoye", progress: 78 },
-        { name: "Web Development", lecturer: "Prof. Eze", progress: 65 },
-        { name: "Database Systems", lecturer: "Mr. Chukwu", progress: 90 },
-      ];
-      coursesList.innerHTML = sampleCourses.map(c => `
-        <div class="glass p-4 rounded-xl border border-white/10">
-          <h3 class="font-bold text-white">${c.name}</h3>
-          <p class="text-xs text-muted">${c.lecturer}</p>
-          <div class="mt-3 bg-white/10 rounded-full h-2">
-            <div class="bg-gradient-to-r from-accent to-primary h-full rounded-full" style="width: ${c.progress}%"></div>
-          </div>
-          <p class="text-xs text-muted mt-1">${c.progress}% Complete</p>
-        </div>
-      `).join('');
-
-      // Sample Activity
-      activityList.innerHTML = `
-        <div class="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-          <i class="fas fa-check-circle text-green-400"></i>
-          <div>
-            <p class="text-sm text-white">Submitted Web Dev Assignment</p>
-            <p class="text-xs text-muted">2 hours ago</p>
-          </div>
-        </div>
-      `;
-
-      // Attendance Submit
-      document.getElementById('submitAttendance').onclick = () => {
-        const code = document.getElementById('attendanceCode').value.trim();
-        if (code) {
-          attendanceStatus.innerHTML = `<p class="text-green-400"><i class="fas fa-check"></i> Attendance recorded!</p>`;
-          document.getElementById('attendanceCode').value = '';
-        } else {
-          attendanceStatus.innerHTML = `<p class="text-red-400">Please enter a valid code.</p>`;
-        }
-      };
-
-      // Chart
-      if (chart) chart.destroy();
-      chart = new Chart(document.getElementById('attendanceChart'), {
-        type: 'line',
-        data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-          datasets: [{
-            label: 'Attendance',
-            data: [100, 95, 90, 100, 92],
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59,130,246,0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, max: 100 } }
-        }
-      });
-    }
-  </script>
-  <!--for the Attendance---->
-
+&nbsp;&nbsp;</main>
+&nbsp;&nbsp;<!-- Firebase + Logic -->
+&nbsp;&nbsp;<script type="module">
+&nbsp;&nbsp;&nbsp;&nbsp;import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-app.js";
+&nbsp;&nbsp;&nbsp;&nbsp;import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-auth.js";
+&nbsp;&nbsp;&nbsp;&nbsp;import { getFirestore, doc, getDoc, collection, getDocs, setDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-firestore.js";
+&nbsp;&nbsp;&nbsp;&nbsp;const firebaseConfig = {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;authDomain: "goteach-1eaa3.firebaseapp.com",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;projectId: "goteach-1eaa3",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;storageBucket: "goteach-1eaa3.appspot.com",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messagingSenderId: "486448948939",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;appId: "1:486448948939:web:3058788ea1a134804d1d4e"
+&nbsp;&nbsp;&nbsp;&nbsp;};
+&nbsp;&nbsp;&nbsp;&nbsp;const app = initializeApp(firebaseConfig);
+&nbsp;&nbsp;&nbsp;&nbsp;const auth = getAuth(app);
+&nbsp;&nbsp;&nbsp;&nbsp;const db = getFirestore(app);
+&nbsp;&nbsp;&nbsp;&nbsp;const studentName = document.getElementById('studentName');
+&nbsp;&nbsp;&nbsp;&nbsp;const totalCourses = document.getElementById('totalCourses');
+&nbsp;&nbsp;&nbsp;&nbsp;const attendanceRate = document.getElementById('attendanceRate');
+&nbsp;&nbsp;&nbsp;&nbsp;const pendingTasks = document.getElementById('pendingTasks');
+&nbsp;&nbsp;&nbsp;&nbsp;const coursesList = document.getElementById('coursesList');
+&nbsp;&nbsp;&nbsp;&nbsp;const attendanceStatus = document.getElementById('attendanceStatus');
+&nbsp;&nbsp;&nbsp;&nbsp;const activityList = document.getElementById('activityList');
+&nbsp;&nbsp;&nbsp;&nbsp;const profileName = document.getElementById('profileName');
+&nbsp;&nbsp;&nbsp;&nbsp;const profileEmail = document.getElementById('profileEmail');
+&nbsp;&nbsp;&nbsp;&nbsp;const profileReg = document.getElementById('profileReg');
+&nbsp;&nbsp;&nbsp;&nbsp;const profileInitial = document.getElementById('profileInitial');
+&nbsp;&nbsp;&nbsp;&nbsp;const sidebarName = document.getElementById('sidebarName');
+&nbsp;&nbsp;&nbsp;&nbsp;const sidebarAvatar = document.getElementById('sidebarAvatar');
+&nbsp;&nbsp;&nbsp;&nbsp;let currentUser = null;
+&nbsp;&nbsp;&nbsp;&nbsp;let chart = null;
+&nbsp;&nbsp;&nbsp;&nbsp;// Mobile Menu
+&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('openMobileMenu')?.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('mobileMenu').classList.add('open');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('mobileOverlay').classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('closeMobileMenu')?.addEventListener('click', closeMenu);
+&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('mobileOverlay')?.addEventListener('click', closeMenu);
+&nbsp;&nbsp;&nbsp;&nbsp;function closeMenu() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('mobileMenu').classList.remove('open');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('mobileOverlay').classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;// Sidebar Active
+&nbsp;&nbsp;&nbsp;&nbsp;document.querySelectorAll('.sidebar-link').forEach(link => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;link.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;link.classList.add('active');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;closeMenu();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;// Logout
+&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('desktopLogout')?.addEventListener('click', logout);
+&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('mobileLogout')?.addEventListener('click', logout);
+&nbsp;&nbsp;&nbsp;&nbsp;async function logout() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await signOut(auth);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;window.location.href = 'login.html';
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;// Auth State
+&nbsp;&nbsp;&nbsp;&nbsp;onAuthStateChanged(auth, async user => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!user || !user.emailVerified) { window.location.href = 'login.html'; return; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currentUser = user;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const userSnap = await getDoc(doc(db, 'users', user.uid));
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!userSnap.exists() || userSnap.data().role !== 'Student') {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert('Access denied.');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logout();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const d = userSnap.data();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const full = `${d.firstName} ${d.lastName}`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const ini = d.firstName[0].toUpperCase();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;studentName.textContent = d.firstName;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profileName.textContent = full;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profileEmail.textContent = d.email;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profileReg.textContent = d.regNumber || 'N/A';
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profileInitial.textContent = ini;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sidebarName.textContent = d.firstName;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sidebarAvatar.textContent = ini;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loadStudentData();
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;async function loadStudentData() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Mock data (replace with real Firestore queries)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;totalCourses.textContent = 5;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attendanceRate.textContent = '92%';
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pendingTasks.textContent = 3;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Sample Courses
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const sampleCourses = [
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ name: "Data Structures", lecturer: "Dr. Okoye", progress: 78 },
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ name: "Web Development", lecturer: "Prof. Eze", progress: 65 },
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ name: "Database Systems", lecturer: "Mr. Chukwu", progress: 90 },
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coursesList.innerHTML = sampleCourses.map(c => `
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="glass p-4 rounded-xl border border-white/10">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3 class="font-bold text-white">${c.name}</h3>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">${c.lecturer}</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="mt-3 bg-white/10 rounded-full h-2">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="bg-gradient-to-r from-accent to-primary h-full rounded-full" style="width: ${c.progress}%"></div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted mt-1">${c.progress}% Complete</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`).join('');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Sample Activity
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;activityList.innerHTML = `
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-check-circle text-green-400"></i>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-sm text-white">Submitted Web Dev Assignment</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-muted">2 hours ago</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Attendance Submit
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('submitAttendance').onclick = () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const code = document.getElementById('attendanceCode').value.trim();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (code) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attendanceStatus.innerHTML = `<p class="text-green-400"><i class="fas fa-check"></i> Attendance recorded!</p>`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('attendanceCode').value = '';
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attendanceStatus.innerHTML = `<p class="text-red-400">Please enter a valid code.</p>`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Chart
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (chart) chart.destroy();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chart = new Chart(document.getElementById('attendanceChart'), {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'line',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Attendance',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: [100, 95, 90, 100, 92],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: '#3b82f6',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(59,130,246,0.1)',
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tension: 0.4,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fill: true
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;responsive: true,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plugins: { legend: { display: false } },
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: { y: { beginAtZero: true, max: 100 } }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;</script>
+&nbsp;&nbsp;<!--for the Attendance---->
 <script>
 // =========================
 // ELEMENTS
@@ -982,10 +882,8 @@ const deployedList = document.getElementById('deployedCodesList');
 const noDeployedCodes = document.getElementById('noDeployedCodes');
 const submitBtn = document.getElementById('submitAttendance');
 const codeInput = document.getElementById('attendanceCode');
-
 let usedCodes = JSON.parse(localStorage.getItem('used_attendance_codes') || '[]');
 let deployedCodes = JSON.parse(localStorage.getItem('attendance_deployments') || '[]');
-
 // =========================
 // MODAL HANDLER
 // =========================
@@ -993,397 +891,332 @@ const modalWrapper = document.getElementById('modalWrapper');
 const modalIcon = document.getElementById('modalIcon');
 const modalTitle = document.getElementById('modalTitle');
 const modalMessage = document.getElementById('modalMessage');
-
 function showModal(type, title, message) {
-  const icons = {
-    success: '<i class="fas fa-check-circle text-green-500"></i>',
-    warning: '<i class="fas fa-exclamation-circle text-yellow-500"></i>',
-    error: '<i class="fas fa-times-circle text-red-500"></i>'
-  };
-  modalIcon.innerHTML = icons[type] || icons.warning;
-  modalTitle.textContent = title;
-  modalMessage.textContent = message;
-  modalWrapper.classList.remove('hidden');
+&nbsp;&nbsp;const icons = {
+&nbsp;&nbsp;&nbsp;&nbsp;success: '<i class="fas fa-check-circle text-green-500"></i>',
+&nbsp;&nbsp;&nbsp;&nbsp;warning: '<i class="fas fa-exclamation-circle text-yellow-500"></i>',
+&nbsp;&nbsp;&nbsp;&nbsp;error: '<i class="fas fa-times-circle text-red-500"></i>'
+&nbsp;&nbsp;};
+&nbsp;&nbsp;modalIcon.innerHTML = icons[type] || icons.warning;
+&nbsp;&nbsp;modalTitle.textContent = title;
+&nbsp;&nbsp;modalMessage.textContent = message;
+&nbsp;&nbsp;modalWrapper.classList.remove('hidden');
 }
 function closeModal() {
-  modalWrapper.classList.add('hidden');
+&nbsp;&nbsp;modalWrapper.classList.add('hidden');
 }
-
 // =========================
 // RENDER DEPLOYED CODES
 // =========================
 function renderDeployedCodes() {
-  deployedList.innerHTML = '';
-
-  if (deployedCodes.length === 0) {
-    noDeployedCodes.classList.remove('hidden');
-    return;
-  }
-
-  noDeployedCodes.classList.add('hidden');
-
-  deployedCodes.forEach(code => {
-    const card = document.createElement('div');
-    card.className = `
-      glass border border-gray-700 rounded-xl p-4 flex justify-between items-center 
-      transition ${code.active ? 'opacity-100' : 'opacity-50 grayscale'}
-    `;
-
-    card.innerHTML = `
-      <div>
-        <h4 class="text-white font-semibold">${code.code}</h4>
-        <p class="text-xs text-gray-400">${code.date}</p>
-      </div>
-      <button 
-        class="copyCode bg-accent/20 hover:bg-accent/40 text-accent px-3 py-1 rounded-lg text-xs font-medium"
-        ${code.active ? '' : 'disabled'}>
-        <i class="fas fa-copy"></i> Copy
-      </button>
-    `;
-
-    if (code.active) {
-      card.querySelector('.copyCode').addEventListener('click', () => {
-        navigator.clipboard.writeText(code.code);
-        codeInput.value = code.code;
-        codeInput.focus();
-        showModal('success', 'Code Copied', `Code ${code.code} copied to clipboard.`);
-      });
-    }
-
-    deployedList.appendChild(card);
-  });
+&nbsp;&nbsp;deployedList.innerHTML = '';
+&nbsp;&nbsp;if (deployedCodes.length === 0) {
+&nbsp;&nbsp;&nbsp;&nbsp;noDeployedCodes.classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;return;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;noDeployedCodes.classList.add('hidden');
+&nbsp;&nbsp;deployedCodes.forEach(code => {
+&nbsp;&nbsp;&nbsp;&nbsp;const card = document.createElement('div');
+&nbsp;&nbsp;&nbsp;&nbsp;card.className = `
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;glass border border-gray-700 rounded-xl p-4 flex justify-between items-center
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transition ${code.active ? 'opacity-100' : 'opacity-50 grayscale'}
+&nbsp;&nbsp;&nbsp;&nbsp;`;
+&nbsp;&nbsp;&nbsp;&nbsp;card.innerHTML = `
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h4 class="text-white font-semibold">${code.code}</h4>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="text-xs text-gray-400">${code.date}</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class="copyCode bg-accent/20 hover:bg-accent/40 text-accent px-3 py-1 rounded-lg text-xs font-medium"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${code.active ? '' : 'disabled'}>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-copy"></i> Copy
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;`;
+&nbsp;&nbsp;&nbsp;&nbsp;if (code.active) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;card.querySelector('.copyCode').addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navigator.clipboard.writeText(code.code);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;codeInput.value = code.code;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;codeInput.focus();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showModal('success', 'Code Copied', `Code ${code.code} copied to clipboard.`);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;deployedList.appendChild(card);
+&nbsp;&nbsp;});
 }
-
 // =========================
 // SUBMIT ATTENDANCE
 // =========================
 submitBtn.addEventListener('click', () => {
-  const entered = codeInput.value.trim().toUpperCase();
-
-  if (!entered) {
-    showModal('warning', 'Empty Field', 'Please enter or select a valid attendance code.');
-    return;
-  }
-
-  if (usedCodes.includes(entered)) {
-    showModal('warning', 'Already Marked', 'You have already marked attendance with this code.');
-    return;
-  }
-
-  const isValid = deployedCodes.some(c => c.code === entered && c.active);
-  if (!isValid) {
-    showModal('error', 'Invalid Code', 'This code is invalid or inactive. Please check with your lecturer.');
-    return;
-  }
-
-  usedCodes.push(entered);
-  localStorage.setItem('used_attendance_codes', JSON.stringify(usedCodes));
-
-  showModal('success', 'Attendance Marked', 'Your attendance has been successfully recorded.');
-  codeInput.value = '';
+&nbsp;&nbsp;const entered = codeInput.value.trim().toUpperCase();
+&nbsp;&nbsp;if (!entered) {
+&nbsp;&nbsp;&nbsp;&nbsp;showModal('warning', 'Empty Field', 'Please enter or select a valid attendance code.');
+&nbsp;&nbsp;&nbsp;&nbsp;return;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;if (usedCodes.includes(entered)) {
+&nbsp;&nbsp;&nbsp;&nbsp;showModal('warning', 'Already Marked', 'You have already marked attendance with this code.');
+&nbsp;&nbsp;&nbsp;&nbsp;return;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;const isValid = deployedCodes.some(c => c.code === entered && c.active);
+&nbsp;&nbsp;if (!isValid) {
+&nbsp;&nbsp;&nbsp;&nbsp;showModal('error', 'Invalid Code', 'This code is invalid or inactive. Please check with your lecturer.');
+&nbsp;&nbsp;&nbsp;&nbsp;return;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;usedCodes.push(entered);
+&nbsp;&nbsp;localStorage.setItem('used_attendance_codes', JSON.stringify(usedCodes));
+&nbsp;&nbsp;showModal('success', 'Attendance Marked', 'Your attendance has been successfully recorded.');
+&nbsp;&nbsp;codeInput.value = '';
 });
-
 // =========================
 // INITIAL RENDER
 // =========================
 renderDeployedCodes();
 </script>
-
 <!------for the activity ------>
-   <script>
-    // Handle tab switching
-    const tabs = document.querySelectorAll('.activity-tab');
-    const contents = document.querySelectorAll('.activity-content');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active-tab', 'text-white'));
-        tabs.forEach(t => t.classList.add('text-white/70'));
-        tab.classList.add('active-tab', 'text-white');
-
-        const target = tab.dataset.tab;
-        contents.forEach(content => {
-          content.classList.toggle('hidden', content.id !== target);
-        });
-      });
-    });
-  </script>
+&nbsp;&nbsp;&nbsp;<script>
+&nbsp;&nbsp;&nbsp;&nbsp;// Handle tab switching
+&nbsp;&nbsp;&nbsp;&nbsp;const tabs = document.querySelectorAll('.activity-tab');
+&nbsp;&nbsp;&nbsp;&nbsp;const contents = document.querySelectorAll('.activity-content');
+&nbsp;&nbsp;&nbsp;&nbsp;tabs.forEach(tab => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tab.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tabs.forEach(t => t.classList.remove('active-tab', 'text-white'));
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tabs.forEach(t => t.classList.add('text-white/70'));
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tab.classList.add('active-tab', 'text-white');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const target = tab.dataset.tab;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contents.forEach(content => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;content.classList.toggle('hidden', content.id !== target);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;</script>
 <!----for the chat room------->
 <script>
-  const chatInput = document.getElementById('chatInput');
-  const sendMessageBtn = document.getElementById('sendMessage');
-  const chatMessages = document.getElementById('chatMessages');
-  const menu = document.getElementById('messageMenu');
-  const recordBtn = document.getElementById('recordBtn');
-  const callBtn = document.getElementById('callBtn'); // optional: your video/voice call button
-
-  let mediaRecorder;
-  let audioChunks = [];
-  let activeMessage = null;
-
-  // --- SEND MESSAGE ---
-  sendMessageBtn.addEventListener('click', sendChatMessage);
-  chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
-
-  function sendChatMessage() {
-    const text = chatInput.value.trim();
-    if (!text) return;
-    createMessageBubble(text, 'me');
-    chatInput.value = '';
-  }
-
-  // --- CREATE MESSAGE BUBBLE ---
-  function createMessageBubble(content, sender, isAudio = false) {
-    const bubble = document.createElement('div');
-    const now = new Date();
-    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    bubble.className = `relative chat-bubble ${sender}`;
-    bubble.dataset.pinned = "false";
-    bubble.dataset.sender = sender;
-
-    bubble.innerHTML = isAudio
-      ? `
-        <audio controls class="w-full rounded-lg mt-1">
-          <source src="${content}" type="audio/webm">
-        </audio>
-        <span class="chat-time">${time}</span>
-        <i class="fas fa-ellipsis-v message-menu-btn"></i>`
-      : `
-        <p class="message-text">${content}</p>
-        <span class="chat-time">${time}</span>
-        <i class="fas fa-ellipsis-v message-menu-btn"></i>`;
-
-    const dots = bubble.querySelector('.message-menu-btn');
-    dots.addEventListener('click', (e) => {
-      e.stopPropagation();
-      activeMessage = bubble;
-      openMenu(e, bubble, sender === 'me');
-    });
-
-    chatMessages.appendChild(bubble);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  // --- MENU (POP DOWN INSIDE CHAT) ---
-  function openMenu(e, messageBubble, isOwner) {
-    const bubbleRect = messageBubble.getBoundingClientRect();
-    const containerRect = chatMessages.getBoundingClientRect();
-    const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
-
-    menu.classList.remove('hidden');
-    menu.style.top = offsetTop + 'px';
-    menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
-
-    const [editBtn, pinBtn, replyBtn, deleteBtn] = menu.querySelectorAll('.menu-item');
-    editBtn.style.display = isOwner ? 'flex' : 'none';
-
-    // Assign dynamic handlers
-    editBtn.onclick = () => editMessage(activeMessage);
-    deleteBtn.onclick = () => deleteMessage(activeMessage);
-    replyBtn.onclick = () => replyToMessage(activeMessage);
-    pinBtn.onclick = () => pinMessage(activeMessage);
-  }
-
-  // Hide menu on blank area click
-  chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
-
-  // --- EDIT MESSAGE ---
-  function editMessage(msg) {
-    menu.classList.add('hidden');
-    const textEl = msg.querySelector('.message-text');
-    if (!textEl) return showInlineAlert("Cannot edit voice messages.");
-
-    const originalText = textEl.textContent;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = originalText;
-    input.className = "w-full bg-white/10 border border-white/20 text-white rounded-md px-2 py-1 text-sm mt-1";
-
-    msg.replaceChild(input, textEl);
-    input.focus();
-
-    input.addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
-        const newText = input.value.trim();
-        if (newText) {
-          const newP = document.createElement('p');
-          newP.textContent = newText;
-          newP.className = "message-text";
-          msg.replaceChild(newP, input);
-          showInlineAlert("Message edited.");
-        }
-      }
-    });
-  }
-
-  // --- DELETE MESSAGE ---
-  function deleteMessage(msg) {
-    menu.classList.add('hidden');
-    msg.classList.add('opacity-50');
-    setTimeout(() => msg.remove(), 300);
-    showInlineAlert("Message deleted.");
-  }
-
-  // --- REPLY TO MESSAGE ---
-  function replyToMessage(msg) {
-    menu.classList.add('hidden');
-    const textEl = msg.querySelector('.message-text');
-    const replyText = textEl ? textEl.textContent : "Voice message";
-
-    const replyBox = document.createElement('div');
-    replyBox.className = "bg-white/10 text-white text-sm p-2 rounded-md border-l-4 border-accent mb-2";
-    replyBox.textContent = `Replying to: ${replyText}`;
-
-    const inputContainer = chatInput.parentElement;
-    inputContainer.insertBefore(replyBox, chatInput);
-    chatInput.focus();
-
-    chatInput.addEventListener('keydown', function handleReply(e) {
-      if (e.key === 'Enter') {
-        createMessageBubble(`Reply to "${replyText}": ${chatInput.value.trim()}`, 'me');
-        replyBox.remove();
-        chatInput.removeEventListener('keydown', handleReply);
-        chatInput.value = '';
-        showInlineAlert("Reply sent.");
-      }
-    });
-  }
-
-  // --- PIN MESSAGE ---
-  function pinMessage(msg) {
-    menu.classList.add('hidden');
-    const pinned = msg.dataset.pinned === "true";
-    msg.dataset.pinned = !pinned;
-
-    if (!pinned) {
-      msg.style.border = "1px solid gold";
-      msg.style.order = "-1";
-      showInlineAlert("Message pinned to top.");
-    } else {
-      msg.style.border = "";
-      msg.style.order = "initial";
-      showInlineAlert("Message unpinned.");
-    }
-  }
-
-  // --- AUDIO RECORDING ---
-  recordBtn.addEventListener('click', async () => {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
-      recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-      recordBtn.classList.remove('bg-red-600');
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
-
-      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        createMessageBubble(audioUrl, 'me', true);
-      };
-
-      mediaRecorder.start();
-      recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
-      recordBtn.classList.add('bg-red-600');
-    } catch (err) {
-      showInlineAlert('Microphone access denied.');
-    }
-  });
-
-  // --- INLINE ALERT INSIDE CHAT ---
-  function showInlineAlert(msg) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className =
-      "bg-accent/10 text-accent border border-accent/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
-    alertDiv.textContent = msg;
-    chatMessages.appendChild(alertDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    setTimeout(() => alertDiv.remove(), 3000);
-  }
-
-  // --- VOICE/VIDEO CALL TEST HANDLER ---
-  if (callBtn) {
-    callBtn.addEventListener('click', async () => {
-      showInlineAlert("🔔 Call feature testing…");
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        video.autoplay = true;
-        video.muted = true;
-        video.className = "rounded-lg border border-white/20 mt-3";
-        chatMessages.appendChild(video);
-        showInlineAlert("🎥 You’re live (testing mode only)");
-      } catch (err) {
-        showInlineAlert("❌ Camera or mic access denied.");
-      }
-    });
-  }
+&nbsp;&nbsp;const chatInput = document.getElementById('chatInput');
+&nbsp;&nbsp;const sendMessageBtn = document.getElementById('sendMessage');
+&nbsp;&nbsp;const chatMessages = document.getElementById('chatMessages');
+&nbsp;&nbsp;const menu = document.getElementById('messageMenu');
+&nbsp;&nbsp;const recordBtn = document.getElementById('recordBtn');
+&nbsp;&nbsp;const callBtn = document.getElementById('callBtn'); // optional: your video/voice call button
+&nbsp;&nbsp;let mediaRecorder;
+&nbsp;&nbsp;let audioChunks = [];
+&nbsp;&nbsp;let activeMessage = null;
+&nbsp;&nbsp;// --- SEND MESSAGE ---
+&nbsp;&nbsp;sendMessageBtn.addEventListener('click', sendChatMessage);
+&nbsp;&nbsp;chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
+&nbsp;&nbsp;function sendChatMessage() {
+&nbsp;&nbsp;&nbsp;&nbsp;const text = chatInput.value.trim();
+&nbsp;&nbsp;&nbsp;&nbsp;if (!text) return;
+&nbsp;&nbsp;&nbsp;&nbsp;createMessageBubble(text, 'me');
+&nbsp;&nbsp;&nbsp;&nbsp;chatInput.value = '';
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- CREATE MESSAGE BUBBLE ---
+&nbsp;&nbsp;function createMessageBubble(content, sender, isAudio = false) {
+&nbsp;&nbsp;&nbsp;&nbsp;const bubble = document.createElement('div');
+&nbsp;&nbsp;&nbsp;&nbsp;const now = new Date();
+&nbsp;&nbsp;&nbsp;&nbsp;const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+&nbsp;&nbsp;&nbsp;&nbsp;bubble.className = `relative chat-bubble ${sender}`;
+&nbsp;&nbsp;&nbsp;&nbsp;bubble.dataset.pinned = "false";
+&nbsp;&nbsp;&nbsp;&nbsp;bubble.dataset.sender = sender;
+&nbsp;&nbsp;&nbsp;&nbsp;bubble.innerHTML = isAudio
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;? `
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<audio controls class="w-full rounded-lg mt-1">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<source src="${content}" type="audio/webm">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</audio>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="chat-time">${time}</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-ellipsis-v message-menu-btn"></i>`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: `
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p class="message-text">${content}</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="chat-time">${time}</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-ellipsis-v message-menu-btn"></i>`;
+&nbsp;&nbsp;&nbsp;&nbsp;const dots = bubble.querySelector('.message-menu-btn');
+&nbsp;&nbsp;&nbsp;&nbsp;dots.addEventListener('click', (e) => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.stopPropagation();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;activeMessage = bubble;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;openMenu(e, bubble, sender === 'me');
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;&nbsp;&nbsp;chatMessages.appendChild(bubble);
+&nbsp;&nbsp;&nbsp;&nbsp;chatMessages.scrollTop = chatMessages.scrollHeight;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- MENU (POP DOWN INSIDE CHAT) ---
+&nbsp;&nbsp;function openMenu(e, messageBubble, isOwner) {
+&nbsp;&nbsp;&nbsp;&nbsp;const bubbleRect = messageBubble.getBoundingClientRect();
+&nbsp;&nbsp;&nbsp;&nbsp;const containerRect = chatMessages.getBoundingClientRect();
+&nbsp;&nbsp;&nbsp;&nbsp;const offsetTop = bubbleRect.bottom - containerRect.top + chatMessages.scrollTop;
+&nbsp;&nbsp;&nbsp;&nbsp;menu.classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;menu.style.top = offsetTop + 'px';
+&nbsp;&nbsp;&nbsp;&nbsp;menu.style.left = (bubbleRect.left - containerRect.left + 40) + 'px';
+&nbsp;&nbsp;&nbsp;&nbsp;const [editBtn, pinBtn, replyBtn, deleteBtn] = menu.querySelectorAll('.menu-item');
+&nbsp;&nbsp;&nbsp;&nbsp;editBtn.style.display = isOwner ? 'flex' : 'none';
+&nbsp;&nbsp;&nbsp;&nbsp;// Assign dynamic handlers
+&nbsp;&nbsp;&nbsp;&nbsp;editBtn.onclick = () => editMessage(activeMessage);
+&nbsp;&nbsp;&nbsp;&nbsp;deleteBtn.onclick = () => deleteMessage(activeMessage);
+&nbsp;&nbsp;&nbsp;&nbsp;replyBtn.onclick = () => replyToMessage(activeMessage);
+&nbsp;&nbsp;&nbsp;&nbsp;pinBtn.onclick = () => pinMessage(activeMessage);
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// Hide menu on blank area click
+&nbsp;&nbsp;chatMessages.addEventListener('click', () => menu.classList.add('hidden'));
+&nbsp;&nbsp;// --- EDIT MESSAGE ---
+&nbsp;&nbsp;function editMessage(msg) {
+&nbsp;&nbsp;&nbsp;&nbsp;menu.classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;const textEl = msg.querySelector('.message-text');
+&nbsp;&nbsp;&nbsp;&nbsp;if (!textEl) return showInlineAlert("Cannot edit voice messages.");
+&nbsp;&nbsp;&nbsp;&nbsp;const originalText = textEl.textContent;
+&nbsp;&nbsp;&nbsp;&nbsp;const input = document.createElement('input');
+&nbsp;&nbsp;&nbsp;&nbsp;input.type = 'text';
+&nbsp;&nbsp;&nbsp;&nbsp;input.value = originalText;
+&nbsp;&nbsp;&nbsp;&nbsp;input.className = "w-full bg-white/10 border border-white/20 text-white rounded-md px-2 py-1 text-sm mt-1";
+&nbsp;&nbsp;&nbsp;&nbsp;msg.replaceChild(input, textEl);
+&nbsp;&nbsp;&nbsp;&nbsp;input.focus();
+&nbsp;&nbsp;&nbsp;&nbsp;input.addEventListener('keypress', e => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (e.key === 'Enter') {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const newText = input.value.trim();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (newText) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const newP = document.createElement('p');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newP.textContent = newText;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newP.className = "message-text";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg.replaceChild(newP, input);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("Message edited.");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- DELETE MESSAGE ---
+&nbsp;&nbsp;function deleteMessage(msg) {
+&nbsp;&nbsp;&nbsp;&nbsp;menu.classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;msg.classList.add('opacity-50');
+&nbsp;&nbsp;&nbsp;&nbsp;setTimeout(() => msg.remove(), 300);
+&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("Message deleted.");
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- REPLY TO MESSAGE ---
+&nbsp;&nbsp;function replyToMessage(msg) {
+&nbsp;&nbsp;&nbsp;&nbsp;menu.classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;const textEl = msg.querySelector('.message-text');
+&nbsp;&nbsp;&nbsp;&nbsp;const replyText = textEl ? textEl.textContent : "Voice message";
+&nbsp;&nbsp;&nbsp;&nbsp;const replyBox = document.createElement('div');
+&nbsp;&nbsp;&nbsp;&nbsp;replyBox.className = "bg-white/10 text-white text-sm p-2 rounded-md border-l-4 border-accent mb-2";
+&nbsp;&nbsp;&nbsp;&nbsp;replyBox.textContent = `Replying to: ${replyText}`;
+&nbsp;&nbsp;&nbsp;&nbsp;const inputContainer = chatInput.parentElement;
+&nbsp;&nbsp;&nbsp;&nbsp;inputContainer.insertBefore(replyBox, chatInput);
+&nbsp;&nbsp;&nbsp;&nbsp;chatInput.focus();
+&nbsp;&nbsp;&nbsp;&nbsp;chatInput.addEventListener('keydown', function handleReply(e) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (e.key === 'Enter') {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;createMessageBubble(`Reply to "${replyText}": ${chatInput.value.trim()}`, 'me');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;replyBox.remove();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chatInput.removeEventListener('keydown', handleReply);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chatInput.value = '';
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("Reply sent.");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- PIN MESSAGE ---
+&nbsp;&nbsp;function pinMessage(msg) {
+&nbsp;&nbsp;&nbsp;&nbsp;menu.classList.add('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;const pinned = msg.dataset.pinned === "true";
+&nbsp;&nbsp;&nbsp;&nbsp;msg.dataset.pinned = !pinned;
+&nbsp;&nbsp;&nbsp;&nbsp;if (!pinned) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg.style.border = "1px solid gold";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg.style.order = "-1";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("Message pinned to top.");
+&nbsp;&nbsp;&nbsp;&nbsp;} else {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg.style.border = "";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg.style.order = "initial";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("Message unpinned.");
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- AUDIO RECORDING ---
+&nbsp;&nbsp;recordBtn.addEventListener('click', async () => {
+&nbsp;&nbsp;&nbsp;&nbsp;if (mediaRecorder && mediaRecorder.state === 'recording') {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mediaRecorder.stop();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recordBtn.classList.remove('bg-red-600');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mediaRecorder = new MediaRecorder(stream);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;audioChunks = [];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mediaRecorder.onstop = () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const audioUrl = URL.createObjectURL(audioBlob);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;createMessageBubble(audioUrl, 'me', true);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mediaRecorder.start();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recordBtn.classList.add('bg-red-600');
+&nbsp;&nbsp;&nbsp;&nbsp;} catch (err) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert('Microphone access denied.');
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;});
+&nbsp;&nbsp;// --- INLINE ALERT INSIDE CHAT ---
+&nbsp;&nbsp;function showInlineAlert(msg) {
+&nbsp;&nbsp;&nbsp;&nbsp;const alertDiv = document.createElement('div');
+&nbsp;&nbsp;&nbsp;&nbsp;alertDiv.className =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"bg-accent/10 text-accent border border-accent/40 text-sm px-4 py-2 rounded-lg text-center mt-3";
+&nbsp;&nbsp;&nbsp;&nbsp;alertDiv.textContent = msg;
+&nbsp;&nbsp;&nbsp;&nbsp;chatMessages.appendChild(alertDiv);
+&nbsp;&nbsp;&nbsp;&nbsp;chatMessages.scrollTop = chatMessages.scrollHeight;
+&nbsp;&nbsp;&nbsp;&nbsp;setTimeout(() => alertDiv.remove(), 3000);
+&nbsp;&nbsp;}
+&nbsp;&nbsp;// --- VOICE/VIDEO CALL TEST HANDLER ---
+&nbsp;&nbsp;if (callBtn) {
+&nbsp;&nbsp;&nbsp;&nbsp;callBtn.addEventListener('click', async () => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("🔔 Call feature testing…");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const video = document.createElement('video');
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;video.srcObject = stream;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;video.autoplay = true;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;video.muted = true;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;video.className = "rounded-lg border border-white/20 mt-3";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chatMessages.appendChild(video);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("🎥 You’re live (testing mode only)");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} catch (err) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showInlineAlert("❌ Camera or mic access denied.");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;});
+&nbsp;&nbsp;}
 </script>
 <!-----for the profile----->
-  <script>
-  const editBtn = document.getElementById('editProfileBtn');
-  const modal = document.getElementById('profileModal');
-  const closeModal = document.getElementById('closeProfileModal');
-  const saveBtn = document.getElementById('saveProfileBtn');
-
-  const profileName = document.getElementById('profileName');
-  const profileEmail = document.getElementById('profileEmail');
-  const profileReg = document.getElementById('profileReg');
-  const profileInitial = document.getElementById('profileInitial');
-  const profilePic = document.getElementById('profilePic');
-
-  const modalName = document.getElementById('modalName');
-  const modalEmail = document.getElementById('modalEmail');
-  const modalReg = document.getElementById('modalReg');
-  const modalPic = document.getElementById('modalPic');
-
-  // Open modal
-  editBtn.addEventListener('click', () => {
-    modal.classList.remove('hidden');
-    // Populate modal with current info
-    modalName.value = profileName.textContent;
-    modalEmail.value = profileEmail.textContent;
-    modalReg.value = profileReg.textContent;
-  });
-
-  // Close modal
-  closeModal.addEventListener('click', () => modal.classList.add('hidden'));
-
-  // Save changes
-  saveBtn.addEventListener('click', () => {
-    profileName.textContent = modalName.value || "Unnamed";
-    profileEmail.textContent = modalEmail.value || "email@gouni.edu.ng";
-    profileReg.textContent = modalReg.value || "GOU-2025-XXXX";
-    profileInitial.textContent = modalName.value.charAt(0).toUpperCase() || "S";
-
-    // Update profile pic
-    if (modalPic.files && modalPic.files[0]) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        profilePic.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`;
-      };
-      reader.readAsDataURL(modalPic.files[0]);
-    }
-
-    modal.classList.add('hidden');
-  });
+&nbsp;&nbsp;<script>
+&nbsp;&nbsp;const editBtn = document.getElementById('editProfileBtn');
+&nbsp;&nbsp;const modal = document.getElementById('profileModal');
+&nbsp;&nbsp;const closeModal = document.getElementById('closeProfileModal');
+&nbsp;&nbsp;const saveBtn = document.getElementById('saveProfileBtn');
+&nbsp;&nbsp;const profileName = document.getElementById('profileName');
+&nbsp;&nbsp;const profileEmail = document.getElementById('profileEmail');
+&nbsp;&nbsp;const profileReg = document.getElementById('profileReg');
+&nbsp;&nbsp;const profileInitial = document.getElementById('profileInitial');
+&nbsp;&nbsp;const profilePic = document.getElementById('profilePic');
+&nbsp;&nbsp;const modalName = document.getElementById('modalName');
+&nbsp;&nbsp;const modalEmail = document.getElementById('modalEmail');
+&nbsp;&nbsp;const modalReg = document.getElementById('modalReg');
+&nbsp;&nbsp;const modalPic = document.getElementById('modalPic');
+&nbsp;&nbsp;// Open modal
+&nbsp;&nbsp;editBtn.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;modal.classList.remove('hidden');
+&nbsp;&nbsp;&nbsp;&nbsp;// Populate modal with current info
+&nbsp;&nbsp;&nbsp;&nbsp;modalName.value = profileName.textContent;
+&nbsp;&nbsp;&nbsp;&nbsp;modalEmail.value = profileEmail.textContent;
+&nbsp;&nbsp;&nbsp;&nbsp;modalReg.value = profileReg.textContent;
+&nbsp;&nbsp;});
+&nbsp;&nbsp;// Close modal
+&nbsp;&nbsp;closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+&nbsp;&nbsp;// Save changes
+&nbsp;&nbsp;saveBtn.addEventListener('click', () => {
+&nbsp;&nbsp;&nbsp;&nbsp;profileName.textContent = modalName.value || "Unnamed";
+&nbsp;&nbsp;&nbsp;&nbsp;profileEmail.textContent = modalEmail.value || "email@gouni.edu.ng";
+&nbsp;&nbsp;&nbsp;&nbsp;profileReg.textContent = modalReg.value || "GOU-2025-XXXX";
+&nbsp;&nbsp;&nbsp;&nbsp;profileInitial.textContent = modalName.value.charAt(0).toUpperCase() || "S";
+&nbsp;&nbsp;&nbsp;&nbsp;// Update profile pic
+&nbsp;&nbsp;&nbsp;&nbsp;if (modalPic.files && modalPic.files[0]) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const reader = new FileReader();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reader.onload = e => {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profilePic.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reader.readAsDataURL(modalPic.files[0]);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;modal.classList.add('hidden');
+&nbsp;&nbsp;});
 </script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
