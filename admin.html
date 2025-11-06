@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GoTeach | Admin Dashboard</title>
+  <link rel="icon" type="image/png" href="image.png" />
+  <!-- Tailwind + Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            navy: '#0a1a2e',
+            deep: '#0f1b2d',
+            primary: '#1e40af',
+            accent: '#3b82f6',
+            glass: 'rgba(255, 255, 255, 0.08)',
+            border: 'rgba(255, 255, 255, 0.12)',
+            text: '#e2e8f0',
+            muted: '#94a3b8',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --glass: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    body {
+      background: #0a1a2e;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(30, 64, 175, 0.25);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .sidebar-link {
+      @apply flex items-center gap-3 px-5 py-3.5 rounded-xl transition-all duration-300 text-muted;
+    }
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      @apply bg-accent/10 text-white border-l-4 border-accent;
+    }
+    .sidebar-link i { @apply w-5 text-center; }
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .chart-container { position: relative; height: 320px; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    .notice-pulse {
+      animation: noticePulse 1.8s infinite;
+    }
+    @keyframes noticePulse {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.03); }
+    }
+  </style>
+</head>
+<body class="text-text">
+  <!-- Mobile Overlay -->
+  <div id="mobileOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
+
+  <!-- Mobile Right-Slide Menu -->
+  <aside id="mobileMenu"
+    class="mobile-menu fixed top-0 right-0 h-full w-72 z-50 bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-xl border-l border-white/10 shadow-2xl p-6 rounded-l-3xl">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-extrabold text-white tracking-wide">Admin Menu</h2>
+      <button id="closeMobileMenu" class="text-white/60 hover:text-white transition text-xl">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <nav class="space-y-3">
+      <a href="#dashboard" class="sidebar-link active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#users" class="sidebar-link"><i class="fas fa-users"></i> Users</a>
+      <a href="#attendance" class="sidebar-link"><i class="fas fa-clipboard-check"></i> Attendance</a>
+      <a href="#activities" class="sidebar-link"><i class="fas fa-tasks"></i> Activities</a>
+      <a href="#analytics" class="sidebar-link"><i class="fas fa-chart-line"></i> Analytics</a>
+      <a href="#chat" class="sidebar-link"><i class="fas fa-comments"></i> Chat Monitoring</a>
+      <a href="#profiles" class="sidebar-link"><i class="fas fa-user-cog"></i> Profiles</a>
+    </nav>
+    <button id="mobileLogout"
+      class="mt-10 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-900/30">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </aside>
+
+  <!-- Desktop Sidebar (Left) -->
+  <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 backdrop-blur-xl lg:flex lg:flex-col p-6 border-r border-white/10 shadow-xl rounded-r-3xl">
+    <!-- Logo / Header -->
+    <div class="flex items-center gap-3 mb-10">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
+        <i class="fas fa-graduation-cap text-white text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold text-white tracking-wide">GoTeach Admin</h1>
+        <p class="text-xs text-white/50">Godfrey Okoye University</p>
+      </div>
+    </div>
+    <!-- Navigation Links -->
+    <nav class="flex-1 space-y-2">
+      <a href="#dashboard" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 bg-white/10 hover:bg-white/15 transition-all duration-200">
+        <i class="fas fa-home text-white/70"></i>
+        <span class="font-medium">Dashboard</span>
+      </a>
+      <a href="#users" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <i class="fas fa-users text-white/70"></i>
+        <span class="font-medium">Users</span>
+      </a>
+      <a href="#attendance" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <i class="fas fa-clipboard-check text-white/70"></i>
+        <span class="font-medium">Attendance</span>
+      </a>
+      <a href="#activities" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <i class="fas fa-tasks text-white/70"></i>
+        <span class="font-medium">Activities</span>
+      </a>
+      <a href="#analytics" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <i class="fas fa-chart-line text-white/70"></i>
+        <span class="font-medium">Analytics</span>
+      </a>
+      <a href="#chat" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <i class="fas fa-comments text-white/70"></i>
+        <span class="font-medium">Chat Monitoring</span>
+      </a>
+      <a href="#profiles" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <i class="fas fa-user-cog text-white/70"></i>
+        <span class="font-medium">Profiles</span>
+      </a>
+    </nav>
+    <!-- User Info & Logout -->
+    <div class="border-t border-white/10 pt-5 mt-5">
+      <div class="flex items-center gap-3 mb-3">
+        <div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-accent/20">
+          A
+        </div>
+        <div>
+          <p id="sidebarName" class="font-semibold text-white leading-tight">Admin</p>
+          <p class="text-xs text-white/50">Administrator</p>
+        </div>
+      </div>
+      <button
+        id="desktopLogout"
+        class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium py-2.5 rounded-xl transition-all shadow-md shadow-red-900/30 flex items-center justify-center gap-2 text-sm"
+      >
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="lg:ml-72 p-4 lg:p-8 min-h-screen">
+    <!-- Mobile Header -->
+    <header class="lg:hidden flex justify-between items-center mb-6 glass p-4 rounded-xl border border-white/10">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
+          <i class="fas fa-graduation-cap text-white"></i>
+        </div>
+        <h1 class="text-lg font-bold text-white">GoTeach Admin</h1>
+      </div>
+      <button id="openMobileMenu" class="text-2xl text-white/70 hover:text-white">Menu</button>
+    </header>
+
+    <!-- Welcome -->
+    <section id="dashboard" class="mb-10">
+      <div class="glass p-6 lg:p-8 border border-white/10">
+        <h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">
+          Welcome, <span id="adminName" class="text-accent">Admin</span>
+        </h1>
+        <p class="text-muted">Monitor and manage the platform.</p>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <i class="fas fa-users text-3xl text-accent mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="totalUsers">0</h3>
+        <p class="text-xs text-muted">Total Users</p>
+      </div>
+      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <i class="fas fa-check-circle text-3xl text-green-400 mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="totalAttendance">0</h3>
+        <p class="text-xs text-muted">Total Attendance Records</p>
+      </div>
+      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <i class="fas fa-tasks text-3xl text-purple-400 mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="totalActivities">0</h3>
+        <p class="text-xs text-muted">Total Activities</p>
+      </div>
+      <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all">
+        <i class="fas fa-chart-line text-3xl text-yellow-400 mb-2"></i>
+        <h3 class="text-2xl font-bold text-white" id="avgEngagement">0%</h3>
+        <p class="text-xs text-muted">Avg Engagement</p>
+      </div>
+    </section>
+
+    <!-- Users Management -->
+    <section id="users" class="mb-10">
+      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-users"></i> Users Management
+        </h2>
+        <div class="bg-red-600/20 border border-red-600/40 text-red-400 text-sm font-medium px-4 py-2 rounded-lg mb-4 flex items-center gap-2 notice-pulse">
+          <i class="fas fa-info-circle"></i>
+          <span>Real-time user list from Firestore.</span>
+        </div>
+        <div id="usersList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+      </div>
+    </section>
+
+    <!-- Attendance Overview -->
+    <section id="attendance" class="mb-10">
+      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-clipboard-check"></i> Attendance Overview
+        </h2>
+        <div id="attendanceList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+      </div>
+    </section>
+
+    <!-- Activities Monitoring -->
+    <section id="activities" class="mb-10">
+      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-tasks"></i> Activities Monitoring
+        </h2>
+        <div id="activitiesList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+      </div>
+    </section>
+
+    <!-- Analytics -->
+    <section id="analytics" class="mb-10">
+      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-chart-line"></i> Platform Analytics
+        </h2>
+        <div class="chart-container">
+          <canvas id="analyticsChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chat Monitoring -->
+    <section id="chat" class="mb-10">
+      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-comments"></i> Chat Monitoring
+        </h2>
+        <div id="chatMessagesMonitor" class="space-y-3 max-h-80 overflow-y-auto"></div>
+      </div>
+    </section>
+
+    <!-- Profiles Overview -->
+    <section id="profiles" class="mb-10">
+      <div class="glass p-6 border border-white/10 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-user-cog"></i> Profiles Overview
+        </h2>
+        <div id="profilesList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase + Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, onSnapshot, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtTYEHEdPopiYv9Iq2XYAcXTKk3gzWL_A",
+      authDomain: "goteach-1eaa3.firebaseapp.com",
+      projectId: "goteach-1eaa3",
+      storageBucket: "goteach-1eaa3.appspot.com",
+      messagingSenderId: "486448948939",
+      appId: "1:486448948939:web:3058788ea1a134804d1d4e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let chart = null;
+
+    // Mobile Menu Logic (same as teacher/student)
+    const openBtn = document.getElementById('openMobileMenu');
+    const closeBtn = document.getElementById('closeMobileMenu');
+    const overlay = document.getElementById('mobileOverlay');
+    const menu = document.getElementById('mobileMenu');
+    openBtn?.addEventListener('click', () => {
+      menu.classList.add('open');
+      overlay.classList.remove('hidden');
+    });
+    closeBtn?.addEventListener('click', closeMenu);
+    overlay?.addEventListener('click', closeMenu);
+    function closeMenu() {
+      menu.classList.remove('open');
+      overlay.classList.add('hidden');
+    }
+
+    // Sidebar Active State
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        closeMenu();
+      });
+    });
+
+    // Logout
+    document.getElementById('desktopLogout')?.addEventListener('click', logout);
+    document.getElementById('mobileLogout')?.addEventListener('click', logout);
+    async function logout() {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    }
+
+    // Auth State - Check for Admin Role
+    onAuthStateChanged(auth, async user => {
+      if (!user || !user.emailVerified) { window.location.href = 'login.html'; return; }
+      currentUser = user;
+      const userSnap = await getDoc(doc(db, 'users', user.uid));
+      if (!userSnap.exists() || userSnap.data().role !== 'Admin') {
+        alert('Access denied. You are not an admin.');
+        logout();
+        return;
+      }
+      const d = userSnap.data();
+      document.getElementById('adminName').textContent = d.firstName || 'Admin';
+      document.getElementById('sidebarName').textContent = d.firstName || 'Admin';
+      document.getElementById('sidebarAvatar').textContent = (d.firstName || 'A')[0].toUpperCase();
+
+      loadAdminData();
+    });
+
+    // Load Admin Data with Real-time Listeners
+    async function loadAdminData() {
+      // Total Users
+      onSnapshot(collection(db, 'users'), snap => {
+        const users = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        document.getElementById('totalUsers').textContent = users.length;
+        renderUsers(users);
+        renderProfiles(users);
+      });
+
+      // Attendance Records
+      onSnapshot(collection(db, 'attendance'), snap => {
+        const attendance = snap.docs.map(doc => doc.data());
+        document.getElementById('totalAttendance').textContent = attendance.length;
+        renderAttendance(attendance);
+      });
+
+      // Activities (from localStorage or Firestore - assuming synced to Firestore)
+      // For demo, assume activities are in Firestore 'activities'
+      onSnapshot(collection(db, 'activities'), snap => {
+        const activities = snap.docs.map(doc => doc.data());
+        document.getElementById('totalActivities').textContent = activities.length;
+        renderActivities(activities);
+      });
+
+      // Analytics Chart (sample data, replace with real queries)
+      const labels = [], data = [];
+      const attendanceSnap = await getDocs(collection(db, 'attendance'));
+      attendanceSnap.docs.forEach(d => {
+        labels.push(d.data().date);
+        data.push(d.data().present.length);
+      });
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById('analyticsChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Attendance Trend',
+            data,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Chat Monitoring (assume 'chatMessages' collection)
+      onSnapshot(collection(db, 'chatMessages'), snap => {
+        const messages = snap.docs.map(doc => doc.data());
+        renderChatMessages(messages);
+      });
+
+      // Avg Engagement (mock)
+      document.getElementById('avgEngagement').textContent = '85%';
+    }
+
+    // Render Functions
+    function renderUsers(users) {
+      const list = document.getElementById('usersList');
+      list.innerHTML = users.map(u => `
+        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-sm">
+              ${u.firstName[0]}
+            </div>
+            <div>
+              <p class="font-medium text-white">${u.firstName} ${u.lastName}</p>
+              <p class="text-xs text-muted">${u.role} - ${u.email}</p>
+            </div>
+          </div>
+          <span class="text-xs bg-green-600/20 text-green-400 px-3 py-1 rounded-full">Active</span>
+        </div>
+      `).join('');
+    }
+
+    function renderAttendance(attendance) {
+      const list = document.getElementById('attendanceList');
+      list.innerHTML = attendance.map(a => `
+        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+          <p class="font-medium text-white">Date: ${a.date}</p>
+          <p class="text-xs text-muted">Present: ${a.present.length} / ${a.total}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderActivities(activities) {
+      const list = document.getElementById('activitiesList');
+      list.innerHTML = activities.map(act => `
+        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+          <p class="font-medium text-white">${act.title}</p>
+          <p class="text-xs text-muted">${act.type} - ${new Date(act.timestamp).toLocaleString()}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderChatMessages(messages) {
+      const list = document.getElementById('chatMessagesMonitor');
+      list.innerHTML = messages.map(msg => `
+        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+          <p class="font-medium text-white">${msg.sender}: ${msg.content}</p>
+          <p class="text-xs text-muted">${new Date(msg.timestamp.toDate()).toLocaleString()}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderProfiles(users) {
+      const list = document.getElementById('profilesList');
+      list.innerHTML = users.map(u => `
+        <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+          <p class="font-medium text-white">${u.firstName} ${u.lastName} (${u.role})</p>
+          <p class="text-xs text-muted">Email: ${u.email} | ID: ${u.gotechId || u.regNumber}</p>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
