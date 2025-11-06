@@ -198,7 +198,7 @@
       <button id="notifyBtn"
               class="relative bg-white/10 hover:bg-white/20 text-white p-3 rounded-full shadow-md transition duration-300">
         <i class="fas fa-bell text-xl"></i>
-        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+        <span id="bellDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse hidden"></span>
       </button>
 
       <!-- Notification Dropdown -->
@@ -208,7 +208,8 @@
           <h3 class="text-white font-semibold text-sm">Notifications</h3>
           <i class="fas fa-bell text-white/40"></i>
         </div>
-        <ul class="max-h-56 overflow-y-auto text-sm text-white/80">
+        <ul id="notifList" class="max-h-56 overflow-y-auto text-sm text-white/80">
+          <!-- Notifications will appear here -->
           <li class="px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition" id="godfreyNotif">
             <i class="fas fa-rocket text-purple-400 text-lg"></i>
             <span>Godfrey set to Launch GoTeach 🚀</span>
@@ -227,13 +228,16 @@
     <p class="text-white/70">Let’s make today productive.</p>
   </div>
 
+
+
   <!-- Right Slide Notification Panel -->
   <div id="notifPanel" class="hidden fixed top-0 right-0 w-80 h-full bg-[#111]/95 border-l border-white/10 backdrop-blur-xl shadow-2xl transform translate-x-full transition-transform duration-300 z-[99999]">
     <div class="flex items-center justify-between p-4 border-b border-white/10">
       <h2 class="text-white text-lg font-semibold">All Notifications</h2>
       <button id="closePanel" class="text-white/70 hover:text-white"><i class="fas fa-times"></i></button>
     </div>
-    <div class="p-4 space-y-4">
+    <div id="notifPanelList" class="p-4 space-y-4">
+      <!-- Added notifications will appear here -->
       <div class="notification-item flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition" id="openNotifDetail">
         <i class="fas fa-rocket text-purple-400 text-xl"></i>
         <div>
@@ -244,7 +248,7 @@
     </div>
   </div>
 
-  <!-- Centered Modal for Notification Detail -->
+  <!-- Center Modal -->
   <div id="notifModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[999999]">
     <div class="bg-[#121212] border border-white/10 p-6 rounded-2xl max-w-md text-center shadow-2xl">
       <i class="fas fa-rocket text-4xl text-purple-400 mb-3"></i>
@@ -258,12 +262,19 @@
   <script>
     const notifyBtn = document.getElementById('notifyBtn');
     const dropdown = document.getElementById('notificationDropdown');
+    const notifList = document.getElementById('notifList');
+    const notifPanelList = document.getElementById('notifPanelList');
+    const notifCount = document.getElementById('notifications');
+    const notifDot = document.getElementById('notifDot');
+    const bellDot = document.getElementById('bellDot');
     const viewAllBtn = document.getElementById('viewAllBtn');
     const notifPanel = document.getElementById('notifPanel');
     const closePanel = document.getElementById('closePanel');
     const notifModal = document.getElementById('notifModal');
-    const openNotifDetail = document.getElementById('openNotifDetail');
     const closeModal = document.getElementById('closeModal');
+    const openNotifDetail = document.getElementById('openNotifDetail');
+
+    let count = 1; // Initial notification count
 
     // Toggle dropdown
     notifyBtn.addEventListener('click', (e) => {
@@ -288,15 +299,34 @@
       setTimeout(() => notifPanel.classList.add('hidden'), 300);
     });
 
-    // Open notification modal
-    openNotifDetail.addEventListener('click', () => {
-      notifModal.classList.remove('hidden');
-    });
+    // Open modal
+    openNotifDetail.addEventListener('click', () => notifModal.classList.remove('hidden'));
+    closeModal.addEventListener('click', () => notifModal.classList.add('hidden'));
 
-    // Close modal
-    closeModal.addEventListener('click', () => {
-      notifModal.classList.add('hidden');
-    });
+    // Function: Add notification manually
+    function addNotification(title, icon = "fa-bell", color = "text-blue-400") {
+      count++;
+      notifCount.textContent = count;
+      notifDot.classList.remove('hidden');
+      bellDot.classList.remove('hidden');
+
+      // Dropdown item
+      const li = document.createElement('li');
+      li.className = "px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition";
+      li.innerHTML = `<i class="fas ${icon} ${color} text-lg"></i><span>${title}</span>`;
+      notifList.prepend(li);
+
+      // Panel item
+      const div = document.createElement('div');
+      div.className = "notification-item flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition";
+      div.innerHTML = `<i class="fas ${icon} ${color} text-xl"></i><div><h4 class="font-semibold text-white text-sm">${title}</h4><p class="text-xs text-white/50">Tap to read more</p></div>`;
+      notifPanelList.prepend(div);
+    }
+
+    // 🧠 Example: simulate a new notification after 5 seconds
+    setTimeout(() => {
+      addNotification("New course materials available 🎓", "fa-book-open", "text-green-400");
+    }, 5000);
   </script>
 </section>
 
@@ -362,11 +392,13 @@
   </div>
 
   <!-- Notifications -->
-  <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
-    <span class="absolute top-2 right-3 text-[10px] text-yellow-400 bg-yellow-400/10 px-2 py-[2px] rounded-full"></span>
-    <i class="fas fa-bell text-3xl text-pink-400 mb-2"></i>
-    <h3 class="text-2xl font-bold text-white" id="notifications">0</h3>
-    <p class="text-xs text-muted">Notifications</p>
+  <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="glass p-5 text-center border border-white/10 rounded-xl shadow-md hover:shadow-lg transition-all relative">
+      <span id="notifDot" class="absolute top-2 right-3 w-3 h-3 bg-red-500 rounded-full shadow-md hidden"></span>
+      <i class="fas fa-bell text-3xl text-pink-400 mb-2"></i>
+      <h3 class="text-2xl font-bold text-white" id="notifications">1</h3>
+      <p class="text-xs text-white/60">Notifications</p>
+    </div>
   </div>
 </section>
 
